@@ -5,72 +5,82 @@
 ## 1. THÔNG TIN DỰ ÁN
 
 * **Tên dự án:** Xây dựng Website bán linh kiện điện tử tích hợp Trợ lý AI
-* **Lĩnh vực:** Thương mại điện tử (E-commerce) & Ứng dụng Trí tuệ nhân tạo (AI)
+* **Lĩnh vực:** Thương mại điện tử (E-commerce) & Trí tuệ nhân tạo (AI)
 * **Mô hình:** B2C (Business-to-Consumer)
-* **Đối tượng sử dụng:** Sinh viên, kỹ sư, người học kỹ thuật, khách hàng mua linh kiện và Quản trị viên (Admin).
+* **Đối tượng sử dụng:** Sinh viên, kỹ sư, người học kỹ thuật, khách hàng có nhu cầu mua linh kiện và Quản trị viên hệ thống (Admin).
 
 ---
 
 ## 2. GIỚI THIỆU DỰ ÁN
 
-Dự án **“Xây dựng Website bán linh kiện điện tử tích hợp Trợ lý AI”** nhằm xây dựng một hệ thống thương mại điện tử chuyên cung cấp các sản phẩm linh kiện điện tử và cơ điện tử.
+Dự án **“Xây dựng Website bán linh kiện điện tử tích hợp Trợ lý AI”** được triển khai nhằm xây dựng một hệ thống thương mại điện tử chuyên cung cấp các sản phẩm linh kiện điện tử và cơ điện tử.
 
-Khác với các website bán hàng thông thường, linh kiện điện tử thường có nhiều thông số kỹ thuật đặc thù (*điện áp, điện dung, công suất, sai số, số chân IC,...*). Người mua cần tìm kiếm chính xác thông số, trong khi Admin cần nắm bắt nhanh số liệu kinh doanh. Vì vậy, dự án tập trung vào 2 điểm đột phá:
-1. **Tìm kiếm và lọc sản phẩm theo thông số kỹ thuật chi tiết.**
-2. **Trợ lý AI thông minh (AI Bot Assistant):** Hỗ trợ Admin truy vấn doanh thu, tồn kho, sản phẩm bán chạy bằng ngôn ngữ tự nhiên; đồng thời tư vấn kỹ thuật và tra cứu cho khách hàng.
+Khác với các sản phẩm tiêu dùng thông thường, linh kiện điện tử sở hữu nhiều thuộc tính kỹ thuật đặc thù (*điện áp, điện dung, công suất, sai số, số chân IC, kiểu đóng gói,...*). Khách hàng đòi hỏi khả năng tìm kiếm chính xác theo thông số, trong khi nhà quản trị cần theo dõi nhanh chóng các số liệu kinh doanh. Hệ thống tập trung giải quyết 2 bài toán cốt lõi:
+1. **Tìm kiếm và lọc sản phẩm theo thuộc tính kỹ thuật chi tiết.**
+2. **Tích hợp Trợ lý AI thông minh (AI Bot Assistant):** Hỗ trợ Quản trị viên truy vấn báo cáo doanh thu, tồn kho, sản phẩm bán chạy bằng ngôn ngữ tự nhiên; đồng thời tư vấn kỹ thuật và hỗ trợ tra cứu cho khách hàng.
 
 ---
 
 ## 3. MỤC TIÊU DỰ ÁN
 
-* Xây dựng website bán linh kiện điện tử giao diện trực quan, hiện đại, tối ưu UX/UI.
-* Cho phép khách hàng tìm kiếm và lọc sản phẩm theo thông số kỹ thuật đặc thù.
-* Cho phép xem chi tiết sản phẩm, lựa chọn biến thể/SKU, quản lý giỏ hàng và thanh toán.
-* Hỗ trợ đặt hàng không cần đăng nhập (**Guest Checkout**) và theo dõi trạng thái đơn hàng.
-* Xây dựng trang quản trị (Admin Dashboard) quản lý sản phẩm, danh mục, SKU, đơn hàng và tồn kho.
-* **Tích hợp Trợ lý AI (AI Chatbot) nâng cao chuẩn Đồ án:**
-  * **Dành cho Admin:** Hỏi đáp doanh thu, thống kê sản phẩm bán chạy, phát hiện tồn kho cảnh báo bằng giọng nói/văn bản.
-  * **Dành cho Khách hàng:** Tư vấn lựa chọn linh kiện theo yêu cầu bài toán kỹ thuật, tra cứu thông số và đơn hàng.
-* Áp dụng xác thực, phân quyền (**Spring Security & JWT**) và mã hóa dữ liệu an toàn.
+* Xây dựng website thương mại điện tử bán linh kiện điện tử với giao diện trực quan, tối ưu trải nghiệm người dùng (UX/UI).
+* Xây dựng bộ lọc thông số kỹ thuật đa chiều theo từng loại linh kiện.
+* Cung cấp đầy đủ các chức năng thương mại điện tử: xem chi tiết sản phẩm, quản lý biến thể (SKU), giỏ hàng, đặt hàng và thanh toán.
+* Hỗ trợ phương thức đặt hàng không cần đăng nhập (**Guest Checkout**) và chức năng theo dõi đơn hàng.
+* Xây dựng phân hệ quản trị (Admin Dashboard) quản lý sản phẩm, danh mục, tồn kho, đơn hàng và báo cáo thống kê.
+* **Tích hợp Trợ lý AI (AI Chatbot) đa nhiệm:**
+  * **Đối với Quản trị viên:** Hỏi đáp dữ liệu doanh thu, thống kê sản phẩm bán chạy và cảnh báo tồn kho bằng ngôn ngữ tự nhiên.
+  * **Đối với Khách hàng:** Tư vấn lựa chọn linh kiện theo yêu cầu kỹ thuật và hỗ trợ tra cứu đơn hàng.
+* Triển khai cơ chế xác thực, phân quyền (**Spring Security & JWT**) và bảo mật dữ liệu theo chuẩn ngành.
 
 ---
 
 ## 4. PHẠM VI VÀ CHỨC NĂNG CHÍNH
 
-### 4.1. Chức năng dành cho khách hàng
+### 4.1. Chức năng dành cho Khách hàng
 
-* **Xem và tìm kiếm sản phẩm:** Xem danh sách theo danh mục, tìm kiếm theo tên/mã sản phẩm.
-* **Lọc sản phẩm theo thông số kỹ thuật (Chức năng nổi bật):**
-  * *Điện trở:* Công suất, sai số, giá trị ôm.
-  * *Tụ điện:* Điện dung, điện áp chịu đựng, loại tụ.
-  * *IC:* Số chân, loại IC, kiểu đóng gói (DIP/SMD).
-* **Xem chi tiết sản phẩm:** Hình ảnh, giá bán, mô tả, thông số kỹ thuật chi tiết, SKU và tình trạng tồn kho.
-* **Giỏ hàng & Đặt hàng:** Quản lý giỏ hàng, hỗ trợ **Guest Checkout** (không bắt buộc đăng nhập).
-* **Thanh toán:** Thanh toán khi nhận hàng (**COD**) và mô phỏng thanh toán online qua **MoMo**.
-* **Theo dõi đơn hàng:** Trò chuyện hoặc tra cứu mã đơn hàng để xem trạng thái xử lý/vận chuyển.
+* **Xem và tìm kiếm sản phẩm:**
+  * Xem sản phẩm theo danh mục/thương hiệu.
+  * Tìm kiếm theo tên, từ khóa hoặc mã linh kiện.
+* **Lọc sản phẩm theo thông số kỹ thuật (Chức năng trọng tâm):**
+  * *Điện trở:* Công suất (Watt), sai số (%), giá trị điện trở (Ohm).
+  * *Tụ điện:* Điện dung (uF/pF), điện áp chịu đựng (V), loại tụ (gốm/hóa/tần).
+  * *Vi mạch (IC):* Số chân, loại IC, dạng đóng gói (DIP/SMD).
+* **Xem chi tiết sản phẩm:**
+  * Hình ảnh, giá bán, mô tả sản phẩm.
+  * Bảng thông số kỹ thuật chi tiết.
+  * Lựa chọn biến thể / SKU và tình trạng tồn kho thực tế.
+* **Giỏ hàng và Đặt hàng:**
+  * Thêm, sửa, xóa sản phẩm trong giỏ hàng.
+  * Hỗ trợ **Guest Checkout** cho khách hàng không đăng nhập tài khoản.
+* **Thanh toán:**
+  * Thanh toán khi nhận hàng (**COD**).
+  * Mô phỏng thanh toán trực tuyến qua ví điện tử.
+* **Theo dõi đơn hàng:**
+  * Tra cứu tiến trình xử lý và trạng thái đơn hàng thông qua mã đơn.
 
-### 4.2. Chức năng dành cho Admin
+### 4.2. Chức năng dành cho Quản trị viên (Admin)
 
-* Quản lý danh mục, thương hiệu, sản phẩm và biến thể SKU duy nhất.
-* Quản lý tồn kho: Cập nhật số lượng, cảnh báo sản phẩm dưới ngưỡng an toàn.
-* Quản lý đơn hàng: Duyệt đơn, cập nhật trạng thái đơn (Chờ xử lý, Đang giao, Đã hoàn thành, Hủy).
-* Báo cáo thống kê: Biểu đồ doanh thu, số lượng đơn hàng, top sản phẩm bán chạy.
-* Quản lý tài khoản và phân quyền người dùng (`ROLE_USER`, `ROLE_ADMIN`).
+* **Quản lý danh mục & Sản phẩm:** Quản lý sản phẩm, thương hiệu, danh mục và mã SKU duy nhất cho từng biến thể.
+* **Quản lý tồn kho:** Cập nhật số lượng nhập/xóa, thiết lập ngưỡng cảnh báo tồn kho tối thiểu.
+* **Quản lý đơn hàng:** Tiếp nhận, cập nhật trạng thái đơn hàng (Chờ xác nhận, Đang xử lý, Đang giao, Đã hoàn thành, Hủy).
+* **Báo cáo & Thống kê:** Biểu đồ doanh thu theo thời gian, số lượng đơn hàng, top sản phẩm bán chạy.
+* **Quản lý người dùng:** Quản lý tài khoản và phân quyền hệ thống (`ROLE_USER`, `ROLE_ADMIN`).
 
-### 4.3. Chức năng Trợ lý AI (AI Smart Bot - Chức năng nâng cao)
+### 4.3. Chức năng Trợ lý AI (AI Bot Assistant)
 
-Đây là tính năng điểm nhấn giúp nâng cao hàm lượng công nghệ cho đồ án:
+Phân hệ Trợ lý AI được phát triển nhằm tự động hóa công tác tư vấn và hỗ trợ ra quyết định kinh doanh:
 
-* **Đối với Admin (AI Business Intelligence Bot):**
-  * **Hỏi đáp doanh thu:** *"Doanh thu hôm nay/tháng này là bao nhiêu?"*, *"So sánh doanh thu tuần này với tuần trước"*.
-  * **Thống kê sản phẩm:** *"Sản phẩm nào bán chạy nhất trong tháng 9?"*, *"Tụ điện nào có doanh số cao nhất?"*.
-  * **Cảnh báo tồn kho:** *"Những linh kiện nào sắp hết hàng (số lượng < 10)?"*, *"Cần nhập thêm IC nào?"*.
-  * **Tổng hợp báo cáo nhanh:** Nhận câu trả lời tổng hợp dưới dạng văn bản và bảng dữ liệu ngắn gọn.
+* **Phân hệ AI dành cho Quản trị viên (AI Business Intelligence):**
+  * **Hỏi đáp doanh thu:** *"Doanh thu hôm nay/tháng này là bao nhiêu?"*, *"So sánh doanh thu tháng này với tháng trước"*.
+  * **Thống kê sản phẩm:** *"Sản phẩm nào có doanh số cao nhất trong tháng?"*, *"Top 5 linh kiện bán chạy nhất"*.
+  * **Cảnh báo tồn kho:** *"Liệt kê các linh kiện có số lượng tồn kho dưới 10"*, *"Sản phẩm nào cần nhập bổ sung?"*.
+  * **Tổng hợp số liệu:** Phản hồi số liệu tự động dưới dạng văn bản tổng hợp hoặc bảng dữ liệu.
 
-* **Đối với Khách hàng (AI Technical Advisor Bot):**
-  * **Tư vấn kỹ thuật:** *"Tôi cần làm mạch hạ áp từ 12V xuống 5V thì cần dùng IC và điện trở nào?"*, *"Tụ 16V có dùng được cho nguồn 24V không?"*.
-  * **Gợi ý linh kiện:** Gợi ý danh sách sản phẩm có trong cửa hàng kèm đường link xem nhanh.
-  * **Tra cứu đơn hàng:** *"Kiểm tra giúp tôi đơn hàng mã #ORD-88219"*.
+* **Phân hệ AI dành cho Khách hàng (AI Technical Advisor):**
+  * **Tư vấn kỹ thuật:** *"Tôi cần mạch hạ áp từ 12V xuống 5V thì dùng IC nào?"*, *"Tụ điện 16V có chịu được nguồn 24V không?"*.
+  * **Gợi ý linh kiện:** Gợi ý danh sách linh kiện phù hợp đang có tại cửa hàng.
+  * **Tra cứu đơn hàng:** *"Kiểm tra trạng thái đơn hàng mã #ORD-88219"*.
 
 ---
 
@@ -79,28 +89,28 @@ Khác với các website bán hàng thông thường, linh kiện điện tử t
 ### 5.1. Công nghệ sử dụng
 
 #### **Frontend**
-* **Nuxt 3:** Framework Vue 3 xây dựng UI/UX hiện đại (Storefront, Filter System, Cart, Admin Dashboard, AI Chat Widget).
-* **Tailwind CSS:** Thiết kế giao diện responsive, các thành phần UI (card, form, filter table, chat drawer).
-* **Pinia:** Quản lý State phía Frontend (User Auth, Cart, Chat History, Tokens).
+* **Nuxt 3 (Vue 3 Framework):** Xây dựng giao diện ứng dụng (Storefront, Filter System, Cart, Admin Dashboard, AI Chat Widget).
+* **Tailwind CSS:** Thiết kế giao diện UI đồng bộ, responsive.
+* **Pinia:** Quản lý trạng thái ứng dụng (User Auth, Cart, Chat History, Tokens).
 
 #### **Backend & AI Engine**
-* **Java Spring Boot 4:** Xây dựng RESTful API, phân tầng kiến trúc và xử lý nghiệp vụ e-commerce.
-* **Spring Security & JWT:** Xác thực bằng Access Token & Refresh Token, mã hóa password bằng `BCrypt`.
-* **Spring AI / OpenAI API / Gemini API (Hoặc Ollama - Local LLM):** 
-  * Tích hợp Đại mô hình ngôn ngữ (LLM) để xử lý ngôn ngữ tự nhiên (NLP).
-  * Sử dụng kỹ thuật **Function Calling / Tool Calling** để cho phép AI tự động truy vấn CSDL PostgreSQL an toàn (lấy doanh thu, danh sách tồn kho, thông tin đơn hàng) và trả về phản hồi chính xác.
-* **Hibernate / JPA:** Thao tác CSDL thông qua ORM Entity.
+* **Java Spring Boot 4:** Xây dựng hệ thống RESTful API và xử lý nghiệp vụ kinh doanh.
+* **Spring Security & JWT:** Bảo vệ hệ thống bằng Access Token & Refresh Token, mã hóa mật khẩu bằng `BCryptPasswordEncoder`.
+* **Spring AI / OpenAI API / Gemini API**
+  * Xử lý ngôn ngữ tự nhiên (NLP) cho Trợ lý AI.
+  * Áp dụng kỹ thuật **Function Calling (Tool Calling)** cho phép AI truy vấn dữ liệu trực tiếp từ PostgreSQL một cách an toàn và chính xác.
+* **Hibernate / JPA:** Kết nối và thao tác với cơ sở dữ liệu qua các Entity.
 
-#### **Cơ sở dữ liệu & Công cụ**
-* **Database:** PostgreSQL.
-* **API Documentation & Versioning:** Swagger / OpenAPI, Git / GitHub.
-* **Thiết kế & Quản lý:** Figma, Trello.
+#### **Cơ sở dữ liệu & Công cụ phát triển**
+* **Cơ sở dữ liệu:** PostgreSQL.
+* **Công cụ quản lý & API:** Git / GitHub, Swagger / OpenAPI.
+* **Thiết kế UI/UX & Quản lý tiến độ:** Figma, Trello.
 
 ---
 
 ## 6. KIẾN TRÚC HỆ THỐNG TÍCH HỢP AI
 
-Hệ thống áp dụng **Layered Architecture** mở rộng thêm phân hệ **AI Engine Service**:
+Backend được thiết kế theo **Kiến trúc phân tầng 3 lớp (Layered Architecture)** kết hợp phân hệ **AI Engine Service**:
 
 ```
                               ┌─────────────────────────────────────────┐
@@ -113,24 +123,25 @@ Client (Nuxt 3 FE) ──> Controller ──> Service Layer ──> Repository �
  (Storefront / Admin)   (REST API)    (Business / AI)  (JPA / Hibernate)
 ```
 
-1. Client gửi câu hỏi ngôn ngữ tự nhiên (*"Doanh thu hôm nay bao nhiêu?"*) tới Backend AI Controller.
-2. AI Service chuyển đổi ngữ cảnh, kích hoạt **Function Calling (Tool Calling)** gọi hàm `getRevenueByDateRange()`.
-3. Service truy vấn PostgreSQL thông qua Repository để lấy số liệu thực tế.
-4. LLM tổng hợp kết quả số liệu từ DB và phản hồi câu trả lời tự nhiên, chính xác cho client.
+**Quy trình xử lý truy vấn AI:**
+1. Người dùng/Admin gửi câu hỏi bằng ngôn ngữ tự nhiên tới AI Controller.
+2. AI Engine phân tích ý định, kích hoạt **Function Calling** tương ứng (ví dụ: `getRevenueByDateRange()`).
+3. Service Layer truy vấn dữ liệu từ PostgreSQL thông qua Repository.
+4. Đại mô hình ngôn ngữ (LLM) tổng hợp số liệu thực tế từ CSDL và phản hồi kết quả chính xác cho người dùng.
 
 ---
 
-## 7. BẢO MẬT VÀ YÊU CẦU QUAN TRỌNG
+## 7. BẢO MẬT VÀ YÊU CẦU NGHỆP VỤ
 
-### Bảo mật & Quyền riêng tư AI
-* Xác thực **JWT**, mã hóa **BCrypt**, phân quyền nghiêm ngặt `ROLE_USER` và `ROLE_ADMIN`.
-* **Bảo mật truy vấn AI:** Chỉ tài khoản `ROLE_ADMIN` mới có quyền sử dụng AI để truy vấn thông tin doanh thu, báo cáo tài chính và dữ liệu tồn kho nhạy cảm. Khách hàng thông thường chỉ dùng AI tư vấn kỹ thuật và tra cứu sản phẩm/đơn hàng cá nhân.
-* Kiểm tra dữ liệu đầu vào (Input Validation), chống SQL Injection và Prompt Injection.
+### Bảo mật & Quyền truy cập AI
+* Xác thực **JWT**, mã hóa mật khẩu **BCrypt**, phân quyền `ROLE_USER` và `ROLE_ADMIN`.
+* **Phân quyền dữ liệu AI:** Chỉ tài khoản có quyền `ROLE_ADMIN` mới được phép truy vấn dữ liệu doanh thu, báo cáo tài chính và tồn kho. Khách hàng chỉ có quyền sử dụng AI tư vấn kỹ thuật và tra cứu đơn hàng cá nhân.
+* Kiểm tra dữ liệu đầu vào (Input Validation), phòng chống các lỗ hổng bảo mật Web và Prompt Injection.
 
 ### Yêu cầu nghiệp vụ
-* Mã SKU duy nhất cho từng biến thể linh kiện.
-* Kiểm tra và giữ hàng tồn kho chính xác khi đặt hàng.
-* AI phản hồi nhanh, chính xác số liệu từ CSDL, không "bịa" (hallucinate) thông tin doanh thu hay tồn kho.
+* Mã SKU của sản phẩm là duy nhất trên toàn hệ thống.
+* Kiểm tra tồn kho trước khi xác nhận đơn hàng.
+* Trợ lý AI phản hồi dựa trên dữ liệu thực tế từ CSDL, đảm bảo độ chính xác của báo cáo.
 
 ---
 
@@ -138,12 +149,12 @@ Client (Nuxt 3 FE) ──> Controller ──> Service Layer ──> Repository �
 
 | Giai đoạn | Nội dung công việc |
 |---|---|
-| **Giai đoạn 1** | **Phân tích yêu cầu:** Khảo sát yêu cầu e-commerce và xác định các kịch bản sử dụng Trợ lý AI (User & Admin). |
-| **Giai đoạn 2** | **Thiết kế hệ thống:** Figma UI/UX (gồm AI Chat Widget), Diagram (Use Case, Sequence, Class) & DB Design. |
-| **Giai đoạn 3** | **Phát triển Backend & AI:** Lập trình REST API (Product, Cart, Order, Inventory, Auth) & Tích hợp Spring AI / Function Calling query DB. |
-| **Giai đoạn 4** | **Phát triển Frontend:** Giao diện Nuxt 3, bộ lọc thông số linh kiện, Cart, Checkout, Admin Dashboard & UI AI Chatbot. |
-| **Giai đoạn 5** | **Tích hợp & Kiểm thử:** Kết nối FE-BE, test luồng mua hàng, phân quyền AI Admin/User và kiểm thử độ chính xác truy vấn số liệu của AI Bot. |
-| **Giai đoạn 6** | **Hoàn thiện:** Tối ưu hiệu năng, sửa lỗi, đóng gói ứng dụng và hoàn thiện báo cáo đồ án. |
+| **Giai đoạn 1** | **Phân tích yêu cầu:** Xác định mục tiêu, phạm vi và xây dựng các kịch bản sử dụng hệ thống & Trợ lý AI. |
+| **Giai đoạn 2** | **Thiết kế hệ thống:** Thiết kế UI/UX Figma, xây dựng Use Case, Activity, Sequence, Class Diagram & DB Schema. |
+| **Giai đoạn 3** | **Phát triển Backend & AI:** Xây dựng CSDL, REST API (Product, Cart, Order, Inventory, Auth) và triển khai AI Function Calling. |
+| **Giai đoạn 4** | **Phát triển Frontend:** Lập trình Nuxt 3 cho các trang Storefront, bộ lọc thông số, Cart, Checkout, Admin Dashboard & UI AI Chat. |
+| **Giai đoạn 5** | **Tích hợp & Kiểm thử:** Kết nối FE-BE, kiểm thử tích hợp, kiểm tra độ chính xác của các truy vấn AI và phân quyền. |
+| **Giai đoạn 6** | **Hoàn thiện:** Sửa lỗi, tối ưu hiệu năng, đóng gói hệ thống và hoàn thiện tài liệu báo cáo dự án. |
 
 ---
 
@@ -151,27 +162,24 @@ Client (Nuxt 3 FE) ──> Controller ──> Service Layer ──> Repository �
 
 | Thành viên | Tỷ lệ đóng góp | Trách nhiệm chính |
 |---|---|---|
-| **Đàm Anh Pháp** | **50%** | **UI/UX, Frontend & AI Interface:**<br>• Xây dựng Frontend bằng Nuxt 3.<br>• Thiết kế UI/UX Storefront, Product List, Detail, Cart, Checkout, Admin Dashboard.<br>• Xây dựng thành phần **AI Chatbot Widget** (khung chat, gợi ý câu hỏi mẫu, giao diện hội thoại giọng nói/văn bản).<br>• Tích hợp Frontend với Backend API & kiểm thử giao diện. |
-| **Phạm Đức Tài** | **50%** | **Phân tích thiết kế, Backend & AI Engine:**<br>• Phân tích yêu cầu, thiết kế kiến trúc Use Case, Sequence, Class Diagram.<br>• Xây dựng Backend bằng Spring Boot, REST API (Product, Variant, Cart, Order, Inventory).<br>• Triển khai **AI Engine Service (Spring AI / LLM API + Function Calling)** để Bot truy vấn dữ liệu CSDL (Doanh thu, Tồn kho, Bán chạy).<br>• Kiểm thử API, bảo mật phân quyền AI & hoàn thiện báo cáo dự án. |
+| **Đàm Anh Pháp** | **50%** | **UI/UX, Frontend & Giao diện AI:**<br>• Xây dựng ứng dụng Frontend bằng Nuxt 3.<br>• Thiết kế UI/UX Storefront, Product List, Detail, Cart, Checkout, Admin Dashboard.<br>• Xây dựng thành phần **AI Chatbot Widget** (giao diện hội thoại, câu hỏi mẫu).<br>• Kết nối Frontend với Backend API & kiểm thử giao diện. |
+| **Phạm Đức Tài** | **50%** | **Phân tích thiết kế, Backend & AI Engine:**<br>• Phân tích yêu cầu, thiết kế Use Case, Sequence, Class Diagram.<br>• Xây dựng Backend với Spring Boot, REST API (Product, Variant, Cart, Order, Inventory).<br>• Triển khai **AI Engine Service (Spring AI / LLM API + Function Calling)** xử lý truy vấn doanh thu, tồn kho từ CSDL.<br>• Kiểm thử API, bảo mật phân quyền AI & hoàn thiện tài liệu báo cáo. |
 | **Tổng cộng** | **100%** | |
 
 ---
 
 ## 10. KẾT QUẢ DỰ KIẾN
 
-* **Hệ thống E-Commerce AI hoàn chỉnh:** Gồm Storefront cho khách hàng, Admin Dashboard cho quản trị viên và **Trợ lý AI thông minh** đa nhiệm.
-* **Điểm đột phá của Đồ án:**
-  * Khách hàng lọc linh kiện dễ dàng theo thuộc tính kỹ thuật và nhận tư vấn trực tiếp từ AI Bot.
-  * Admin theo dõi số liệu kinh doanh linh hoạt thông qua biểu đồ và truy vấn tức thì bằng AI Bot (*"Doanh thu hôm nay bao nhiêu?"*).
-* **Công nghệ hiện đại:** Nuxt 3, Tailwind CSS, Pinia, Spring Boot 4, Spring Security, Spring AI / LLM API (Function Calling), PostgreSQL.
-* **Hàm lượng chuyên môn cao:** Thể hiện được khả năng tích hợp công nghệ AI mới vào bài toán Thương mại điện tử thực tế.
+* **Hệ thống E-Commerce tích hợp AI hoàn chỉnh:** Gồm Storefront dành cho khách hàng, Admin Dashboard dành cho quản trị viên và Trợ lý AI đa nhiệm.
+* **Tính năng ứng dụng thực tiễn:** Khách hàng lọc sản phẩm theo thuộc tính kỹ thuật và nhận tư vấn từ AI Bot; Quản trị viên truy vấn báo cáo doanh thu và tồn kho nhanh chóng.
+* **Làm chủ công nghệ:** Nuxt 3, Tailwind CSS, Pinia ở Frontend; Spring Boot 4, Spring Security, Spring AI / LLM Function Calling, PostgreSQL ở Backend.
 
 ---
 
 ## 11. KẾT LUẬN
 
-Dự án **“Xây dựng Website bán linh kiện điện tử tích hợp Trợ lý AI”** không chỉ giải quyết bài toán mua sắm linh kiện theo thông số kỹ thuật đặc thù, mà còn nâng tầm đồ án nhờ ứng dụng Trí tuệ nhân tạo (AI) vào quản trị kinh doanh và tư vấn khách hàng.
+Dự án **“Xây dựng Website bán linh kiện điện tử tích hợp Trợ lý AI”** giải quyết bài toán tìm kiếm và lựa chọn linh kiện theo thuộc tính kỹ thuật đặc thù, đồng thời ứng dụng công nghệ Trí tuệ nhân tạo (AI) trong công tác quản trị kinh doanh và tư vấn khách hàng.
 
-Giải pháp sử dụng **Nuxt 3 + Spring Boot 4 + PostgreSQL + Spring AI / LLM Function Calling** tạo nên một hệ thống vững chắc, hiện đại và đạt tiêu chuẩn cao của một đồ án tốt nghiệp.
+Hệ thống được phát triển trên nền tảng **Nuxt 3, Spring Boot 4, PostgreSQL và Spring AI**, đáp ứng các tiêu chuẩn về kiến trúc, bảo mật và khả năng mở rộng của một đồ án tốt nghiệp.
 
-Sự phối hợp chặt chẽ **50% - 50%** giữa **Đàm Anh Pháp** (UI/UX, Frontend & AI Widget) và **Phạm Đức Tài** (Backend, Database, System Architecture & AI Engine) đảm bảo tiến độ và chất lượng hoàn thành dự án ở mức tối ưu.
+Sự phân công công việc cân bằng **50% - 50%** giữa **Đàm Anh Pháp** (Frontend/UI/UX/AI Interface) và **Phạm Đức Tài** (Backend/DB/Architecture/AI Engine) bảo đảm tính hiệu quả và tiến độ hoàn thành dự án.

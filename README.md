@@ -165,21 +165,3 @@ Client (Nuxt 3 FE) ──> Controller ──> Service Layer ──> Repository �
 | **Đàm Anh Pháp** | **50%** | **UI/UX, Frontend & Giao diện AI:**<br>• Xây dựng ứng dụng Frontend bằng Nuxt 3.<br>• Thiết kế UI/UX Storefront, Product List, Detail, Cart, Checkout, Admin Dashboard.<br>• Xây dựng thành phần **AI Chatbot Widget** (giao diện hội thoại, câu hỏi mẫu).<br>• Kết nối Frontend với Backend API & kiểm thử giao diện. |
 | **Phạm Đức Tài** | **50%** | **Phân tích thiết kế, Backend & AI Engine:**<br>• Phân tích yêu cầu, thiết kế Use Case, Sequence, Class Diagram.<br>• Xây dựng Backend với Spring Boot, REST API (Product, Variant, Cart, Order, Inventory).<br>• Triển khai **AI Engine Service (Spring AI / LLM API + Function Calling)** xử lý truy vấn doanh thu, tồn kho từ CSDL.<br>• Kiểm thử API, bảo mật phân quyền AI & hoàn thiện tài liệu báo cáo. |
 | **Tổng cộng** | **100%** | |
-
----
-
-## 10. KẾT QUẢ DỰ KIẾN
-
-* **Hệ thống E-Commerce tích hợp AI hoàn chỉnh:** Gồm Storefront dành cho khách hàng, Admin Dashboard dành cho quản trị viên và Trợ lý AI đa nhiệm.
-* **Tính năng ứng dụng thực tiễn:** Khách hàng lọc sản phẩm theo thuộc tính kỹ thuật và nhận tư vấn từ AI Bot; Quản trị viên truy vấn báo cáo doanh thu và tồn kho nhanh chóng.
-* **Làm chủ công nghệ:** Nuxt 3, Tailwind CSS, Pinia ở Frontend; Spring Boot 4, Spring Security, Spring AI / LLM Function Calling, PostgreSQL ở Backend.
-
----
-
-## 11. KẾT LUẬN
-
-Dự án **“Xây dựng Website bán linh kiện điện tử tích hợp Trợ lý AI”** giải quyết bài toán tìm kiếm và lựa chọn linh kiện theo thuộc tính kỹ thuật đặc thù, đồng thời ứng dụng công nghệ Trí tuệ nhân tạo (AI) trong công tác quản trị kinh doanh và tư vấn khách hàng.
-
-Hệ thống được phát triển trên nền tảng **Nuxt 3, Spring Boot 4, PostgreSQL và Spring AI**, đáp ứng các tiêu chuẩn về kiến trúc, bảo mật và khả năng mở rộng của một đồ án tốt nghiệp.
-
-Sự phân công công việc cân bằng **50% - 50%** giữa **Đàm Anh Pháp** (Frontend/UI/UX/AI Interface) và **Phạm Đức Tài** (Backend/DB/Architecture/AI Engine) bảo đảm tính hiệu quả và tiến độ hoàn thành dự án.

@@ -8,6 +8,7 @@
 * **Lĩnh vực:** Thương mại điện tử (E-commerce) & Trí tuệ nhân tạo (AI)
 * **Mô hình:** B2C (Business-to-Consumer)
 * **Đối tượng sử dụng:** Sinh viên, kỹ sư, người học kỹ thuật, khách hàng có nhu cầu mua linh kiện và Quản trị viên hệ thống (Admin).
+* **Notion:** https://app.notion.com/p/Chatbot-h-tr-website-b-n-linh-ki-n-i-n-t-3e5c29a3974080a1a2e1c7a616c0effd?v=3e5c29a3974080c4af30000c32d2ce32&source=copy_link
 
 ---
 

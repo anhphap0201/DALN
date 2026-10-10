@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -32,7 +33,7 @@ public class JwtDecoderConfig implements JwtDecoder {
         log.info("Decoding JWT Token");
         try {
             if (!jwtService.verifyToken(token)) {
-                throw new JwtException("Invalid token");
+                throw new BadJwtException("Invalid or expired token");
             }
 
             if (Objects.isNull(nimbusJwtDecoder)) {
@@ -43,7 +44,7 @@ public class JwtDecoderConfig implements JwtDecoder {
                         .build();
             }
         } catch (ParseException | JOSEException e) {
-            throw new JwtException("Failed to parse JWT token", e);
+            throw new BadJwtException("Failed to parse JWT token", e);
         }
         return nimbusJwtDecoder.decode(token);
     }

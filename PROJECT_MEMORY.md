@@ -26,6 +26,10 @@
 
 ## 4. Khởi động hệ thống
 - **Tập lệnh gộp:** File `run.bat` tại thư mục gốc chạy cả 3 service trong các terminal riêng.
+- **Tập lệnh riêng lẻ:**
+  - `run-redis.bat`: Khởi động Redis server (Port 6379).
+  - `run-be.bat`: Khởi động Backend Spring Boot (Port 8080).
+  - `run-fe.bat`: Khởi động Frontend Nuxt (Port 3000).
 - **Lệnh thủ công:**
   - Redis: `redis-server`
   - Backend: `cd BE\E-commerce-Electronic-Components-Backend && .\mvnw spring-boot:run`

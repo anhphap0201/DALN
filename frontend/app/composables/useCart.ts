@@ -34,7 +34,7 @@ const error = ref<string | null>(null)
 
 export const useCart = () => {
   const { success, error: showError } = useNotification()
-  const { token: authToken, isAuthenticated } = useAuth()
+  const { token: authToken, isAuthenticated, logout } = useAuth()
   const router = useRouter()
 
   // Fetch cart from backend
@@ -65,13 +65,14 @@ export const useCart = () => {
       console.log('fetchCart response status:', response.status)
 
       if (response.status === 401) {
-        // Don't auto-logout, just show empty cart
         console.warn('401 Unauthorized - token invalid or expired')
         cart.value = null
+        logout()
         return
       }
 
       if (!response.ok) {
+        cart.value = null
         throw new Error('Không thể tải giỏ hàng')
       }
 
@@ -79,7 +80,6 @@ export const useCart = () => {
       console.log('Cart loaded successfully:', cart.value)
     } catch (err: any) {
       error.value = err.message
-      showError(err.message)
       console.error('Cart fetch error:', err)
     } finally {
       loading.value = false

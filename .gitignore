@@ -219,3 +219,7 @@ FE/playwright/.cache/
 *.bak
 *.backup
 *.env
+
+# Redis dumps
+dump.rdb
+*.rdb

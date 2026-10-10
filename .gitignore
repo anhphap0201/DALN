@@ -1,0 +1,221 @@
+# ========================================
+# IDE Configuration (Root Level)
+# ========================================
+.idea/
+.vscode/
+
+# ========================================
+# JAVA BACKEND (BE/) - General Java & Spring Boot
+# ========================================
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Maven
+BE/target/
+BE/pom.xml.tag
+BE/pom.xml.releaseBackup
+BE/pom.xml.versionsBackup
+BE/pom.xml.next
+BE/release.properties
+BE/dependency-reduced-pom.xml
+BE/buildNumber.properties
+BE/.mvn/timing.properties
+BE/.mvn/wrapper/maven-wrapper.jar
+*-output.txt
+
+# Gradle
+BE/.gradle
+BE/build/
+BE/!gradle/wrapper/gradle-wrapper.jar
+BE/!**/src/main/**/build/
+BE/!**/src/test/**/build/
+
+# Spring Boot
+BE/spring.log
+
+# Application configuration files - DO NOT COMMIT
+BE/**/application.yml
+BE/**/application.yaml
+BE/**/application.properties
+BE/**/application-*.yml
+BE/**/application-*.yaml
+BE/**/application-*.properties
+
+# Specifically ignore in resources folder
+BE/E-commerce-Electronic-Components-Backend/src/main/resources/application*.yml
+BE/E-commerce-Electronic-Components-Backend/src/main/resources/application*.yaml
+BE/E-commerce-Electronic-Components-Backend/src/main/resources/application*.properties
+
+# IntelliJ IDEA
+BE/.idea/
+BE/*.iws
+BE/*.iml
+BE/*.ipr
+BE/out/
+BE/!**/src/main/**/out/
+BE/!**/src/test/**/out/
+
+# Eclipse
+BE/.apt_generated
+BE/.classpath
+BE/.factorypath
+BE/.project
+BE/.settings
+BE/.springBeans
+BE/.sts4-cache
+BE/bin/
+BE/!**/src/main/**/bin/
+BE/!**/src/test/**/bin/
+
+# NetBeans
+BE/nbproject/private/
+BE/nbbuild/
+BE/dist/
+BE/nbdist/
+BE/.nb-gradle/
+
+# VS Code
+BE/.vscode/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========================================
+# FRONTEND (FE/) - Nuxt.js, Vue, TypeScript
+# ========================================
+
+# Dependencies
+FE/node_modules/
+frontend/node_modules/
+node_modules/
+FE/npm-debug.log*
+FE/yarn-debug.log*
+FE/yarn-error.log*
+
+# Runtime data
+FE/pids
+FE/*.pid
+FE/*.seed
+FE/*.pid.lock
+
+# Coverage directory used by tools like istanbul
+FE/coverage
+FE/*.lcov
+FE/.nyc_output
+
+# Nuxt.js build / generate output
+FE/.nuxt
+frontend/.nuxt/
+FE/dist
+frontend/dist/
+
+# Nuxt.js cache
+FE/.cache
+frontend/.cache/
+
+# Vite build output
+FE/build
+frontend/build/
+
+# TypeScript
+FE/*.tsbuildinfo
+
+# Optional npm cache directory
+FE/.npm
+
+# Optional eslint cache
+FE/.eslintcache
+
+# Optional REPL history
+FE/.node_repl_history
+
+# Output of 'npm pack'
+FE/*.tgz
+
+# Yarn Integrity file
+FE/.yarn-integrity
+
+# dotenv environment variables file
+FE/.env
+FE/.env.local
+FE/.env.development.local
+FE/.env.test.local
+FE/.env.production.local
+
+# Nuxt.js specific
+FE/.output
+FE/.data
+FE/.unlighthouse
+
+# Vue.js
+FE/dist-ssr
+FE/*.local
+
+# Editor directories and files
+FE/.vscode/*
+FE/!.vscode/extensions.json
+FE/.idea
+FE/*.suo
+FE/*.ntvs*
+FE/*.njsproj
+FE/*.sln
+FE/*.sw?
+
+# Logs
+FE/logs
+FE/*.log
+
+# Temporary folders
+FE/.tmp
+FE/.temp
+
+# Storybook build outputs
+FE/storybook-static
+
+# Testing
+FE/test-results/
+FE/playwright-report/
+FE/playwright/.cache/
+
+# ========================================
+# GENERAL
+# ========================================
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*.backup
+*.env

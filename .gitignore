@@ -223,3 +223,8 @@ FE/playwright/.cache/
 # Redis dumps
 dump.rdb
 *.rdb
+
+# AI Agent Context & Memory files
+PROJECT_MEMORY.md
+AI_CHATBOT_SUMMARY.md
+proj-mem/

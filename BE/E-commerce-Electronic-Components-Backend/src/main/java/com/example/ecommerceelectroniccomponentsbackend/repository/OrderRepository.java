@@ -18,7 +18,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByUserId(Long userId, Pageable pageable);
     Optional<Order> findByIdAndUserId(Long orderId, Long userId);
     Optional<Order> findByOrderNumber(String orderNumber);
-       Optional<Order> findByLockerOrderId(String lockerOrderId);
+    Optional<Order> findByOrderNumberIgnoreCase(String orderNumber);
+    Optional<Order> findByLockerOrderId(String lockerOrderId);
+
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.productVariant pv LEFT JOIN FETCH pv.product WHERE LOWER(o.orderNumber) = LOWER(:orderNumber)")
+    Optional<Order> findByOrderNumberWithItems(@Param("orderNumber") String orderNumber);
 
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.orderItems oi LEFT JOIN FETCH oi.productVariant WHERE o.id = :orderId AND o.userId = :userId")
     Optional<Order> findByIdAndUserIdWithItems(@Param("orderId") Long orderId, @Param("userId") Long userId);
@@ -60,6 +64,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // Doanh thu (đơn DELIVERED) theo khoảng thời gian
     @Query("SELECT COALESCE(SUM(o.totalCost), 0) FROM Order o WHERE o.status = 'DELIVERED' AND o.createdAt >= :from AND o.createdAt < :to")
     BigDecimal sumRevenueByPeriod(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+    // Đếm số đơn DELIVERED theo khoảng thời gian
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'DELIVERED' AND o.createdAt >= :from AND o.createdAt < :to")
+    long countDeliveredByPeriod(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     // Đơn hàng trong khoảng thời gian (cho biểu đồ)
     @Query("SELECT o FROM Order o WHERE o.createdAt >= :from AND o.createdAt < :to ORDER BY o.createdAt ASC")

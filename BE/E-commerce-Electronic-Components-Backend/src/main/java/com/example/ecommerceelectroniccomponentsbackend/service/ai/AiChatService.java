@@ -37,9 +37,13 @@ public class AiChatService {
             2. Tra cứu sản phẩm và thông số bằng cách GỌI CÔNG CỤ (tool) `search_products`.
             3. Tra cứu số lượng tồn kho và biến thể sản phẩm bằng công cụ `check_stock`.
             4. Hỗ trợ Admin kiểm tra linh kiện sắp hết hàng bằng công cụ `get_low_stock_products`.
-            Quy tắc:
-            - Khi khách hàng hỏi về một sản phẩm hoặc hỏi còn hàng không, HÃY GỌI TOOL để lấy dữ liệu thực tế trước khi kết luận.
-            - Phản hồi bằng tiếng Việt thân thiện, chuyên nghiệp, ngắn gọn và định dạng markdown rõ ràng.
+            5. Hỗ trợ Admin xem báo cáo tổng doanh thu và số lượng đơn hàng bằng công cụ `get_revenue_report`.
+            6. Tra cứu tình trạng vận chuyển và xử lý đơn hàng bằng công cụ `track_order`.
+            Quy tắc trình bày:
+            - Trình bày câu trả lời bằng Markdown phong phú, súc tích và mạch lạc: in đậm thông số kỹ thuật then chốt (**5V**, **16MHz**, **giá bán**), sử dụng gạch đầu dòng rõ ràng.
+            - Khi so sánh hoặc liệt kê nhiều sản phẩm/thuộc tính, hãy định dạng thành bảng Markdown.
+            - TUYỆT ĐỐI KHÔNG xuất văn bản thô (raw JSON) hoặc chuỗi dữ liệu lặp lại.
+            - Hệ thống tự động đính kèm thẻ tương tác (Product Card, Order Tracking Card,...) từ kết quả tool bên dưới câu trả lời, do đó câu trả lời của bạn cần tập trung vào việc tóm tắt và đưa ra lời tư vấn giá trị nhất.
             """;
 
     @Transactional
@@ -57,14 +61,17 @@ public class AiChatService {
 
         // 3. Chuẩn bị ngữ cảnh hội thoại có thông tin vai trò
         boolean isAdmin = userRole != null && userRole.contains("ADMIN");
+        java.time.LocalDate today = java.time.LocalDate.now();
         String dynamicPrompt = SYSTEM_PROMPT + "\n" +
                 "THÔNG TIN PHIÊN VÀ PHÂN QUYỀN HIỆN TẠI:\n" +
+                "- Ngày hệ thống hiện tại: " + today + " (Năm " + today.getYear() + ", Tháng " + today.getMonthValue() + ")\n" +
                 "- Vai trò người dùng: " + (isAdmin ? "ADMIN (QUẢN TRỊ VIÊN HỆ THỐNG)" : "KHÁCH HÀNG / GUEST") + "\n" +
                 "- HƯỚNG DẪN BẮT BUỘC:\n" +
                 (isAdmin
-                    ? "  + Người dùng này LÀ QUẢN TRỊ VIÊN (ADMIN). Họ có toàn quyền tra cứu tồn kho, cảnh báo hàng sắp hết (gọi tool get_low_stock_products), và báo cáo hàng bán chạy nhất (gọi tool get_top_selling_products). BẮT BUỘC PHẢI GỌI TOOL ngay, TUYỆT ĐỐI KHÔNG TỪ CHỐI hay bảo họ liên hệ Admin vì chính họ là Admin!\n"
+                    ? "  + Người dùng này LÀ QUẢN TRỊ VIÊN (ADMIN). Họ có toàn quyền tra cứu tồn kho, cảnh báo hàng sắp hết (gọi tool get_low_stock_products), báo cáo doanh thu theo ngày/tháng (gọi tool get_revenue_report), và báo cáo hàng bán chạy nhất (gọi tool get_top_selling_products). BẮT BUỘC PHẢI GỌI TOOL ngay, TUYỆT ĐỐI KHÔNG TỪ CHỐI hay bảo họ liên hệ Admin vì chính họ là Admin!\n"
                     : "  + Khi khách hàng hỏi về mặt hàng bán chạy, hãy gọi tool get_top_selling_products để giới thiệu cho họ.\n"
-                );
+                ) +
+                "  + Khi người dùng hỏi về tình trạng đơn hàng hoặc cung cấp mã đơn (chứa tiền tố ORD hoặc số đơn), hãy gọi tool track_order để kiểm tra tình trạng thực tế.\n";
 
         List<Map<String, Object>> messages = new ArrayList<>();
         messages.add(Map.of("role", "system", "content", dynamicPrompt));
@@ -185,6 +192,16 @@ public class AiChatService {
                 Number limit = (Number) args.getOrDefault("limit", 5);
                 yield aiToolService.getTopSellingProducts(limit != null ? limit.intValue() : 5, sessionId, userId);
             }
+            case "get_revenue_report" -> {
+                String startDate = (String) args.get("start_date");
+                String endDate = (String) args.get("end_date");
+                String period = (String) args.getOrDefault("period", "range");
+                yield aiToolService.getRevenueReport(startDate, endDate, period, role, sessionId, userId);
+            }
+            case "track_order" -> {
+                String orderCode = (String) args.getOrDefault("order_code", "");
+                yield aiToolService.trackOrder(orderCode, sessionId, userId);
+            }
             default -> Map.of("error", "Công cụ không được hỗ trợ: " + toolName);
         };
     }
@@ -217,6 +234,27 @@ public class AiChatService {
             Map<String, Object> res = aiToolService.getTopSellingProducts(5, sessionId, userId);
             referencedData.add(res);
             return "*(Ollama local chưa bật - Phản hồi tự động)*\nĐã tra cứu top các mặt hàng bán chạy nhất của cửa hàng.";
+        } else if (lower.contains("doanh thu") || lower.contains("báo cáo doanh thu") || lower.contains("tiền bán")) {
+            toolsUsed.add("get_revenue_report");
+            java.time.LocalDate now = java.time.LocalDate.now();
+            String start = now.withDayOfMonth(1).toString();
+            String end = now.toString();
+            Map<String, Object> res = aiToolService.getRevenueReport(start, end, "month", userRole, sessionId, userId);
+            referencedData.add(res);
+            if (res.containsKey("error")) {
+                return (String) res.get("error");
+            }
+            return "*(Ollama local chưa bật - Phản hồi tự động)*\n" + res.getOrDefault("summary", "Đã thống kê doanh thu tháng này.");
+        } else if (lower.contains("đơn hàng") || lower.contains("tra cứu đơn") || lower.contains("mã đơn") || lower.contains("ord-") || lower.contains("#ord")) {
+            toolsUsed.add("track_order");
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?i)(?:#|ord-)[a-z0-9-]+").matcher(message);
+            String code = m.find() ? m.group() : message.trim();
+            Map<String, Object> res = aiToolService.trackOrder(code, sessionId, userId);
+            referencedData.add(res);
+            if (res.containsKey("error")) {
+                return "*(Ollama local chưa bật - Phản hồi tự động)*\n" + res.get("error");
+            }
+            return "*(Ollama local chưa bật - Phản hồi tự động)*\n" + res.getOrDefault("message", "Đã tra cứu thông tin đơn hàng.");
         } else {
             toolsUsed.add("search_products");
 

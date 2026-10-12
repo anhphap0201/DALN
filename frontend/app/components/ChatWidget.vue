@@ -21,7 +21,7 @@
     <!-- Chat Box Window -->
     <div
       v-else
-      class="flex flex-col w-[380px] sm:w-[420px] h-[580px] max-h-[85vh] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
+      class="flex flex-col w-[380px] sm:w-[450px] h-[600px] max-h-[88vh] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
     >
       <!-- Header -->
       <div class="flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-[#0077cc] to-[#09f] text-white shadow-sm">
@@ -100,13 +100,165 @@
 
           <!-- Assistant Message -->
           <div v-else class="flex gap-2 items-start justify-start">
-            <div class="w-6 h-6 rounded-full bg-[#09f] text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-1">
+            <div class="w-6 h-6 rounded-full bg-[#09f] text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-1 shadow-xs">
               AI
             </div>
-            <div class="max-w-[85%] flex flex-col gap-1">
-              <div class="px-3.5 py-2.5 bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-tl-xs text-xs sm:text-sm leading-relaxed shadow-xs break-words whitespace-pre-wrap">
-                {{ msg.content }}
-              </div>
+            <div class="max-w-[88%] sm:max-w-[85%] flex flex-col gap-1.5 w-full">
+              <!-- Rendered Markdown Message -->
+              <div
+                class="px-3.5 py-2.5 bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-tl-xs text-xs sm:text-sm leading-relaxed shadow-xs break-words ai-rendered-content"
+                v-html="renderMarkdown(msg.content)"
+              ></div>
+
+              <!-- Interactive Structured Cards from Referenced Data -->
+              <template v-if="msg.referencedData && msg.referencedData.length">
+                <div v-for="(ref, rIdx) in msg.referencedData" :key="rIdx" class="flex flex-col gap-2">
+                  <!-- Case 1: Product Grid / Cards (from search_products or get_top_selling_products) -->
+                  <div v-if="hasProducts(ref)" class="bg-white border border-blue-100 rounded-xl p-2.5 shadow-2xs">
+                    <div class="text-[11px] font-bold text-blue-900 mb-2 flex items-center justify-between">
+                      <span class="flex items-center gap-1">⚡ Linh kiện gợi ý</span>
+                      <span class="text-[10px] text-gray-400 font-normal">{{ getProductsFromRef(ref).length }} kết quả</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-1.5">
+                      <div
+                        v-for="p in getProductsFromRef(ref).slice(0, 3)"
+                        :key="p.id"
+                        class="flex items-center justify-between p-2 rounded-lg bg-gray-50/80 hover:bg-blue-50/60 border border-gray-100 transition-colors group"
+                      >
+                        <div class="min-w-0 flex-1 pr-2">
+                          <NuxtLink :to="'/products/' + p.id" class="text-xs font-semibold text-gray-800 group-hover:text-[#09f] line-clamp-1 block">
+                            {{ p.name }}
+                          </NuxtLink>
+                          <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-[11px] font-bold text-[#09f]">{{ formatPriceDisplay(p) }}</span>
+                            <span v-if="p.totalStock !== undefined" :class="p.totalStock > 0 ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'" class="text-[9px] px-1.5 py-0.2 rounded-full font-medium">
+                              {{ p.totalStock > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                            </span>
+                            <span v-else-if="p.soldQuantity !== undefined" class="text-[10px] text-gray-500">
+                              Đã bán: {{ p.soldQuantity }}
+                            </span>
+                          </div>
+                        </div>
+                        <NuxtLink
+                          :to="'/products/' + p.id"
+                          class="px-2.5 py-1 bg-white border border-blue-200 text-[#09f] group-hover:bg-[#09f] group-hover:text-white rounded-lg text-[10px] font-medium transition-all shadow-2xs flex-shrink-0 flex items-center gap-0.5"
+                        >
+                          Xem chi tiết ↗
+                        </NuxtLink>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Case 2: Order Tracking Card (from track_order) -->
+                  <div v-else-if="ref.orderNumber && !ref.error" class="bg-gradient-to-br from-blue-50/60 to-indigo-50/40 border border-blue-200/80 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between pb-2 border-b border-blue-100 mb-2">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-sm">🚚</span>
+                        <span class="font-mono text-xs font-bold text-gray-900">#{{ ref.orderNumber }}</span>
+                      </div>
+                      <span :class="getOrderStatusBadgeClass(ref.status)" class="text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-2xs">
+                        {{ ref.statusDescription || ref.status }}
+                      </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5 text-[11px] text-gray-600 mb-2">
+                      <div><span class="text-gray-400">Khách:</span> <span class="font-medium text-gray-800">{{ ref.customerName || 'N/A' }}</span></div>
+                      <div><span class="text-gray-400">Tổng tiền:</span> <span class="font-bold text-[#09f]">{{ ref.formattedTotal || '0 ₫' }}</span></div>
+                      <div><span class="text-gray-400">PT thanh toán:</span> <span class="font-medium text-gray-800">{{ ref.paymentMethod || 'COD' }}</span></div>
+                      <div><span class="text-gray-400">Trạng thái:</span> <span class="font-medium text-gray-800">{{ ref.paymentStatus || 'Chưa thanh toán' }}</span></div>
+                    </div>
+                    <div v-if="ref.items && ref.items.length" class="pt-2 border-t border-blue-100 text-[11px]">
+                      <div class="text-[10px] text-gray-400 mb-1 font-medium">Sản phẩm trong đơn ({{ ref.items.length }}):</div>
+                      <div v-for="(it, itIdx) in ref.items.slice(0, 3)" :key="itIdx" class="flex justify-between py-0.5 text-gray-700">
+                        <span class="line-clamp-1 flex-1">{{ it.productName }}</span>
+                        <span class="text-gray-500 font-semibold ml-2">x{{ it.quantity }}</span>
+                      </div>
+                      <div v-if="ref.items.length > 3" class="text-[10px] text-blue-600 mt-1">
+                        + {{ ref.items.length - 3 }} linh kiện khác
+                      </div>
+                    </div>
+                    <div class="mt-2.5 pt-2 border-t border-blue-100 flex justify-end">
+                      <NuxtLink to="/orders" class="text-[11px] font-semibold text-[#09f] hover:underline flex items-center gap-1">
+                        Xem chi tiết đơn hàng →
+                      </NuxtLink>
+                    </div>
+                  </div>
+
+                  <!-- Case 3: Revenue Report Card (from get_revenue_report) -->
+                  <div v-else-if="ref.totalRevenue !== undefined && ref.deliveredOrders !== undefined && !ref.error" class="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 text-emerald-900 font-bold text-xs">
+                        <span>📈 Báo Cáo Doanh Thu</span>
+                      </div>
+                      <span class="text-[10px] text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full font-medium">
+                        {{ ref.startDate }} → {{ ref.endDate }}
+                      </span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-2">
+                      <span class="text-base sm:text-lg font-black text-emerald-700">{{ ref.formattedRevenue }}</span>
+                      <span class="text-[10px] text-emerald-600 uppercase font-bold tracking-wider ml-1">Doanh thu hoàn tất</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-[11px] bg-white/80 p-2 rounded-lg border border-emerald-100">
+                      <div>
+                        <span class="text-gray-500">Đơn hoàn thành:</span>
+                        <span class="font-bold text-gray-800 ml-1">{{ ref.deliveredOrders }}</span>
+                      </div>
+                      <div>
+                        <span class="text-gray-500">Tổng đơn phát sinh:</span>
+                        <span class="font-bold text-gray-800 ml-1">{{ ref.totalOrders }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Case 4: Low Stock Alert Card (from get_low_stock_products) -->
+                  <div v-else-if="ref.lowStockItems && ref.lowStockItems.length && !ref.error" class="bg-gradient-to-br from-amber-50 to-orange-50/40 border border-amber-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1 text-amber-900 font-bold text-xs">
+                        <span>⚠️ Cảnh Báo Tồn Kho Thấp</span>
+                      </div>
+                      <span class="text-[10px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-semibold">
+                        Ngưỡng ≤ {{ ref.threshold }}
+                      </span>
+                    </div>
+                    <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      <div
+                        v-for="(item, itemIdx) in ref.lowStockItems"
+                        :key="itemIdx"
+                        class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-amber-100 text-xs"
+                      >
+                        <div class="min-w-0 flex-1 pr-2">
+                          <div class="font-medium text-gray-800 line-clamp-1">{{ item.productName }}</div>
+                          <div class="text-[10px] text-gray-400">{{ item.variantName }}</div>
+                        </div>
+                        <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100 flex-shrink-0">
+                          Còn {{ item.inStock }} cái
+                        </span>
+                      </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-amber-200/60 flex justify-end">
+                      <NuxtLink to="/admin/products" class="text-[11px] font-semibold text-amber-900 hover:underline">
+                        Đến trang Quản lý kho hàng →
+                      </NuxtLink>
+                    </div>
+                  </div>
+
+                  <!-- Case 5: Single Product Stock Details (from check_stock) -->
+                  <div v-else-if="ref.productId && ref.variants && !ref.error" class="bg-white border border-gray-200 rounded-xl p-2.5 shadow-2xs">
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="text-xs font-bold text-gray-800 line-clamp-1">{{ ref.productName }}</span>
+                      <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                        Tổng tồn: {{ ref.totalStock }}
+                      </span>
+                    </div>
+                    <div class="space-y-1 text-[11px]">
+                      <div v-for="v in ref.variants" :key="v.variantId" class="flex justify-between items-center py-1 border-t border-gray-100 first:border-0 text-gray-600">
+                        <span>{{ v.variantName || 'Biến thể' }}</span>
+                        <span class="font-medium" :class="v.inStock > 0 ? 'text-gray-800' : 'text-rose-500'">{{ v.inStock }} còn lại</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
               <!-- Tool Used Badges -->
               <div v-if="msg.toolsUsed && msg.toolsUsed.length" class="flex flex-wrap gap-1 px-1">
                 <span
@@ -168,6 +320,7 @@ interface Message {
   role: 'user' | 'assistant'
   content: string
   toolsUsed?: string[]
+  referencedData?: any[]
 }
 
 const isOpen = ref(false)
@@ -179,12 +332,23 @@ const messagesContainer = ref<HTMLElement | null>(null)
 
 const { user, token } = useAuth()
 
-const suggestions = [
-  'Tư vấn bo mạch Arduino Uno R3 và giá bán',
-  'ESP32 DevKit V1 còn hàng không?',
-  'Top mặt hàng nào bán chạy nhất?',
-  'Kiểm tra danh sách linh kiện sắp hết hàng'
-]
+const suggestions = computed(() => {
+  const isAdmin = user.value?.role === 'ROLE_ADMIN' || user.value?.role === 'ADMIN'
+  if (isAdmin) {
+    return [
+      'Báo cáo doanh thu tháng này',
+      'Kiểm tra danh sách linh kiện sắp hết hàng',
+      'Top mặt hàng nào bán chạy nhất?',
+      'Tư vấn bo mạch Arduino Uno R3'
+    ]
+  }
+  return [
+    'Tư vấn bo mạch Arduino Uno R3 và giá bán',
+    'ESP32 DevKit V1 còn hàng không?',
+    'Top mặt hàng nào bán chạy nhất?',
+    'Kiểm tra đơn hàng #ORD-...'
+  ]
+})
 
 onMounted(() => {
   if (import.meta.client) {
@@ -208,6 +372,8 @@ const formatToolName = (tool: string) => {
     case 'check_stock': return 'Kiểm tra tồn kho'
     case 'get_low_stock_products': return 'Cảnh báo tồn kho'
     case 'get_top_selling_products': return 'Top bán chạy'
+    case 'get_revenue_report': return 'Báo cáo doanh thu'
+    case 'track_order': return 'Tra cứu đơn hàng'
     default: return tool
   }
 }
@@ -281,7 +447,8 @@ const sendMessage = async () => {
     messages.value.push({
       role: 'assistant',
       content: response?.message || 'Không có phản hồi từ máy chủ.',
-      toolsUsed: response?.toolsUsed || []
+      toolsUsed: response?.toolsUsed || [],
+      referencedData: response?.referencedData || []
     })
   } catch (error: any) {
     console.error('Chat error details:', error)
@@ -296,4 +463,119 @@ const sendMessage = async () => {
   }
 }
 
+const hasProducts = (ref: any) => {
+  if (!ref || ref.error) return false
+  return !!((ref.products && ref.products.length) || (ref.topSellingProducts && ref.topSellingProducts.length))
+}
+
+const getProductsFromRef = (ref: any) => {
+  if (!ref || ref.error) return []
+  if (Array.isArray(ref.products)) return ref.products
+  if (Array.isArray(ref.topSellingProducts)) return ref.topSellingProducts
+  return []
+}
+
+const formatPriceDisplay = (p: any) => {
+  const val = p.minPrice || p.price || p.salePrice || 0
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val)
+}
+
+const getOrderStatusBadgeClass = (status?: string) => {
+  switch (status?.toUpperCase()) {
+    case 'PENDING': return 'bg-amber-100 text-amber-800'
+    case 'CONFIRMED': return 'bg-blue-100 text-blue-800'
+    case 'SHIPPED': return 'bg-indigo-100 text-indigo-800'
+    case 'DELIVERED': return 'bg-emerald-100 text-emerald-800'
+    case 'CANCELLED': return 'bg-rose-100 text-rose-800'
+    default: return 'bg-gray-100 text-gray-700'
+  }
+}
+
+const renderMarkdown = (text: string): string => {
+  if (!text) return ''
+
+  // 1. Sanitize HTML tags to prevent XSS
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+
+  // 2. Fenced code blocks
+  html = html.replace(/```([a-zA-Z0-9_]*)\n([\s\S]*?)```/g, (_, _lang, code) => {
+    return `<pre class="bg-gray-800 text-gray-100 rounded-xl p-2.5 my-2 text-xs font-mono overflow-x-auto shadow-inner"><code>${code.trim()}</code></pre>`
+  })
+
+  // 3. Inline code
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-blue-50 text-blue-700 font-mono text-[11px] px-1.5 py-0.5 rounded border border-blue-100">$1</code>')
+
+  // 4. Headings
+  html = html.replace(/^### (.*$)/gim, '<h4 class="font-bold text-gray-900 text-xs mt-2 mb-1">$1</h4>')
+  html = html.replace(/^## (.*$)/gim, '<h3 class="font-bold text-gray-900 text-sm mt-2.5 mb-1 text-[#0077cc]">$1</h3>')
+  html = html.replace(/^# (.*$)/gim, '<h2 class="font-bold text-gray-900 text-sm mt-3 mb-1.5">$1</h2>')
+
+  // 5. Bold & Italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+  html = html.replace(/\*([^*]+)\*/g, '<em class="italic text-gray-700">$1</em>')
+
+  // 6. Markdown Tables
+  const tableRegex = /((?:\|[^\n]+\|\r?\n)+)/g
+  html = html.replace(tableRegex, (match) => {
+    const lines = match.trim().split(/\r?\n/).filter(line => line.trim().startsWith('|'))
+    if (lines.length < 2) return match
+    
+    const isTable = lines.some(l => /^\|[\s-:]+\|/.test(l))
+    if (!isTable) return match
+
+    let tableHtml = '<div class="overflow-x-auto my-2 rounded-lg border border-gray-200"><table class="w-full text-[11px] text-left border-collapse">'
+    let isHeader = true
+
+    for (const line of lines) {
+      if (/^\|[\s-:]+\|/.test(line)) {
+        isHeader = false
+        continue
+      }
+      const cells = line.split('|').slice(1, -1).map(c => c.trim())
+      tableHtml += `<tr class="${isHeader ? 'bg-gray-100 font-semibold text-gray-800' : 'border-t border-gray-100 hover:bg-gray-50/80'}">`
+      for (const cell of cells) {
+        tableHtml += isHeader 
+          ? `<th class="p-1.5 border-r border-gray-200 last:border-r-0">${cell}</th>`
+          : `<td class="p-1.5 border-r border-gray-200 last:border-r-0">${cell}</td>`
+      }
+      tableHtml += '</tr>'
+    }
+    tableHtml += '</table></div>'
+    return tableHtml
+  })
+
+  // 7. Markdown Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#09f] hover:underline font-medium inline-flex items-center gap-0.5">$1 ↗</a>')
+
+  // 8. Lists (bullet & numbered)
+  html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<li class="ml-4 list-disc text-gray-800 leading-relaxed">$1</li>')
+  html = html.replace(/^\s*(\d+)\.\s+(.*$)/gim, '<li class="ml-4 list-decimal text-gray-800 leading-relaxed">$2</li>')
+
+  // 9. Line breaks
+  html = html.replace(/\n/g, '<br>')
+
+  return html
+}
+
 </script>
+
+<style scoped>
+:deep(.ai-rendered-content ul),
+:deep(.ai-rendered-content ol) {
+  margin: 0.35rem 0;
+  padding-left: 1.25rem;
+}
+:deep(.ai-rendered-content li) {
+  margin-bottom: 0.2rem;
+}
+:deep(.ai-rendered-content strong) {
+  color: #111827;
+}
+:deep(.ai-rendered-content table) {
+  width: 100%;
+  margin: 0.5rem 0;
+}
+</style>

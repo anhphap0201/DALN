@@ -4,7 +4,7 @@
       <!-- Loading -->
       <div v-if="loading" class="bg-white rounded-2xl p-8 shadow-sm text-center">
         <div class="animate-spin w-12 h-12 border-4 border-[#09f] border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p class="text-gray-600">Đang xác nhận thanh toán MoMo...</p>
+        <p class="text-gray-600">Đang xác nhận kết quả thanh toán VNPAY...</p>
       </div>
 
       <!-- Success -->
@@ -15,7 +15,7 @@
           </svg>
         </div>
         <h1 class="text-2xl font-bold text-gray-900">Thanh toán thành công!</h1>
-        <p class="text-gray-600">Đơn hàng <span class="font-semibold text-[#09f]">{{ orderNumber }}</span> đã được thanh toán qua MoMo.</p>
+        <p class="text-gray-600">Đơn hàng <span class="font-semibold text-[#09f]">{{ orderNumber }}</span> đã được thanh toán qua VNPAY.</p>
         <NuxtLink
           to="/orders"
           class="inline-block mt-4 px-6 py-3 bg-gradient-to-r from-[#09f] to-[#0077cc] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
@@ -66,24 +66,24 @@ const { success: showSuccess, error: showError } = useNotification()
 const loading = ref(true)
 const paymentSuccess = ref(false)
 const orderNumber = ref('')
-const errorMessage = ref('Thanh toán MoMo không thành công. Vui lòng thử lại hoặc chọn phương thức khác.')
+const errorMessage = ref('Thanh toán VNPAY không thành công. Vui lòng thử lại hoặc chọn phương thức khác.')
 
 onMounted(async () => {
   try {
-    // Forward all MoMo query params to backend for verification
+    // Forward all VNPAY query params to backend for verification
     const queryString = new URLSearchParams(route.query as Record<string, string>).toString()
-    const result: any = await $fetch(`${API_BASE_URL}/api/momo/return?${queryString}`)
+    const result: any = await $fetch(`${API_BASE_URL}/api/vnpay/return?${queryString}`)
 
     if (result.success) {
       paymentSuccess.value = true
       orderNumber.value = result.orderNumber || ''
-      showSuccess('Thanh toán MoMo thành công!')
+      showSuccess('Thanh toán VNPAY thành công!')
     } else {
       paymentSuccess.value = false
-      errorMessage.value = result.message || 'Thanh toán MoMo không thành công.'
+      errorMessage.value = result.message || 'Thanh toán VNPAY không thành công.'
     }
   } catch (error: any) {
-    console.error('Error verifying MoMo payment:', error)
+    console.error('Error verifying VNPAY payment:', error)
     paymentSuccess.value = false
     errorMessage.value = 'Không thể xác nhận thanh toán. Vui lòng kiểm tra đơn hàng.'
   } finally {

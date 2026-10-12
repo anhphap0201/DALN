@@ -22,6 +22,8 @@ public interface IOrderService {
 
     OrderDTO cancelOrder(Long orderId, Long userId);
 
+    OrderDTO returnOrder(Long orderId, Long userId, String reason);
+
     Map<String, Object> handleDeliveryWebhook(DeliveryWebhookRequest request);
 }
 

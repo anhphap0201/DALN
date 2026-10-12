@@ -70,4 +70,13 @@ public class OrderController {
         OrderDTO cancelledOrder = orderService.cancelOrder(orderId, getCurrentUserId());
         return ResponseEntity.ok(cancelledOrder);
     }
+
+    @PostMapping("/{orderId}/return")
+    public ResponseEntity<OrderDTO> returnOrder(
+            @PathVariable Long orderId,
+            @RequestBody(required = false) Map<String, String> body) {
+        String reason = body != null ? body.get("reason") : "Khách hàng yêu cầu trả hàng";
+        OrderDTO returnedOrder = orderService.returnOrder(orderId, getCurrentUserId(), reason);
+        return ResponseEntity.ok(returnedOrder);
+    }
 }

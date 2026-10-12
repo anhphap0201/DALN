@@ -3,6 +3,7 @@
     <!-- Notification Container -->
     <NotificationContainer />
     <ConfirmModal />
+    <AlertModal />
     <ChatWidget />
     
     <!-- Header -->

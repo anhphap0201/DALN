@@ -140,6 +140,12 @@ public class Order {
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 
+    @Column(name = "returned_at")
+    private LocalDateTime returnedAt;
+
+    @Column(name = "return_reason")
+    private String returnReason;
+
     // --- Items ---
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -157,6 +163,6 @@ public class Order {
     }
 
     public enum OrderStatus {
-        PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+        PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, RETURNED
     }
 }

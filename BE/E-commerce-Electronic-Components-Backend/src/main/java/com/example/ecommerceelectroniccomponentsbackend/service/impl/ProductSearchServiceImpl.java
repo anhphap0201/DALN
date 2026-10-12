@@ -67,6 +67,21 @@ public class ProductSearchServiceImpl implements IProductSearchService {
     public List<ProductWithVariantsDTO> searchProductsByName(String productName) {
         log.info("Searching products by name: {}", productName);
         List<Product> products = productRepository.findByNameContainingIgnoreCase(productName);
+        if (products.isEmpty() && productName != null) {
+            // Thử tách các từ khóa gốc (vd: "esp32-c3" -> "esp32", "arduino uno r3" -> "arduino")
+            String sanitized = productName.replaceAll("[-_/,.]", " ").trim();
+            String[] tokens = sanitized.split("\\s+");
+            for (String token : tokens) {
+                if (token.length() >= 3) {
+                    List<Product> relaxed = productRepository.findByNameContainingIgnoreCase(token);
+                    if (!relaxed.isEmpty()) {
+                        log.info("Found {} alternative products using token '{}'", relaxed.size(), token);
+                        products = relaxed;
+                        break;
+                    }
+                }
+            }
+        }
         log.info("Found {} products for name: {}", products.size(), productName);
         return products.stream()
                 .map(this::convertToProductWithVariantsDTO)

@@ -102,7 +102,7 @@ public class OrderServiceImpl implements IOrderService {
                 // Order details
                 .orderNumber(orderNumber)
                 .paymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD")
-                .paymentStatus("PENDING")
+                .paymentStatus("VNPAY".equalsIgnoreCase(request.getPaymentMethod()) ? "UNPAID" : "PENDING")
                 .shippingMethod(request.getShippingMethod() != null ? request.getShippingMethod().toUpperCase() : "STANDARD")
                 .note(request.getNote())
                 .voucherCode(request.getVoucherCode())
@@ -205,11 +205,24 @@ public class OrderServiceImpl implements IOrderService {
         return value == null ? "" : value.trim();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Page<OrderDTO> getOrderHistory(Long userId, Pageable pageable) {
         log.info("Retrieving order history for user: {}", userId);
-        return orderRepository.findByUserId(userId, pageable)
-                .map(orderMapper::toDTO);
+        Page<Order> orders = orderRepository.findByUserId(userId, pageable);
+        LocalDateTime now = LocalDateTime.now();
+        for (Order o : orders.getContent()) {
+            if ("VNPAY".equalsIgnoreCase(o.getPaymentMethod())
+                    && ("UNPAID".equals(o.getPaymentStatus()) || "AWAITING_PAYMENT".equals(o.getPaymentStatus()))
+                    && o.getStatus() == Order.OrderStatus.PENDING) {
+                if (o.getCreatedAt() != null && o.getCreatedAt().plusHours(24).isBefore(now)) {
+                    o.setStatus(Order.OrderStatus.CANCELLED);
+                    o.setCancelledAt(now);
+                    o.setNote((o.getNote() != null ? o.getNote() + " - " : "") + "Tự động hủy do quá hạn thanh toán 24h");
+                    orderRepository.save(o);
+                }
+            }
+        }
+        return orders.map(orderMapper::toDTO);
     }
 
     @Transactional(readOnly = true)
@@ -417,5 +430,28 @@ public class OrderServiceImpl implements IOrderService {
         order.setDeliveryStatus(null);
         Order cancelledOrder = orderRepository.save(order);
         return orderMapper.toDTO(cancelledOrder);
+    }
+
+    @Transactional
+    public OrderDTO returnOrder(Long orderId, Long userId, String reason) {
+        log.info("Requesting return for order: {} by user: {}", orderId, userId);
+
+        Order order = orderRepository.findByIdAndUserIdWithItems(orderId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
+
+        if (order.getStatus() != Order.OrderStatus.DELIVERED) {
+            throw new IllegalArgumentException("Chỉ đơn hàng đã giao thành công mới được yêu cầu trả hàng");
+        }
+
+        LocalDateTime deliveredTime = order.getDeliveredAt() != null ? order.getDeliveredAt() : order.getUpdatedAt();
+        if (deliveredTime != null && deliveredTime.plusDays(7).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Đã quá thời hạn 7 ngày cho phép trả hàng");
+        }
+
+        order.setStatus(Order.OrderStatus.RETURNED);
+        order.setReturnedAt(LocalDateTime.now());
+        order.setReturnReason(reason != null && !reason.isBlank() ? reason.trim() : "Khách hàng yêu cầu trả hàng");
+        Order returnedOrder = orderRepository.save(order);
+        return orderMapper.toDTO(returnedOrder);
     }
 }

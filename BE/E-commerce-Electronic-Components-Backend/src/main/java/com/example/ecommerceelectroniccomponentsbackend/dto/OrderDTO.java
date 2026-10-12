@@ -35,6 +35,13 @@ public class OrderDTO {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deliveredAt;
+    private LocalDateTime returnedAt;
+    private String returnReason;
+
+    private String orderNumber;
+    private String paymentMethod;
+    private String paymentStatus;
 
     // Smart Locker fields
     private String lockerId;

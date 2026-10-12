@@ -530,11 +530,11 @@ const paymentMethods = [
     image: '/payment method/icons8-dollar-50.png'
   },
   {
-    id: 'momo',
-    name: 'Ví MoMo',
-    description: 'Thanh toán qua ví điện tử MoMo',
-    icon: 'MOMO',
-    image: '/payment method/MOMO-Logo-App.png'
+    id: 'vnpay',
+    name: 'Cổng thanh toán VNPAY',
+    description: 'Thanh toán qua VNPAY-QR, Thẻ ATM / Tài khoản ngân hàng, Thẻ quốc tế',
+    icon: 'VNPAY',
+    image: '/payment method/logo-atm.png'
   }
 ]
 
@@ -783,9 +783,9 @@ const placeOrder = async () => {
       orderBody.lockerId = selectedLocker.value
     }
 
-    // MoMo payment flow - create order and redirect to MoMo
-    if (selectedPayment.value === 'momo') {
-      const momoResult: any = await $fetch(`${API_BASE_URL}/api/momo/create`, {
+    // VNPAY payment flow - create order and redirect to VNPAY
+    if (selectedPayment.value === 'vnpay') {
+      const vnpayResult: any = await $fetch(`${API_BASE_URL}/api/vnpay/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -794,12 +794,12 @@ const placeOrder = async () => {
         body: JSON.stringify(orderBody)
       })
 
-      if (momoResult.resultCode === 0 && momoResult.payUrl) {
-        // Redirect to MoMo payment page
-        window.location.href = momoResult.payUrl
+      if (vnpayResult.resultCode === 0 && vnpayResult.payUrl) {
+        // Redirect to VNPAY payment page
+        window.location.href = vnpayResult.payUrl
         return
       } else {
-        showError(momoResult.message || 'Không thể tạo thanh toán MoMo. Vui lòng thử lại.')
+        showError(vnpayResult.message || 'Không thể tạo thanh toán VNPAY. Vui lòng thử lại.')
         return
       }
     }

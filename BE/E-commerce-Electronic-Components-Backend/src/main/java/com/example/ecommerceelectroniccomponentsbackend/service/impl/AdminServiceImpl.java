@@ -398,7 +398,9 @@ public class AdminServiceImpl implements IAdminService {
                 .confirmedAt(order.getConfirmedAt())
                 .shippedAt(order.getShippedAt())
                 .deliveredAt(order.getDeliveredAt())
+                .returnedAt(order.getReturnedAt())
                 .cancelledAt(order.getCancelledAt())
+                .returnReason(order.getReturnReason())
                 .orderItems(order.getOrderItems().stream()
                         .map(this::toOrderItemDTO)
                         .collect(Collectors.toSet()))
@@ -406,13 +408,23 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     private OrderItemDTO toOrderItemDTO(OrderItem item) {
+        String productName = null;
+        String imageUrl = null;
+        if (item.getProductVariant() != null) {
+            imageUrl = item.getProductVariant().getImageUrl();
+            if (item.getProductVariant().getProduct() != null) {
+                productName = item.getProductVariant().getProduct().getName();
+            }
+        }
         return OrderItemDTO.builder()
                 .id(item.getId())
-                .productVariantId(item.getProductVariant().getId())
+                .productVariantId(item.getProductVariant() != null ? item.getProductVariant().getId() : null)
                 .quantity(item.getQuantity())
                 .price(item.getPrice())
                 .totalPrice(item.getTotalPrice())
-                .variantName(item.getProductVariant().getVariantName())
+                .variantName(item.getProductVariant() != null ? item.getProductVariant().getVariantName() : null)
+                .productName(productName)
+                .imageUrl(imageUrl)
                 .build();
     }
 

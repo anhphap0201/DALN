@@ -35,8 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/upload/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/api/momo/ipn").permitAll()
-                        .requestMatchers("/api/momo/return").permitAll()
+                        .requestMatchers("/api/vnpay/ipn").permitAll()
+                        .requestMatchers("/api/vnpay/return").permitAll()
                         .requestMatchers("/api/webhook/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")

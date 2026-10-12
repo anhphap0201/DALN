@@ -6,12 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "momo")
-public class MomoConfig {
-    private String partnerCode;
-    private String accessKey;
-    private String secretKey;
-    private String apiUrl;
+@ConfigurationProperties(prefix = "vnpay")
+public class VnPayConfig {
+    private String tmnCode;
+    private String hashSecret;
+    private String payUrl;
     private String returnUrl;
-    private String notifyUrl;
 }

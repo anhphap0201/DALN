@@ -30,4 +30,8 @@ public class OrderItemDTO {
     private BigDecimal totalPrice;
 
     private String variantName;
+
+    private String productName;
+
+    private String imageUrl;
 }

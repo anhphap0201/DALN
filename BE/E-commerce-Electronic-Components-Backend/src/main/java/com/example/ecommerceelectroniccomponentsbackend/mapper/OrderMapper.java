@@ -25,6 +25,12 @@ public class OrderMapper {
                         .collect(Collectors.toSet()))
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+                .deliveredAt(order.getDeliveredAt())
+                .returnedAt(order.getReturnedAt())
+                .returnReason(order.getReturnReason())
+                .orderNumber(order.getOrderNumber())
+                .paymentMethod(order.getPaymentMethod())
+                .paymentStatus(order.getPaymentStatus())
                 .lockerId(order.getLockerId())
                 .compartmentId(order.getCompartmentId())
                 .lockerOrderId(order.getLockerOrderId())
@@ -55,13 +61,24 @@ public class OrderMapper {
     public OrderItemDTO orderItemToDTO(OrderItem orderItem) {
         if (orderItem == null) return null;
 
+        String productName = null;
+        String imageUrl = null;
+        if (orderItem.getProductVariant() != null) {
+            imageUrl = orderItem.getProductVariant().getImageUrl();
+            if (orderItem.getProductVariant().getProduct() != null) {
+                productName = orderItem.getProductVariant().getProduct().getName();
+            }
+        }
+
         return OrderItemDTO.builder()
                 .id(orderItem.getId())
-                .productVariantId(orderItem.getProductVariant().getId())
+                .productVariantId(orderItem.getProductVariant() != null ? orderItem.getProductVariant().getId() : null)
                 .quantity(orderItem.getQuantity())
                 .price(orderItem.getPrice())
                 .totalPrice(orderItem.getTotalPrice())
-                .variantName(orderItem.getProductVariant().getVariantName())
+                .variantName(orderItem.getProductVariant() != null ? orderItem.getProductVariant().getVariantName() : null)
+                .productName(productName)
+                .imageUrl(imageUrl)
                 .build();
     }
 

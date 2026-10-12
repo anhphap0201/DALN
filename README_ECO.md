@@ -23,7 +23,7 @@ Hệ thống thương mại điện tử linh kiện điện tử là một nề
 - **Xác Thực & Phân Quyền**: Đăng ký và đăng nhập an toàn với JWT tokens
 - **Quản Lý Sản Phẩm**: Duyệt, tìm kiếm và lọc linh kiện điện tử
 - **Giỏ Hàng**: Thêm sản phẩm vào giỏ với lựa chọn biến thể
-- **Tích Hợp Thanh Toán**: Hỗ trợ cổng thanh toán MoMo
+- **Tích Hợp Thanh Toán**: Hỗ trợ cổng thanh toán VNPAY (VNPAY-QR, Thẻ ATM/Nội địa, Thẻ quốc tế)
 - **Quản Lý Đơn Hàng**: Theo dõi đơn hàng và lịch sử mua hàng
 - **Giao Hàng Smart Locker**: Tích hợp hệ thống giao hàng tủ thông minh
 - **Hồ Sơ Người Dùng**: Quản lý thông tin cá nhân và địa chỉ

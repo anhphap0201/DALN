@@ -223,7 +223,9 @@
                   <p><span class="text-gray-500">Tạo:</span> {{ formatDate(selectedOrder.createdAt) }}</p>
                   <p v-if="selectedOrder.confirmedAt"><span class="text-gray-500">Xác nhận:</span> {{ formatDate(selectedOrder.confirmedAt) }}</p>
                   <p v-if="selectedOrder.shippedAt"><span class="text-gray-500">Giao hàng:</span> {{ formatDate(selectedOrder.shippedAt) }}</p>
-                  <p v-if="selectedOrder.deliveredAt"><span class="text-gray-500">Hoàn thành:</span> {{ formatDate(selectedOrder.deliveredAt) }}</p>
+                  <p v-if="selectedOrder.deliveredAt"><span class="text-gray-500">Đã giao:</span> {{ formatDate(selectedOrder.deliveredAt) }}</p>
+                  <p v-if="selectedOrder.returnedAt"><span class="text-rose-500 font-medium">Trả hàng:</span> {{ formatDate(selectedOrder.returnedAt) }}</p>
+                  <p v-if="selectedOrder.returnReason" class="text-xs text-rose-600 bg-rose-50 p-2 rounded-lg mt-1"><span class="font-semibold">Lý do trả:</span> {{ selectedOrder.returnReason }}</p>
                   <p v-if="selectedOrder.cancelledAt"><span class="text-gray-500">Hủy:</span> {{ formatDate(selectedOrder.cancelledAt) }}</p>
                 </div>
               </div>
@@ -357,6 +359,7 @@ const statusFilters = [
   { value: 'CONFIRMED', label: 'Đã xác nhận' },
   { value: 'SHIPPED', label: 'Đang giao' },
   { value: 'DELIVERED', label: 'Đã giao' },
+  { value: 'RETURNED', label: 'Trả hàng / Hoàn tiền' },
   { value: 'CANCELLED', label: 'Đã hủy' },
 ]
 
@@ -365,6 +368,7 @@ const orderStatuses = [
   { value: 'CONFIRMED', label: 'Đã xác nhận' },
   { value: 'SHIPPED', label: 'Đang giao' },
   { value: 'DELIVERED', label: 'Đã giao' },
+  { value: 'RETURNED', label: 'Trả hàng / Hoàn tiền' },
   { value: 'CANCELLED', label: 'Đã hủy' },
 ]
 
@@ -459,6 +463,8 @@ const getStatusLabel = (status: string) => {
     CONFIRMED: 'Đã xác nhận',
     SHIPPED: 'Đang giao',
     DELIVERED: 'Đã giao',
+    COMPLETED: 'Đã giao',
+    RETURNED: 'Trả hàng / Hoàn tiền',
     CANCELLED: 'Đã hủy',
   }
   return map[status] || status
@@ -470,6 +476,8 @@ const getStatusClass = (status: string) => {
     CONFIRMED: 'bg-blue-100 text-blue-800',
     SHIPPED: 'bg-purple-100 text-purple-800',
     DELIVERED: 'bg-green-100 text-green-800',
+    COMPLETED: 'bg-green-100 text-green-800',
+    RETURNED: 'bg-rose-100 text-rose-800',
     CANCELLED: 'bg-red-100 text-red-800',
   }
   return map[status] || 'bg-gray-100 text-gray-800'
@@ -483,6 +491,8 @@ const getPaymentLabel = (method: string) => {
     BANK: 'Chuyển khoản',
     momo: 'MoMo',
     MOMO: 'MoMo',
+    vnpay: 'VNPAY',
+    VNPAY: 'VNPAY',
     card: 'Thẻ',
     CARD: 'Thẻ',
   }
@@ -493,6 +503,7 @@ const getPaymentClass = (method: string) => {
   const m = (method || '').toLowerCase()
   if (m === 'cod') return 'bg-orange-100 text-orange-700'
   if (m === 'bank') return 'bg-blue-100 text-blue-700'
+  if (m === 'vnpay') return 'bg-blue-100 text-blue-800'
   if (m === 'momo') return 'bg-pink-100 text-pink-700'
   return 'bg-gray-100 text-gray-700'
 }

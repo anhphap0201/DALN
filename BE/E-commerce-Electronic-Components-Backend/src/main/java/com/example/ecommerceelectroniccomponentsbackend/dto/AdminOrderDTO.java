@@ -49,7 +49,9 @@ public class AdminOrderDTO {
     private LocalDateTime confirmedAt;
     private LocalDateTime shippedAt;
     private LocalDateTime deliveredAt;
+    private LocalDateTime returnedAt;
     private LocalDateTime cancelledAt;
+    private String returnReason;
 
     @Builder.Default
     private Set<OrderItemDTO> orderItems = new HashSet<>();

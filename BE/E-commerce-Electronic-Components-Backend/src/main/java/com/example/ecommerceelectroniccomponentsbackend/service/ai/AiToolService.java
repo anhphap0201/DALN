@@ -333,6 +333,7 @@ public class AiToolService {
             case CONFIRMED -> "Đã xác nhận / Đang chuẩn bị hàng";
             case SHIPPED -> "Đang giao hàng";
             case DELIVERED -> "Đã giao thành công";
+            case RETURNED -> "Đã trả hàng / Hoàn tiền";
             case CANCELLED -> "Đã hủy đơn";
         };
     }

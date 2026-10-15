@@ -78,6 +78,8 @@ public class OrderMapper {
                 .totalPrice(orderItem.getTotalPrice())
                 .variantName(orderItem.getProductVariant() != null ? orderItem.getProductVariant().getVariantName() : null)
                 .productName(productName)
+                .productId(orderItem.getProductVariant() != null && orderItem.getProductVariant().getProduct() != null
+                        ? orderItem.getProductVariant().getProduct().getId() : null)
                 .imageUrl(imageUrl)
                 .build();
     }

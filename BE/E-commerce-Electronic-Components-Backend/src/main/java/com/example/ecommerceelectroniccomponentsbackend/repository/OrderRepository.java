@@ -81,4 +81,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
            "GROUP BY oi.productVariant.product.id, oi.productVariant.product.name, oi.productVariant.variantName " +
            "ORDER BY SUM(oi.quantity) DESC")
     List<Object[]> findTopSellingProducts(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to, Pageable pageable);
+
+    @Query("SELECT oi2.productVariant.product.id FROM OrderItem oi1 JOIN oi1.order o JOIN o.orderItems oi2 " +
+           "WHERE oi1.productVariant.product.id = :productId " +
+           "AND oi2.productVariant.product.id <> :productId " +
+           "AND o.status = 'DELIVERED' " +
+           "GROUP BY oi2.productVariant.product.id " +
+           "ORDER BY SUM(oi2.quantity) DESC")
+    List<Long> findFrequentlyBoughtTogetherProductIds(@Param("productId") Long productId, Pageable pageable);
 }

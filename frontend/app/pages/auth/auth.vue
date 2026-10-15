@@ -260,7 +260,7 @@ const handleRegister = async () => {
   }
 
   try {
-    await $fetch('http://localhost:8080/auth/register', {
+    const data = await $fetch<{ message: string }>('http://localhost:8080/auth/register', {
       method: 'POST',
       body: {
         fullName: registerData.value.fullName,
@@ -270,7 +270,7 @@ const handleRegister = async () => {
       }
     })
 
-    success('Đăng ký thành công!', 'Bạn có thể đăng nhập ngay bây giờ')
+    success('Đăng ký thành công!', data.message)
     activeTab.value = 'login'
     registerData.value = { fullName: '', email: '', password: '', confirmPassword: '' }
   } catch (err: any) {

@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.util.*;
 
 @Service
@@ -53,6 +55,82 @@ public class AiToolService {
         } finally {
             logToolExecution(sessionId, userId, "search_products", Map.of("query", query), result, status, System.currentTimeMillis() - startTime, error);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> recommendProducts(String request, BigDecimal maxBudget, UUID sessionId, Long userId) {
+        long startTime = System.currentTimeMillis();
+        String status = "SUCCESS";
+        String error = null;
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<String> keywords = recommendationKeywords(request);
+            List<ProductWithVariantsDTO> products = productRepository.findAll().stream()
+                    .map(productSearchService::convertToProductWithVariantsDTO)
+                    .filter(product -> product.getTotalStock() != null && product.getTotalStock() > 0)
+                    .filter(product -> effectivePrice(product) != null)
+                    .filter(product -> maxBudget == null || effectivePrice(product).compareTo(maxBudget) <= 0)
+                    .map(product -> Map.entry(product, recommendationScore(product, keywords)))
+                    .filter(entry -> keywords.isEmpty() || entry.getValue() > 0)
+                    .sorted(Comparator.<Map.Entry<ProductWithVariantsDTO, Integer>>comparingInt(Map.Entry::getValue)
+                            .reversed()
+                            .thenComparing(entry -> effectivePrice(entry.getKey())))
+                    .limit(5)
+                    .map(Map.Entry::getKey)
+                    .toList();
+
+            result.put("query", request);
+            result.put("maxBudget", maxBudget);
+            result.put("totalFound", products.size());
+            result.put("products", products);
+            return result;
+        } catch (Exception e) {
+            status = "FAILED";
+            error = e.getMessage();
+            result.put("error", "Lỗi khi gợi ý sản phẩm: " + e.getMessage());
+            return result;
+        } finally {
+            Map<String, Object> params = new HashMap<>();
+            params.put("query", request);
+            params.put("maxBudget", maxBudget);
+            logToolExecution(sessionId, userId, "recommend_products", params, result, status, System.currentTimeMillis() - startTime, error);
+        }
+    }
+
+    private BigDecimal effectivePrice(ProductWithVariantsDTO product) {
+        return product.getMinDiscountPrice() != null ? product.getMinDiscountPrice() : product.getMinPrice();
+    }
+
+    private int recommendationScore(ProductWithVariantsDTO product, List<String> keywords) {
+        String searchable = normalizeText(product.getName() + " "
+                + product.getCategories().stream().map(category -> category.getName() + " " + category.getSlug()).reduce("", (a, b) -> a + " " + b)
+                + " " + product.getVariants().stream()
+                .map(variant -> Objects.toString(variant.getDescription(), "") + " " + Objects.toString(variant.getSpecifications(), ""))
+                .reduce("", (a, b) -> a + " " + b));
+        return (int) keywords.stream().filter(searchable::contains).count();
+    }
+
+    private List<String> recommendationKeywords(String request) {
+        String cleaned = normalizeText(request)
+                .replaceAll("\\d+(?:[.,]\\d+)?\\s*(?:k|nghin|ngan|tr|trieu|dong|d)?", " ")
+                .replaceAll("\\b(duoi|toi da|ngan sach|tam|khoang|goi y|tu van|tim|tim kiem|san pham|nao|phu hop|cho toi|toi can|minh can|minh muon|muon|can|voi|gia|ngan|hang|con|khong|co|la|de|lam|mot|cai|loai|re|tot|nhat|duoc)\\b", " ")
+                .replaceAll("[^a-z0-9]+", " ")
+                .trim();
+        if (cleaned.isEmpty()) {
+            return List.of();
+        }
+        return Arrays.stream(cleaned.split("\\s+"))
+                .filter(word -> word.length() >= 2)
+                .distinct()
+                .toList();
+    }
+
+    private String normalizeText(String value) {
+        return Normalizer.normalize(Objects.toString(value, ""), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase(Locale.ROOT)
+                .replace('đ', 'd');
     }
 
     /**
@@ -173,6 +251,13 @@ public class AiToolService {
                 item.put("slug", p.getSlug());
                 item.put("soldQuantity", p.getSoldQuantity());
                 item.put("avgRating", p.getAvgRating());
+                ProductWithVariantsDTO details = productSearchService.getProductById(p.getId());
+                if (details != null) {
+                    item.put("defaultImageUrl", details.getDefaultImageUrl());
+                    item.put("minPrice", details.getMinPrice());
+                    item.put("minDiscountPrice", details.getMinDiscountPrice());
+                    item.put("totalStock", details.getTotalStock());
+                }
                 items.add(item);
             }
 

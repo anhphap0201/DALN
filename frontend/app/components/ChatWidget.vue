@@ -33,7 +33,7 @@
             <h3 class="font-bold text-sm leading-tight">Trợ Lý Linh Kiện DALN</h3>
             <div class="flex items-center gap-1.5 text-xs text-white/80">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Qwen 2.5 (Online)</span>
+              <span>Trò chuyện &amp; mua sắm</span>
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
           </div>
           <h4 class="font-bold text-gray-800 text-sm mb-1">Xin chào! Tôi có thể giúp gì cho bạn?</h4>
           <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-            Hỏi tôi về thông số linh kiện, tra cứu giá bán, hoặc kiểm tra số lượng tồn kho theo thời gian thực.
+            Bạn có thể trò chuyện, hỏi kiến thức hoặc nhờ tư vấn và tìm linh kiện.
           </p>
 
           <!-- Suggestion Chips -->
@@ -282,7 +282,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-[#09f] animate-bounce"></span>
             <span class="w-1.5 h-1.5 rounded-full bg-[#09f] animate-bounce [animation-delay:0.2s]"></span>
             <span class="w-1.5 h-1.5 rounded-full bg-[#09f] animate-bounce [animation-delay:0.4s]"></span>
-            <span class="text-[11px] text-gray-400 ml-1">Đang tra cứu dữ liệu...</span>
+            <span class="text-[11px] text-gray-400 ml-1">Đang trả lời...</span>
           </div>
         </div>
       </div>
@@ -293,7 +293,7 @@
           <input
             v-model="inputMessage"
             type="text"
-            placeholder="Hỏi về linh kiện, tồn kho..."
+            placeholder="Nhắn tin hoặc hỏi về sản phẩm..."
             :disabled="isLoading"
             class="flex-1 px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#09f] focus:bg-white transition-all disabled:opacity-50"
           />
@@ -313,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 
 interface Message {
@@ -336,17 +336,19 @@ const suggestions = computed(() => {
   const isAdmin = user.value?.role === 'ROLE_ADMIN' || user.value?.role === 'ADMIN'
   if (isAdmin) {
     return [
+      'Chào bạn, hôm nay thế nào?',
       'Báo cáo doanh thu tháng này',
       'Kiểm tra danh sách linh kiện sắp hết hàng',
-      'Top mặt hàng nào bán chạy nhất?',
-      'Tư vấn bo mạch Arduino Uno R3'
+      'So sánh Arduino Uno R3 với Raspberry Pi 5',
+      'Gợi ý linh kiện Arduino dưới 200k'
     ]
   }
   return [
+    'Chào bạn, hôm nay thế nào?',
     'Tư vấn bo mạch Arduino Uno R3 và giá bán',
     'ESP32 DevKit V1 còn hàng không?',
-    'Top mặt hàng nào bán chạy nhất?',
-    'Kiểm tra đơn hàng #ORD-...'
+    'So sánh Arduino Uno R3 với Raspberry Pi 5',
+    'Gợi ý linh kiện Arduino dưới 200k'
   ]
 })
 
@@ -369,6 +371,8 @@ const scrollToBottom = async () => {
 const formatToolName = (tool: string) => {
   switch (tool) {
     case 'search_products': return 'Tìm kiếm sản phẩm'
+    case 'recommend_products': return 'Gợi ý sản phẩm'
+    case 'compare_products': return 'So sánh sản phẩm'
     case 'check_stock': return 'Kiểm tra tồn kho'
     case 'get_low_stock_products': return 'Cảnh báo tồn kho'
     case 'get_top_selling_products': return 'Top bán chạy'

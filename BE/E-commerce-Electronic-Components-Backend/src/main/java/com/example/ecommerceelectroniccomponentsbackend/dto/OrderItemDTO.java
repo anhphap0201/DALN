@@ -32,6 +32,7 @@ public class OrderItemDTO {
     private String variantName;
 
     private String productName;
+    private Long productId;
 
     private String imageUrl;
 }

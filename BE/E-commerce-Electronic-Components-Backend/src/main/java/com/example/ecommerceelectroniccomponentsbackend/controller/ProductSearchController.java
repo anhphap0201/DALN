@@ -4,6 +4,7 @@ import com.example.ecommerceelectroniccomponentsbackend.dto.ProductFilterRequest
 import com.example.ecommerceelectroniccomponentsbackend.dto.ProductWithVariantsDTO;
 import com.example.ecommerceelectroniccomponentsbackend.service.IProductFilterService;
 import com.example.ecommerceelectroniccomponentsbackend.service.IProductSearchService;
+import com.example.ecommerceelectroniccomponentsbackend.service.ProductRecommendationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,7 @@ public class ProductSearchController {
 
     private final IProductSearchService productSearchService;
     private final IProductFilterService productFilterService;
+    private final ProductRecommendationService productRecommendationService;
 
     @GetMapping("/by-category-name")
     @Operation(summary = "Tìm kiếm sản phẩm theo tên danh mục",
@@ -78,6 +80,16 @@ public class ProductSearchController {
         return ResponseEntity.ok(product);
     }
 
+    @GetMapping("/related/{productId}")
+    @Operation(summary = "Gợi ý sản phẩm liên quan và thường mua kèm")
+    public ResponseEntity<List<ProductWithVariantsDTO>> getRelatedProducts(
+            @PathVariable Long productId,
+            @RequestParam(defaultValue = "8") int limit) {
+        if (productSearchService.getProductById(productId) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(productRecommendationService.relatedProducts(productId, limit));
+    }
 
     @PostMapping("/filter")
     @Operation(summary = "Lọc sản phẩm theo nhiều tiêu chí",

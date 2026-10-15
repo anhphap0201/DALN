@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.*;
 
@@ -23,13 +25,18 @@ public class OllamaClient {
 
     public OllamaClient(
             @Value("${ai.ollama.base-url:http://localhost:11434}") String baseUrl,
-            @Value("${ai.ollama.model:qwen2.5:7b}") String model,
+            @Value("${ai.ollama.model:qwen2.5:3b}") String model,
             ObjectMapper objectMapper
     ) {
         this.model = model;
         this.objectMapper = objectMapper;
+        JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(
+                HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build()
+        );
+        requestFactory.setReadTimeout(Duration.ofMinutes(3));
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
+                .requestFactory(requestFactory)
                 .build();
         this.isConfigured = baseUrl != null && !baseUrl.isEmpty();
     }

@@ -170,8 +170,14 @@ const categoryImages: Record<string, string> = {
   'default': '/images/pngtree-ellipsis-black-glyph-ui-icon-flat-negative-space-ellipsis-vector-png-image_48303394.jpg'
 }
 
+const API_BASE_URL = 'http://localhost:8080'
+
 const getCategoryImage = (category: any) => {
-  return category.imageUrl || categoryImages[category.name] || categoryImages['default']
+  const imageUrl = category.imageUrl
+  if (imageUrl) {
+    return imageUrl.startsWith('/uploads/') ? `${API_BASE_URL}${imageUrl}` : imageUrl
+  }
+  return categoryImages[category.name] || categoryImages['default']
 }
 
 const saleProducts = ref<any[]>([])

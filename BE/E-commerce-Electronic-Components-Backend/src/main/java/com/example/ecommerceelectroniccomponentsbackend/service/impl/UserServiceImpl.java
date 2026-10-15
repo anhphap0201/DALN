@@ -18,6 +18,7 @@ import com.example.ecommerceelectroniccomponentsbackend.repository.UserRepositor
 import com.example.ecommerceelectroniccomponentsbackend.service.IEmailService;
 import com.example.ecommerceelectroniccomponentsbackend.service.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +38,9 @@ public class UserServiceImpl implements IUserService {
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final IEmailService emailService;
 
+    @Value("${app.auth.email-verification-required:true}")
+    private boolean emailVerificationRequired;
+
     public UserCreateResponse createUser(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
@@ -55,32 +59,54 @@ public class UserServiceImpl implements IUserService {
     }
 
     public RegisterResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+        User existingUser = userRepository.findByEmail(request.getEmail()).orElse(null);
+        if (existingUser != null) {
+            if (Boolean.TRUE.equals(existingUser.getEmailVerified())) {
+                throw new IllegalArgumentException("Email already exists");
+            }
+
+            if (!emailVerificationRequired) {
+                existingUser.setFullName(request.getFullName());
+                existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
+                existingUser.setIsActive(true);
+                existingUser.setEmailVerified(true);
+                userRepository.save(existingUser);
+                return RegisterResponse.builder()
+                        .email(existingUser.getEmail())
+                        .role(existingUser.getRole())
+                        .message("Đăng ký thành công! Bạn có thể đăng nhập ngay.")
+                        .build();
+            }
+
+            sendVerificationEmail(existingUser.getEmail());
+            return RegisterResponse.builder()
+                    .email(existingUser.getEmail())
+                    .role(existingUser.getRole())
+                    .message("Tài khoản đã được tạo nhưng chưa xác thực. Email xác thực đã được gửi lại.")
+                    .build();
         }
 
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
-                .role(request.getRole() != null ? request.getRole() : Role.ROLE_USER)
-                .isActive(false) // User inactive until email verified
-                .emailVerified(false)
+                .role(Role.ROLE_USER)
+                .isActive(!emailVerificationRequired)
+                .emailVerified(!emailVerificationRequired)
                 .build();
 
         userRepository.save(user);
 
-        // Send verification email
-        try {
+        if (emailVerificationRequired) {
             sendVerificationEmail(user.getEmail());
-        } catch (Exception e) {
-            System.out.println(("Failed to send verification email: {}" + e.getMessage()));
         }
 
         return RegisterResponse.builder()
                 .email(user.getEmail())
                 .role(user.getRole())
-                .message("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.")
+                .message(emailVerificationRequired
+                        ? "Đăng ký thành công! Vui lòng kiểm tra email và xác thực tài khoản trước khi đăng nhập."
+                        : "Đăng ký thành công! Bạn có thể đăng nhập ngay.")
                 .build();
     }
 
@@ -225,4 +251,3 @@ public class UserServiceImpl implements IUserService {
         }
     }
 }
-

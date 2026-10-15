@@ -211,6 +211,45 @@
           Khám phá sản phẩm
         </NuxtLink>
       </div>
+
+      <section v-if="reorderItems.length" class="mt-10">
+        <div class="mb-4">
+          <h2 class="text-2xl font-bold text-gray-900">Sản phẩm đã mua hoặc đã hủy</h2>
+          <p class="text-sm text-gray-600 mt-1">Thêm lại sản phẩm vào giỏ chỉ với một lần bấm.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <article
+            v-for="item in reorderItems"
+            :key="`${item.orderId}-${item.productVariantId}`"
+            class="bg-white border border-gray-200 rounded-2xl p-4 flex items-center gap-4"
+          >
+            <img
+              :src="getImageUrl(item.imageUrl)"
+              :alt="item.productName"
+              class="w-16 h-16 rounded-xl object-contain bg-gray-50 flex-shrink-0"
+            />
+            <div class="flex-1 min-w-0">
+              <NuxtLink :to="`/products/${item.productId || ''}`" class="font-semibold text-gray-900 hover:text-[#09f] line-clamp-2">
+                {{ item.productName || item.variantName }}
+              </NuxtLink>
+              <p class="text-xs text-gray-500 mt-1">{{ item.variantName }} · {{ formatPrice(item.price) }}</p>
+              <span
+                class="inline-flex mt-2 px-2 py-0.5 rounded-full text-xs font-medium"
+                :class="item.status === 'CANCELLED' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'"
+              >
+                {{ item.status === 'CANCELLED' ? 'Đã hủy' : 'Đã mua' }}
+              </span>
+            </div>
+            <button
+              @click="reorderItem(item)"
+              :disabled="reorderingItems.has(`${item.orderId}-${item.productVariantId}`)"
+              class="px-3 py-2 rounded-lg bg-[#09f] text-white text-sm font-semibold hover:bg-[#0077cc] disabled:opacity-50 whitespace-nowrap"
+            >
+              {{ reorderingItems.has(`${item.orderId}-${item.productVariantId}`) ? 'Đang thêm...' : 'Mua lại' }}
+            </button>
+          </article>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -228,21 +267,57 @@ definePageMeta({
 const API_BASE_URL = 'http://localhost:8080'
 
 // Composables
-const { cart, loading, fetchCart, updateCartItem, removeFromCart, clearCart } = useCart()
+const { cart, loading, fetchCart, updateCartItem, removeFromCart, clearCart, addToCart } = useCart()
+const { getAuthHeader } = useAuth()
 
 // Local state
 const selectAll = ref(false)
 const selectedItems = ref<Set<number>>(new Set())
+const orderHistory = ref<any[]>([])
+const reorderingItems = ref<Set<string>>(new Set())
+
+const reorderItems = computed(() => orderHistory.value
+  .filter(order => ['CANCELLED', 'DELIVERED', 'COMPLETED'].includes(String(order.status || '').toUpperCase()))
+  .flatMap(order => (order.orderItems || []).map((item: any) => ({
+    ...item,
+    orderId: order.id,
+    status: String(order.status || '').toUpperCase(),
+    productId: item.productId
+  })))
+)
 
 // Fetch cart on mount
 onMounted(async () => {
-  await fetchCart()
+  await Promise.all([fetchCart(), fetchOrderHistory()])
   // Select all items by default
   if (cart.value?.cartItems && cart.value.cartItems.length > 0) {
     cart.value.cartItems.forEach(item => selectedItems.value.add(item.id))
     selectAll.value = true
   }
 })
+
+const fetchOrderHistory = async () => {
+  try {
+    const response = await $fetch<any>('http://localhost:8080/api/orders', {
+      params: { page: 0, size: 30 },
+      headers: getAuthHeader() as Record<string, string>
+    })
+    orderHistory.value = response?.content || []
+  } catch (error) {
+    console.error('Could not load purchased products for reorder:', error)
+  }
+}
+
+const reorderItem = async (item: any) => {
+  const key = `${item.orderId}-${item.productVariantId}`
+  if (reorderingItems.value.has(key)) return
+  reorderingItems.value.add(key)
+  try {
+    await addToCart(item.productVariantId, item.quantity || 1, Number(item.price))
+  } finally {
+    reorderingItems.value.delete(key)
+  }
+}
 
 const selectedCartItems = computed(() => {
   return cart.value?.cartItems?.filter(item => selectedItems.value.has(item.id)) || []
@@ -369,4 +444,3 @@ const clearAllCart = async () => {
   selectedItems.value.clear()
 }
 </script>
-

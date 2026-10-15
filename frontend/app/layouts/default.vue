@@ -29,6 +29,12 @@
                 type="text"
                 placeholder="Tìm kiếm linh kiện điện tử..."
                 class="w-full px-4 py-2.5 pr-12 border-2 border-gray-200 rounded-xl text-sm transition-all duration-300 outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)] hover:border-[#33adff] placeholder:text-gray-400"
+                role="combobox"
+                aria-autocomplete="list"
+                :aria-expanded="showSearchSuggestions && filteredSearchSuggestions.length > 0"
+                @focus="openSearchSuggestions"
+                @input="openSearchSuggestions"
+                @keydown.esc="showSearchSuggestions = false"
                 @keyup.enter="handleSearch"
               />
               <button
@@ -39,6 +45,35 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
+              <div
+                v-if="showSearchSuggestions && filteredSearchSuggestions.length"
+                role="listbox"
+                class="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white py-2 shadow-xl"
+              >
+                <p class="px-4 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  Gợi ý tìm kiếm
+                </p>
+                <button
+                  v-for="suggestion in filteredSearchSuggestions"
+                  :key="suggestion.query.toLowerCase()"
+                  type="button"
+                  role="option"
+                  class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-blue-50 hover:text-[#0077cc]"
+                  @mousedown.prevent
+                  @click="selectSearchSuggestion(suggestion.query)"
+                >
+                  <span class="flex items-center gap-3">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="11" cy="11" r="7" stroke-width="2" />
+                      <path stroke-linecap="round" stroke-width="2" d="m20 20-4-4" />
+                    </svg>
+                    {{ suggestion.query }}
+                  </span>
+                  <span v-if="suggestion.count" class="text-xs text-gray-400">
+                    {{ suggestion.count }} lượt tìm
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -278,6 +313,8 @@ import { useCart } from '~/composables/useCart'
 
 const searchQuery = ref('')
 const showUserMenu = ref(false)
+const showSearchSuggestions = ref(false)
+const searchHistory = ref<{ query: string; count: number }[]>([])
 
 const { user, isAuthenticated, logout, initializeAuth } = useAuth()
 const { success } = useNotification()
@@ -286,6 +323,7 @@ const { cartItemCount, fetchCart } = useCart()
 // Force initialize on mount
 onMounted(() => {
   initializeAuth()
+  loadSearchHistory()
   // Fetch cart if authenticated
   if (isAuthenticated.value) {
     fetchCart()
@@ -312,9 +350,60 @@ const popularKeywords = [
   'Relay'
 ]
 
+const filteredSearchSuggestions = computed(() => {
+  const query = searchQuery.value.trim().toLocaleLowerCase()
+  if (!query) return []
+
+  const suggestions = new Map<string, { query: string; count: number }>()
+  for (const item of searchHistory.value) {
+    if (item.query.toLocaleLowerCase().includes(query)) {
+      suggestions.set(item.query.toLocaleLowerCase(), item)
+    }
+  }
+  for (const keyword of popularKeywords) {
+    const normalized = keyword.toLocaleLowerCase()
+    if (normalized.includes(query) && !suggestions.has(normalized)) {
+      suggestions.set(normalized, { query: keyword, count: 0 })
+    }
+  }
+
+  return [...suggestions.values()]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6)
+})
+
+const loadSearchHistory = () => {
+  try {
+    const stored = localStorage.getItem('daln_search_terms')
+    const parsed: unknown = stored ? JSON.parse(stored) : []
+    if (Array.isArray(parsed)) {
+      searchHistory.value = parsed.filter((item): item is { query: string; count: number } =>
+        typeof item?.query === 'string' &&
+        item.query.trim().length > 0 &&
+        typeof item.count === 'number'
+      )
+    }
+  } catch (error) {
+    console.error('Could not load search history:', error)
+    searchHistory.value = []
+  }
+}
+
+const openSearchSuggestions = () => {
+  loadSearchHistory()
+  showSearchSuggestions.value = true
+}
+
+const selectSearchSuggestion = (query: string) => {
+  searchQuery.value = query
+  showSearchSuggestions.value = false
+  handleSearch()
+}
+
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    navigateTo(`/search?q=${encodeURIComponent(searchQuery.value)}`)
+    showSearchSuggestions.value = false
+    navigateTo(`/search?q=${encodeURIComponent(searchQuery.value.trim())}`)
   }
 }
 </script>

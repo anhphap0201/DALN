@@ -132,7 +132,7 @@
           <!-- Trạng thái đơn hàng -->
           <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Trạng thái đơn hàng</h3>
-            <div class="grid grid-cols-5 gap-3 mb-4">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
               <div class="text-center p-3 bg-yellow-50 rounded-xl">
                 <p class="text-2xl font-bold text-yellow-600">{{ dashboard.pendingOrders }}</p>
                 <p class="text-xs text-gray-500 mt-1">Chờ xử lý</p>
@@ -179,13 +179,14 @@
             </div>
           </div>
 
-          <div v-if="dashboard.revenueChart && dashboard.revenueChart.length > 0" class="relative">
+          <div v-if="dashboard.revenueChart && dashboard.revenueChart.length > 0" class="relative overflow-x-auto">
+            <div class="min-w-[720px]">
             <!-- Revenue bars -->
-            <div class="flex items-end gap-[2px] h-48 mb-2">
+            <div class="flex items-end gap-1 h-48 mb-2">
               <div
                 v-for="(day, idx) in dashboard.revenueChart"
                 :key="idx"
-                class="flex-1 flex flex-col items-center justify-end gap-[1px] group relative"
+                class="flex-1 flex flex-col items-center justify-end group relative"
               >
                 <!-- Tooltip -->
                 <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
@@ -193,16 +194,18 @@
                   <p>Doanh thu: {{ formatPrice(day.revenue) }}</p>
                   <p>Đơn hàng: {{ day.orderCount }}</p>
                 </div>
-                <!-- Revenue bar -->
-                <div
-                  class="w-full rounded-t bg-[#09f]/80 hover:bg-[#09f] transition-all cursor-pointer min-h-[2px]"
-                  :style="{ height: revenueBarHeight(day.revenue) + '%' }"
-                ></div>
-                <!-- Order count dot -->
-                <div
-                  class="w-full rounded-t bg-emerald-400/80 hover:bg-emerald-400 transition-all cursor-pointer min-h-[1px]"
-                  :style="{ height: orderBarHeight(day.orderCount) + '%' }"
-                ></div>
+                <div class="w-full h-full flex items-end justify-center gap-0.5">
+                  <div
+                    class="w-1/2 rounded-t bg-[#09f]/80 hover:bg-[#09f] transition-all cursor-pointer min-h-[2px]"
+                    :style="{ height: revenueBarHeight(day.revenue) + '%' }"
+                    :title="`Doanh thu: ${formatPrice(day.revenue)}`"
+                  ></div>
+                  <div
+                    class="w-1/2 rounded-t bg-emerald-400/80 hover:bg-emerald-400 transition-all cursor-pointer min-h-[2px]"
+                    :style="{ height: orderBarHeight(day.orderCount) + '%' }"
+                    :title="`Đơn hàng: ${day.orderCount}`"
+                  ></div>
+                </div>
               </div>
             </div>
             <!-- X-axis labels -->
@@ -216,6 +219,7 @@
                   {{ day.date.slice(5) }}
                 </span>
               </div>
+            </div>
             </div>
           </div>
           <div v-else class="flex items-center justify-center h-48 text-gray-400 text-sm">
@@ -420,12 +424,12 @@ const maxOrders = computed(() => {
 
 const revenueBarHeight = (revenue: number | null) => {
   if (!revenue) return 1
-  return Math.max(1, (Number(revenue) / maxRevenue.value) * 80)
+  return Math.max(1, (Number(revenue) / maxRevenue.value) * 100)
 }
 
 const orderBarHeight = (count: number) => {
   if (!count) return 1
-  return Math.max(1, (count / maxOrders.value) * 20)
+  return Math.max(1, (count / maxOrders.value) * 100)
 }
 
 const statusPercent = (status: string) => {

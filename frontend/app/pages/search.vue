@@ -33,6 +33,31 @@
         </p>
       </div>
 
+      <div v-if="searchQuery" class="mb-6 space-y-3">
+        <div v-if="relatedKeywords.length" class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-semibold text-gray-600">Từ khóa liên quan:</span>
+          <button
+            v-for="keyword in relatedKeywords"
+            :key="keyword"
+            @click="searchForKeyword(keyword)"
+            class="px-3 py-1.5 rounded-full bg-blue-50 text-[#0077cc] text-sm hover:bg-blue-100 transition-colors"
+          >
+            {{ keyword }}
+          </button>
+        </div>
+        <div v-if="popularSearches.length" class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-semibold text-gray-600">Từ khóa bạn hay tìm:</span>
+          <button
+            v-for="item in popularSearches"
+            :key="item.query"
+            @click="searchForKeyword(item.query)"
+            class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 transition-colors"
+          >
+            {{ item.query }}
+          </button>
+        </div>
+      </div>
+
       <div class="flex gap-6">
         <!-- Filters Sidebar -->
         <aside class="w-64 flex-shrink-0 hidden lg:block">
@@ -264,6 +289,29 @@
               </svg>
             </button>
           </div>
+
+          <section v-if="searchQuery && (relatedLoading || relatedProducts.length)" class="mt-10">
+            <div class="flex items-end justify-between mb-4">
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">Sản phẩm liên quan</h2>
+                <p class="text-sm text-gray-500 mt-1">Sản phẩm cùng nhóm hoặc thường được mua kèm</p>
+              </div>
+            </div>
+            <div v-if="relatedLoading" class="text-sm text-gray-500 py-4">Đang tìm sản phẩm phù hợp...</div>
+            <div v-else class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+              <NuxtLink
+                v-for="product in relatedProducts"
+                :key="product.id"
+                :to="`/products/${product.id}`"
+                class="bg-white border border-gray-200 rounded-xl p-3 hover:border-[#09f] hover:shadow-md transition-all"
+              >
+                <img :src="product.img" :alt="product.name" class="w-full aspect-square object-contain bg-gray-50 rounded-lg mb-3" />
+                <h3 class="text-sm font-semibold text-gray-800 line-clamp-2">{{ product.name }}</h3>
+                <p class="text-sm font-bold text-[#0077cc] mt-2">{{ product.priceRange }}</p>
+                <p class="text-xs text-gray-500 mt-1">Còn {{ product.totalStock }} sản phẩm</p>
+              </NuxtLink>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -293,6 +341,97 @@ const categories = ref<any[]>([])
 const products = ref<any[]>([])
 const loading = ref(false)
 const totalElements = ref(0)
+const relatedProducts = ref<any[]>([])
+const relatedLoading = ref(false)
+const popularSearches = ref<{ query: string; count: number }[]>([])
+const lastRecordedSearch = ref('')
+
+const keywordSuggestions: Record<string, string[]> = {
+  esp32: ['ESP32 DevKit', 'ESP32-WROOM', 'NodeMCU', 'cảm biến', 'module nguồn'],
+  arduino: ['Arduino Uno', 'Arduino Nano', 'ESP32', 'cảm biến', 'module relay'],
+  raspberry: ['Raspberry Pi 5', 'thẻ nhớ microSD', 'nguồn USB-C', 'cảm biến'],
+  cam: ['cảm biến khoảng cách', 'cảm biến nhiệt độ', 'Arduino', 'ESP32'],
+  sensor: ['cảm biến khoảng cách', 'cảm biến nhiệt độ', 'Arduino', 'ESP32'],
+  dien: ['điện trở 10k', 'tụ điện', 'IC Logic', 'breadboard']
+}
+
+const relatedKeywords = computed(() => {
+  const query = searchQuery.value.toLowerCase()
+  const mapped = Object.entries(keywordSuggestions).find(([key]) => query.includes(key))?.[1] || []
+  const fromProducts = products.value
+    .flatMap((product: any) => [
+      ...(product.categories || []).map((category: any) => category.name),
+      ...(product.name || '').split(/[\s-]+/)
+    ])
+    .filter((term: string) => term && term.length > 2 && !query.includes(term.toLowerCase()))
+  const unique = new Map<string, string>()
+  for (const keyword of [...mapped, ...fromProducts]) {
+    unique.set(keyword.toLowerCase(), keyword)
+  }
+  return [...unique.values()].slice(0, 6)
+})
+
+const loadPopularSearches = () => {
+  try {
+    const stored = localStorage.getItem('daln_search_terms')
+    popularSearches.value = stored ? JSON.parse(stored) : []
+  } catch (error) {
+    console.error('Could not load search history:', error)
+    popularSearches.value = []
+  }
+}
+
+const recordSearchTerm = (query: string) => {
+  const term = query.trim()
+  if (!term || term.toLowerCase() === lastRecordedSearch.value.toLowerCase()) return
+  lastRecordedSearch.value = term
+  try {
+    const stored = localStorage.getItem('daln_search_terms')
+    const counts: { query: string; count: number }[] = stored ? JSON.parse(stored) : []
+    const existing = counts.find(item => item.query.toLowerCase() === term.toLowerCase())
+    if (existing) existing.count += 1
+    else counts.push({ query: term, count: 1 })
+    counts.sort((a, b) => b.count - a.count)
+    localStorage.setItem('daln_search_terms', JSON.stringify(counts.slice(0, 20)))
+    popularSearches.value = counts.slice(0, 5)
+  } catch (error) {
+    console.error('Could not save search history:', error)
+  }
+}
+
+const searchForKeyword = (keyword: string) => {
+  router.push({ path: '/search', query: { q: keyword } })
+}
+
+const loadRelatedProducts = async (sourceProducts: any[]) => {
+  if (!searchQuery.value || sourceProducts.length === 0) {
+    relatedProducts.value = []
+    return
+  }
+  relatedLoading.value = true
+  try {
+    const sourceIds = new Set(sourceProducts.map(product => String(product.id)))
+    const results = await Promise.all(
+      sourceProducts.slice(0, 3).map(product =>
+        $fetch<any[]>(`${API_BASE_URL}/products/search/related/${product.id}`, {
+          params: { limit: 6 }
+        })
+      )
+    )
+    const unique = new Map<string, any>()
+    results.flat().forEach(product => {
+      if (!sourceIds.has(String(product.id)) && !unique.has(String(product.id))) {
+        unique.set(String(product.id), mapProduct(product))
+      }
+    })
+    relatedProducts.value = [...unique.values()].slice(0, 8)
+  } catch (error) {
+    console.error('Could not load related products:', error)
+    relatedProducts.value = []
+  } finally {
+    relatedLoading.value = false
+  }
+}
 
 const priceRanges = [
   { id: '0-100k', label: 'Dưới 100.000đ', min: 0, max: 100000 },
@@ -462,10 +601,16 @@ const searchProducts = async () => {
         totalElements.value = 0
       }
     }
+    if (searchQuery.value) {
+      void loadRelatedProducts(products.value.slice(0, 3))
+    } else {
+      relatedProducts.value = []
+    }
   } catch (error: any) {
     console.error('Error searching products:', error)
     products.value = []
     totalElements.value = 0
+    relatedProducts.value = []
   } finally {
     loading.value = false
   }
@@ -601,6 +746,7 @@ watch([selectedCategory, selectedPriceRange, onlyShowSale, sortBy], () => {
 watch(() => route.query.q, (newQuery) => {
   searchQuery.value = String(newQuery || '')
   currentPage.value = 1
+  recordSearchTerm(searchQuery.value)
   searchProducts()
 })
 
@@ -616,6 +762,8 @@ watch(currentPage, () => {
 
 // Load initial data
 onMounted(async () => {
+  loadPopularSearches()
+  recordSearchTerm(searchQuery.value)
   try {
     // Fetch categories
     const data = await $fetch(`${API_BASE_URL}/categories`)

@@ -530,11 +530,18 @@ const paymentMethods = [
     image: '/payment method/icons8-dollar-50.png'
   },
   {
+    id: 'payos',
+    name: 'Cổng thanh toán PayOS (VietQR)',
+    description: 'Quét mã VietQR chuyển khoản tự động qua mọi ứng dụng ngân hàng & ví điện tử',
+    icon: 'PAYOS',
+    image: '/payment method/logo-atm.png'
+  },
+  {
     id: 'vnpay',
     name: 'Cổng thanh toán VNPAY',
     description: 'Thanh toán qua VNPAY-QR, Thẻ ATM / Tài khoản ngân hàng, Thẻ quốc tế',
     icon: 'VNPAY',
-    image: '/payment method/logo-atm.png'
+    image: '/payment method/logo-visa-master-jcb.png'
   }
 ]
 
@@ -781,6 +788,26 @@ const placeOrder = async () => {
     // Only include locker fields when smart_locker is selected
     if (selectedShipping.value === 'smart_locker') {
       orderBody.lockerId = selectedLocker.value
+    }
+
+    // PayOS payment flow - create order and redirect to PayOS
+    if (selectedPayment.value === 'payos') {
+      const payosResult: any = await $fetch(`${API_BASE_URL}/api/payos/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(getAuthHeader() as Record<string, string>)
+        },
+        body: JSON.stringify(orderBody)
+      })
+
+      if (payosResult.resultCode === 0 && payosResult.checkoutUrl) {
+        window.location.href = payosResult.checkoutUrl
+        return
+      } else {
+        showError(payosResult.message || 'Không thể tạo thanh toán PayOS. Vui lòng thử lại.')
+        return
+      }
     }
 
     // VNPAY payment flow - create order and redirect to VNPAY

@@ -37,6 +37,8 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/vnpay/ipn").permitAll()
                         .requestMatchers("/api/vnpay/return").permitAll()
+                        .requestMatchers("/api/payos/webhook").permitAll()
+                        .requestMatchers("/api/payos/info/**").permitAll()
                         .requestMatchers("/api/webhook/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")

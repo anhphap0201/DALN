@@ -489,6 +489,8 @@ const getPaymentLabel = (method: string) => {
     cod: 'COD',
     bank: 'Chuyển khoản',
     BANK: 'Chuyển khoản',
+    payos: 'PayOS',
+    PAYOS: 'PayOS',
     momo: 'MoMo',
     MOMO: 'MoMo',
     vnpay: 'VNPAY',
@@ -502,6 +504,7 @@ const getPaymentLabel = (method: string) => {
 const getPaymentClass = (method: string) => {
   const m = (method || '').toLowerCase()
   if (m === 'cod') return 'bg-orange-100 text-orange-700'
+  if (m === 'payos') return 'bg-emerald-100 text-emerald-800'
   if (m === 'bank') return 'bg-blue-100 text-blue-700'
   if (m === 'vnpay') return 'bg-blue-100 text-blue-800'
   if (m === 'momo') return 'bg-pink-100 text-pink-700'

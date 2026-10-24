@@ -95,7 +95,7 @@
               </span>
             </div>
 
-            <!-- Unpaid / Awaiting VNPAY Notice Banner -->
+            <!-- Unpaid / Awaiting Online Payment Notice Banner -->
             <div
               v-if="isAwaitingVnpay(order)"
               class="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
@@ -103,7 +103,7 @@
               <div class="flex items-center gap-2">
                 <span class="text-lg">⏳</span>
                 <p class="text-xs sm:text-sm text-amber-800 font-medium">
-                  Đơn hàng chưa hoàn tất thanh toán qua VNPAY. Vui lòng thanh toán trong vòng
+                  Đơn hàng chưa hoàn tất thanh toán ({{ order.paymentMethod?.toUpperCase() }}). Vui lòng thanh toán trong vòng
                   <span class="font-bold text-amber-900 underline">{{ getPaymentRemainingTime(order) }}</span> trước khi hệ thống tự động hủy.
                 </p>
               </div>
@@ -561,8 +561,9 @@ const statusTabs: { key: TabKey; label: string }[] = [
 ]
 
 const isAwaitingVnpay = (order: Order) => {
+  const method = order.paymentMethod?.toUpperCase()
   return (
-    order.paymentMethod?.toUpperCase() === 'VNPAY' &&
+    (method === 'VNPAY' || method === 'PAYOS') &&
     (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
     order.status === 'PENDING'
   )
@@ -573,8 +574,9 @@ const getOrderTabKey = (order: Order): TabKey => {
   if (status === 'CANCELLED') return 'CANCELLED'
   if (status === 'RETURNED') return 'RETURNED'
 
-  // If VNPAY and unpaid/awaiting_payment
-  if (order.paymentMethod?.toUpperCase() === 'VNPAY' &&
+  // If VNPAY/PAYOS and unpaid/awaiting_payment
+  const pm = order.paymentMethod?.toUpperCase()
+  if ((pm === 'VNPAY' || pm === 'PAYOS') &&
       (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
       status === 'PENDING') {
     return 'UNPAID'
@@ -652,7 +654,8 @@ const getPaymentRemainingTime = (order: Order): string => {
 }
 
 const statusLabel = (status: string, order?: Order) => {
-  if (order && order.paymentMethod?.toUpperCase() === 'VNPAY' &&
+  const pm = order?.paymentMethod?.toUpperCase()
+  if (order && (pm === 'VNPAY' || pm === 'PAYOS') &&
       (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
       normalizeStatus(order.status) === 'PENDING') {
     return order.paymentStatus === 'AWAITING_PAYMENT' ? 'Chờ thanh toán (24h)' : 'Chưa thanh toán'
@@ -684,7 +687,8 @@ const statusLabel = (status: string, order?: Order) => {
 }
 
 const statusClass = (status: string, order?: Order) => {
-  if (order && order.paymentMethod?.toUpperCase() === 'VNPAY' &&
+  const pm = order?.paymentMethod?.toUpperCase()
+  if (order && (pm === 'VNPAY' || pm === 'PAYOS') &&
       (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
       normalizeStatus(order.status) === 'PENDING') {
     return 'bg-amber-100 text-amber-800 border border-amber-200'
@@ -819,14 +823,19 @@ const createOrderFromCart = async () => {
 const retryPayment = async (order: Order) => {
   retryingOrderIds.value.add(order.id)
   try {
-    const res: any = await $fetch(`${API_BASE_URL}/api/vnpay/retry-payment/${order.id}`, {
+    const isPayOs = order.paymentMethod?.toUpperCase() === 'PAYOS'
+    const endpoint = isPayOs
+      ? `${API_BASE_URL}/api/payos/retry-payment/${order.id}`
+      : `${API_BASE_URL}/api/vnpay/retry-payment/${order.id}`
+    const res: any = await $fetch(endpoint, {
       method: 'POST',
       headers: {
         ...(getAuthHeader() as Record<string, string>)
       }
     })
-    if (res.resultCode === 0 && res.payUrl) {
-      window.location.href = res.payUrl
+    const redirectUrl = res.checkoutUrl || res.payUrl
+    if (res.resultCode === 0 && redirectUrl) {
+      window.location.href = redirectUrl
     } else {
       showError(res.message || 'Không thể tạo phiên thanh toán lại. Vui lòng thử lại.')
     }

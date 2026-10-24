@@ -102,7 +102,7 @@ public class OrderServiceImpl implements IOrderService {
                 // Order details
                 .orderNumber(orderNumber)
                 .paymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD")
-                .paymentStatus("VNPAY".equalsIgnoreCase(request.getPaymentMethod()) ? "UNPAID" : "PENDING")
+                .paymentStatus(("VNPAY".equalsIgnoreCase(request.getPaymentMethod()) || "PAYOS".equalsIgnoreCase(request.getPaymentMethod())) ? "UNPAID" : "PENDING")
                 .shippingMethod(request.getShippingMethod() != null ? request.getShippingMethod().toUpperCase() : "STANDARD")
                 .note(request.getNote())
                 .voucherCode(request.getVoucherCode())

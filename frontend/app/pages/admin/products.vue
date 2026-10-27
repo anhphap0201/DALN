@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-8">
-    <div class="max-w-7xl mx-auto">
+  <div class="space-y-6">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
@@ -19,24 +18,34 @@
         </div>
         <div class="flex gap-3">
           <button
+            v-if="!selectedProduct"
+            @click="openCreateProductModal"
+            class="flex items-center gap-2 px-5 py-2.5 bg-[#09f] text-white rounded-xl hover:bg-[#0077cc] transition-all shadow-md shadow-[#09f]/20 font-semibold text-sm cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            Thêm sản phẩm mới
+          </button>
+          <button
             v-if="selectedProduct"
             @click="backToProducts"
-            class="flex items-center gap-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all"
+            class="flex items-center gap-2 px-5 py-2.5 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 font-medium text-sm transition-all"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Quay lại
+            Quay lại danh sách
           </button>
           <button
             v-if="selectedProduct"
             @click="openCreateVariantModal"
-            class="flex items-center gap-2 px-6 py-3 bg-[#09f] text-white rounded-xl hover:bg-[#0077cc] transition-all shadow-lg hover:shadow-xl"
+            class="flex items-center gap-2 px-5 py-2.5 bg-[#09f] text-white rounded-xl hover:bg-[#0077cc] font-semibold text-sm transition-all shadow-md hover:shadow-lg"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
             </svg>
-            Thêm phân loại
+            + Thêm phân loại
           </button>
         </div>
       </div>
@@ -59,15 +68,15 @@
       <!-- Products Table (when no product selected) -->
       <div v-if="!selectedProduct" class="bg-white rounded-xl shadow-sm overflow-hidden">
         <table class="min-w-full">
-          <thead class="bg-gray-50 border-b border-gray-200">
+          <thead class="bg-slate-900 text-white border-b border-slate-800">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">ID</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Sản phẩm</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Danh mục</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Khoảng giá</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">phân loại</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tồn kho</th>
-              <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Thao tác</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Sản phẩm</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Danh mục</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Khoảng giá</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Phân loại</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Tồn kho</th>
+              <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-100">Thao tác</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -85,6 +94,13 @@
                   <div>
                     <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
                     <div class="text-xs text-gray-500">{{ product.slug }}</div>
+                    <div class="flex items-center gap-2 mt-1 text-xs">
+                      <span class="inline-flex items-center gap-0.5 text-amber-500 font-bold">
+                        ★ {{ Number(product.avgRating || 5.0).toFixed(1) }}
+                      </span>
+                      <span class="text-gray-300">•</span>
+                      <span class="text-gray-600">Đã bán: <strong class="text-gray-800">{{ product.soldQuantity || 0 }}</strong></span>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -93,42 +109,67 @@
                   <span 
                     v-for="cat in product.categories" 
                     :key="cat.id"
-                    class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs"
+                    class="px-2.5 py-1 bg-sky-100 text-sky-900 border border-sky-300 font-bold rounded-lg text-xs shadow-xs"
                   >
                     {{ cat.name }}
                   </span>
                 </span>
-                <span v-else class="text-gray-400">-</span>
+                <span v-else class="text-gray-400 font-medium">-</span>
               </td>
               <td class="px-6 py-4 text-sm">
                 <div v-if="product.minPrice !== undefined">
-                  <span class="font-medium text-gray-900">{{ formatPriceRange(product) }}</span>
-                  <div v-if="product.hasDiscount" class="text-xs text-green-600">Có giảm giá</div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-gray-900 text-sm">{{ formatPriceRange(product) }}</span>
+                    <span v-if="product.hasDiscount" class="text-xs font-bold text-white bg-rose-600 px-1.5 py-0.5 rounded shadow-xs">
+                      Giảm giá
+                    </span>
+                  </div>
                 </div>
-                <span v-else class="text-gray-400">-</span>
+                <span v-else class="text-gray-400 font-medium">-</span>
               </td>
               <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900 border border-indigo-300 shadow-xs">
                   {{ product.variants?.length || 0 }} phân loại
                 </span>
               </td>
               <td class="px-6 py-4">
-                <span :class="[
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  product.totalStock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                ]">
-                  {{ product.totalStock || 0 }}
-                </span>
+                <div class="flex flex-col gap-1">
+                  <span :class="[
+                    'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shadow-xs w-fit',
+                    product.totalStock > 0 ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+                  ]">
+                    {{ product.totalStock > 0 ? `Còn ${product.totalStock}` : 'Hết hàng' }}
+                  </span>
+                  <span class="text-xs text-gray-500 font-medium">Đã bán: {{ product.soldQuantity || 0 }}</span>
+                </div>
               </td>
               <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
+                <div class="flex items-center justify-end gap-1.5">
                   <button
                     @click="selectProduct(product)"
-                    class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                    title="Xem phân loại"
+                    class="p-2 text-indigo-700 bg-indigo-100 hover:bg-indigo-600 hover:text-white border border-indigo-300 rounded-xl transition-all shadow-xs cursor-pointer"
+                    title="Xem & quản lý phân loại"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="openEditProductModal(product)"
+                    class="p-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-300 rounded-xl transition-all shadow-xs cursor-pointer"
+                    title="Sửa sản phẩm"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="confirmDeleteProduct(product)"
+                    class="p-2 text-rose-700 bg-rose-100 hover:bg-rose-600 hover:text-white border border-rose-300 rounded-xl transition-all shadow-xs cursor-pointer"
+                    title="Xóa sản phẩm"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </div>
@@ -146,23 +187,23 @@
       <!-- Variants Table (when product selected) -->
       <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
         <!-- Selected Product Info -->
-        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 border-b border-gray-200">
+        <div class="bg-gradient-to-r from-blue-700 to-[#09f] p-5 border-b border-blue-500 text-white shadow-sm">
           <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-white rounded-lg overflow-hidden shadow">
+            <div class="w-16 h-16 bg-white rounded-xl overflow-hidden shadow-md p-1">
               <img 
                 :src="selectedProduct.defaultImageUrl ? `http://localhost:8080${selectedProduct.defaultImageUrl}` : '/images/placeholder.png'" 
                 :alt="selectedProduct.name" 
-                class="w-full h-full object-cover" 
+                class="w-full h-full object-cover rounded-lg" 
               />
             </div>
             <div>
-              <h2 class="text-lg font-bold text-gray-900">{{ selectedProduct.name }}</h2>
-              <p class="text-sm text-gray-600">{{ selectedProduct.variants?.length || 0 }} phân loại</p>
-              <div class="flex gap-2 mt-1">
+              <h2 class="text-xl font-black text-white tracking-tight">{{ selectedProduct.name }}</h2>
+              <p class="text-xs text-blue-100 font-semibold mt-0.5">{{ selectedProduct.variants?.length || 0 }} phân loại đang quản lý</p>
+              <div class="flex gap-2 mt-2">
                 <span 
                   v-for="cat in selectedProduct.categories" 
                   :key="cat.id"
-                  class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs"
+                  class="px-2.5 py-0.5 bg-white/20 text-white border border-white/40 font-bold rounded-lg text-xs"
                 >
                   {{ cat.name }}
                 </span>
@@ -172,15 +213,15 @@
         </div>
 
         <table class="min-w-full">
-          <thead class="bg-gray-50 border-b border-gray-200">
+          <thead class="bg-slate-900 text-white border-b border-slate-800">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">ID</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tên phân loại</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Giá</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Giá KM</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tồn kho</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Trạng thái</th>
-              <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Thao tác</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Tên phân loại</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Giá</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Giá KM</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Tồn kho</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Trạng thái</th>
+              <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-100">Thao tác</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -204,21 +245,27 @@
               <td class="px-6 py-4 text-sm font-medium text-gray-900">
                 {{ formatPrice(variant.price) }}
               </td>
-              <td class="px-6 py-4 text-sm text-green-600">
-                {{ variant.discountPrice ? formatPrice(variant.discountPrice) : '-' }}
+              <td class="px-6 py-4 text-sm">
+                <div v-if="variant.discountPrice && variant.discountPrice < variant.price" class="flex items-center gap-1.5 flex-wrap">
+                  <span class="font-extrabold text-emerald-600">{{ formatPrice(variant.discountPrice) }}</span>
+                  <span class="text-xs font-bold text-white bg-rose-600 px-1.5 py-0.5 rounded shadow-xs">
+                    {{ Math.round(((variant.price - variant.discountPrice) / variant.price) * 100) }}%
+                  </span>
+                </div>
+                <span v-else class="text-gray-400 font-medium">-</span>
               </td>
               <td class="px-6 py-4">
                 <span :class="[
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  variant.inStock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shadow-xs',
+                  variant.inStock > 0 ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
                 ]">
-                  {{ variant.inStock }}
+                  {{ variant.inStock > 0 ? `Còn ${variant.inStock}` : 'Hết hàng' }}
                 </span>
               </td>
               <td class="px-6 py-4">
                 <span :class="[
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  variant.isAvailable ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shadow-xs',
+                  variant.isAvailable ? 'bg-blue-600 text-white' : 'bg-slate-600 text-white'
                 ]">
                   {{ variant.isAvailable ? 'Đang bán' : 'Tạm dừng' }}
                 </span>
@@ -227,7 +274,7 @@
                 <div class="flex items-center justify-end gap-2">
                   <button
                     @click="openEditVariantModal(variant)"
-                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    class="p-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-300 rounded-xl transition-all shadow-xs cursor-pointer"
                     title="Sửa"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +283,7 @@
                   </button>
                   <button
                     @click="confirmDeleteVariant(variant)"
-                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    class="p-2 text-rose-700 bg-rose-100 hover:bg-rose-600 hover:text-white border border-rose-300 rounded-xl transition-all shadow-xs cursor-pointer"
                     title="Xóa"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,16 +423,80 @@
           </div>
         </div>
       </div>
+
+      <!-- Create/Edit Product Modal -->
+      <div
+        v-if="showProductModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+        @click.self="showProductModal = false"
+      >
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
+          <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-900">
+              {{ isEditProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới' }}
+            </h2>
+            <button @click="showProductModal = false" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Tên sản phẩm *</label>
+              <input
+                v-model="productFormData.name"
+                @input="handleProductNameInput"
+                type="text"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#09f]"
+                placeholder="VD: Cảm biến khoảng cách HC-SR04"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Đường dẫn tĩnh (Slug) *</label>
+              <input
+                v-model="productFormData.slug"
+                type="text"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#09f] font-mono text-sm"
+                placeholder="vd: cam-bien-khoang-cach-hc-sr04"
+              />
+              <p class="text-[11px] text-gray-500 mt-1">Chuỗi định danh duy nhất (URL-friendly)</p>
+            </div>
+          </div>
+          <div class="p-6 border-t border-gray-100 flex gap-3 justify-end bg-gray-50/50">
+            <button
+              @click="showProductModal = false"
+              class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 font-medium text-sm transition-colors cursor-pointer"
+            >
+              Hủy
+            </button>
+            <button
+              @click="saveProduct"
+              :disabled="savingProduct"
+              class="px-5 py-2.5 bg-[#09f] text-white rounded-xl hover:bg-[#0077cc] font-semibold text-sm transition-all shadow-md disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            >
+              <span v-if="savingProduct" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              {{ isEditProduct ? 'Cập nhật' : 'Tạo sản phẩm' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useConfirm } from '~/composables/useConfirm'
 import { useNotification } from '~/composables/useNotification'
 import { useAuth } from '~/composables/useAuth'
 
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin'
+})
+
+const route = useRoute()
 const API_BASE_URL = 'http://localhost:8080'
 
 // State
@@ -397,6 +508,16 @@ const showModal = ref(false)
 const isEditMode = ref(false)
 const currentVariant = ref<any>(null)
 const saving = ref(false)
+
+// Product Modal State
+const showProductModal = ref(false)
+const isEditProduct = ref(false)
+const editingProductId = ref<number | null>(null)
+const savingProduct = ref(false)
+const productFormData = ref({
+  name: '',
+  slug: ''
+})
 
 const formData = ref({
   variantName: '',
@@ -627,8 +748,111 @@ const handleFileSelect = (event: Event) => {
   }
 }
 
-// Lifecycle
-onMounted(() => {
-  fetchProducts()
+// ==================== PRODUCT CRUD METHODS ====================
+const handleProductNameInput = () => {
+  if (!isEditProduct.value) {
+    productFormData.value.slug = productFormData.value.name
+      .toLowerCase()
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/[\s-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+  }
+}
+
+const openCreateProductModal = () => {
+  isEditProduct.value = false
+  editingProductId.value = null
+  productFormData.value = { name: '', slug: '' }
+  showProductModal.value = true
+}
+
+const openEditProductModal = (product: any) => {
+  isEditProduct.value = true
+  editingProductId.value = product.id
+  productFormData.value = {
+    name: product.name || '',
+    slug: product.slug || ''
+  }
+  showProductModal.value = true
+}
+
+const saveProduct = async () => {
+  const { success: showSuccess, error: showError } = useNotification()
+  const auth = useAuth()
+  if (!productFormData.value.name.trim()) {
+    showError('Vui lòng nhập tên sản phẩm')
+    return
+  }
+  let slug = productFormData.value.slug.trim()
+  if (!slug) {
+    slug = productFormData.value.name.toLowerCase().trim().replace(/[\s-]+/g, '-')
+  }
+
+  savingProduct.value = true
+  try {
+    if (isEditProduct.value && editingProductId.value) {
+      await $fetch(`${API_BASE_URL}/api/products/${editingProductId.value}`, {
+        method: 'PUT',
+        body: { name: productFormData.value.name, slug },
+        headers: auth.getAuthHeader()
+      })
+      showSuccess('Cập nhật sản phẩm thành công!')
+    } else {
+      await $fetch(`${API_BASE_URL}/api/products`, {
+        method: 'POST',
+        body: { name: productFormData.value.name, slug },
+        headers: auth.getAuthHeader()
+      })
+      showSuccess('Thêm sản phẩm mới thành công!')
+    }
+    showProductModal.value = false
+    await fetchProducts()
+  } catch (err: any) {
+    console.error('Error saving product:', err)
+    showError('Lỗi: ' + (err.data?.message || err.message || 'Không thể lưu sản phẩm'))
+  } finally {
+    savingProduct.value = false
+  }
+}
+
+const confirmDeleteProduct = async (product: any) => {
+  const { confirm } = useConfirm()
+  const auth = useAuth()
+  const { success: showSuccess, error: showError } = useNotification()
+
+  const ok = await confirm(`Bạn có chắc muốn xóa sản phẩm "${product.name}"? Toàn bộ phân loại liên quan cũng sẽ bị xóa!`, 'Xác nhận xóa sản phẩm')
+  if (!ok) return
+
+  try {
+    await $fetch(`${API_BASE_URL}/api/products/${product.id}`, {
+      method: 'DELETE',
+      headers: auth.getAuthHeader()
+    })
+    showSuccess('Xóa sản phẩm thành công!')
+    await fetchProducts()
+  } catch (error: any) {
+    console.error('Error deleting product:', error)
+    showError('Lỗi khi xóa sản phẩm: ' + (error.data?.message || error.message))
+  }
+}
+
+// Lifecycle & Route query watcher
+onMounted(async () => {
+  await fetchProducts()
+  if (route.query.action === 'create') {
+    selectedProduct.value = null
+    openCreateProductModal()
+  }
+})
+
+watch(() => route.query.action, (action) => {
+  if (action === 'create') {
+    selectedProduct.value = null
+    openCreateProductModal()
+  }
 })
 </script>

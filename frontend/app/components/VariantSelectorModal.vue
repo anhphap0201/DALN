@@ -40,9 +40,17 @@
                 </div>
                 <div class="flex-1">
                   <h4 class="font-semibold text-gray-900 mb-1 line-clamp-2">{{ product.name }}</h4>
-                  <p v-if="selectedVariant" class="text-lg font-bold text-[#09f]">
-                    {{ formatPrice(selectedVariant.discountPrice || selectedVariant.price) }}
-                  </p>
+                  <div v-if="selectedVariant" class="flex items-center gap-2 flex-wrap">
+                    <span class="text-lg font-bold text-[#09f]">
+                      {{ formatPrice(selectedVariant.discountPrice || selectedVariant.price) }}
+                    </span>
+                    <span v-if="selectedVariant.discountPrice && selectedVariant.discountPrice < selectedVariant.price" class="text-sm text-gray-400 line-through">
+                      {{ formatPrice(selectedVariant.price) }}
+                    </span>
+                    <span v-if="selectedVariant.discountPrice && selectedVariant.discountPrice < selectedVariant.price" class="text-xs font-bold text-white bg-rose-600 px-1.5 py-0.5 rounded shadow-xs">
+                      {{ Math.round(((selectedVariant.price - selectedVariant.discountPrice) / selectedVariant.price) * 100) }}%
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -78,12 +86,15 @@
                       <div class="flex-1">
                         <div class="flex items-center justify-between mb-1">
                           <span class="font-semibold text-gray-900">{{ variant.variantName }}</span>
-                          <div class="flex items-center gap-2">
+                          <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-base font-bold text-[#09f]">
                               {{ formatPrice(variant.discountPrice || variant.price) }}
                             </span>
                             <span v-if="variant.discountPrice && variant.discountPrice < variant.price" class="text-sm text-gray-400 line-through">
                               {{ formatPrice(variant.price) }}
+                            </span>
+                            <span v-if="variant.discountPrice && variant.discountPrice < variant.price" class="text-xs font-bold text-white bg-rose-600 px-1.5 py-0.5 rounded shadow-xs">
+                              {{ Math.round(((variant.price - variant.discountPrice) / variant.price) * 100) }}%
                             </span>
                           </div>
                         </div>
@@ -158,7 +169,7 @@
               <button
                 @click="handleAddToCart"
                 :disabled="!selectedVariant || selectedVariant.inStock <= 0 || loading"
-                class="px-8 py-3 bg-[#09f] text-white font-semibold rounded-xl hover:bg-[#0088dd] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105"
+                class="px-8 py-3 bg-[#09f] text-white font-semibold rounded-xl hover:bg-[#0088dd] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
               >
                 <span v-if="loading" class="flex items-center gap-2">
                   <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -167,7 +178,12 @@
                   </svg>
                   Đang thêm...
                 </span>
-                <span v-else>Thêm vào giỏ hàng</span>
+                <span v-else class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  Thêm vào giỏ hàng
+                </span>
               </button>
             </div>
           </div>

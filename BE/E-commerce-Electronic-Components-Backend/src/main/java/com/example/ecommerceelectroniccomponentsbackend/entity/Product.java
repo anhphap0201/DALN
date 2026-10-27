@@ -30,6 +30,9 @@ public class Product {
     @Column(name = "sold_quantity")
     private Integer soldQuantity = 0;
 
+    @Column(name = "warranty_months")
+    private Integer warrantyMonths = 12;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_categories",

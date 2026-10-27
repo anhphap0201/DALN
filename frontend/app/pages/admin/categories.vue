@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-8">
-    <div class="max-w-6xl mx-auto">
+  <div class="space-y-6">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
@@ -48,27 +47,27 @@
           class="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all"
         >
           <div class="flex items-start gap-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl flex items-center justify-center overflow-hidden">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#09f] to-blue-700 text-white rounded-xl flex items-center justify-center overflow-hidden shadow-sm shrink-0">
               <img
                 v-if="category.imageUrl"
                 :src="category.imageUrl.startsWith('/uploads') ? `http://localhost:8080${category.imageUrl}` : category.imageUrl"
                 :alt="category.name"
                 class="w-full h-full object-cover"
               />
-              <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ category.name }}</h3>
-              <p class="text-sm text-gray-500 mb-2">{{ category.slug }}</p>
+              <h3 class="text-lg font-bold text-gray-900 mb-1">{{ category.name }}</h3>
+              <p class="text-xs font-mono font-semibold text-[#09f] mb-2">{{ category.slug }}</p>
               <p class="text-xs text-gray-600 line-clamp-2">{{ category.description || 'Không có mô tả' }}</p>
             </div>
           </div>
           <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200">
             <button
               @click="openEditModal(category)"
-              class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg font-bold shadow-xs transition-all cursor-pointer"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -77,7 +76,7 @@
             </button>
             <button
               @click="confirmDelete(category)"
-              class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-rose-700 bg-rose-100 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold shadow-xs transition-all cursor-pointer"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -168,7 +167,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -176,6 +174,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useConfirm } from '~/composables/useConfirm'
 import { useNotification } from '~/composables/useNotification'
 import { useAuth } from '~/composables/useAuth'
+
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin'
+})
 
 const API_BASE_URL = 'http://localhost:8080/api'
 

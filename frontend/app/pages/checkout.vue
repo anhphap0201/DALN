@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
       <!-- Page Title -->
       <h1 class="text-3xl font-bold text-gray-900 mb-8">Thanh toán</h1>
 

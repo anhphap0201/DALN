@@ -6,6 +6,7 @@ import com.example.ecommerceelectroniccomponentsbackend.entity.ChatMessage;
 import com.example.ecommerceelectroniccomponentsbackend.entity.ChatSession;
 import com.example.ecommerceelectroniccomponentsbackend.repository.ChatMessageRepository;
 import com.example.ecommerceelectroniccomponentsbackend.repository.ChatSessionRepository;
+import com.example.ecommerceelectroniccomponentsbackend.repository.ChatToolLogRepository;
 import com.example.ecommerceelectroniccomponentsbackend.service.ai.AiChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,7 @@ public class ChatController {
     private final AiChatService aiChatService;
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatToolLogRepository chatToolLogRepository;
     private final com.example.ecommerceelectroniccomponentsbackend.repository.UserRepository userRepository;
 
     private Long getCurrentUserId() {
@@ -88,5 +90,43 @@ public class ChatController {
     @Operation(summary = "Get message history for a specific chat session")
     public ResponseEntity<List<ChatMessage>> getSessionMessages(@PathVariable UUID sessionId) {
         return ResponseEntity.ok(chatMessageRepository.findBySessionIdOrderByCreatedAtAsc(sessionId));
+    }
+
+    @GetMapping("/admin/stats")
+    @Operation(summary = "Get AI operational stats & metrics (Admin only)")
+    public ResponseEntity<?> getAiOperationalStats() {
+        String role = getCurrentUserRole();
+        if (!"ROLE_ADMIN".equals(role)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body(java.util.Map.of("error", "Access denied. Admin role required."));
+        }
+        long totalSessions = chatSessionRepository.count();
+        long totalMessages = chatMessageRepository.count();
+        long totalToolCalls = chatToolLogRepository.count();
+        long successfulToolCalls = chatToolLogRepository.countByStatus("SUCCESS");
+        long failedToolCalls = chatToolLogRepository.countByStatus("FAILED");
+        Double avgExecutionTime = chatToolLogRepository.getAverageExecutionTime();
+        double successRate = totalToolCalls > 0 ? (double) successfulToolCalls / totalToolCalls * 100.0 : 100.0;
+
+        List<Object[]> topToolsRaw = chatToolLogRepository.getTopToolsUsed();
+        List<java.util.Map<String, Object>> topTools = topToolsRaw != null ? topToolsRaw.stream()
+                .limit(5)
+                .map(row -> java.util.Map.of(
+                        "toolName", row[0] != null ? row[0] : "unknown",
+                        "callCount", row[1] != null ? row[1] : 0
+                ))
+                .toList() : List.of();
+
+        java.util.Map<String, Object> stats = new java.util.LinkedHashMap<>();
+        stats.put("totalSessions", totalSessions);
+        stats.put("totalMessages", totalMessages);
+        stats.put("totalToolCalls", totalToolCalls);
+        stats.put("successfulToolCalls", successfulToolCalls);
+        stats.put("failedToolCalls", failedToolCalls);
+        stats.put("toolSuccessRatePercent", Math.round(successRate * 100.0) / 100.0);
+        stats.put("avgExecutionTimeMs", avgExecutionTime != null ? Math.round(avgExecutionTime * 100.0) / 100.0 : 0.0);
+        stats.put("topToolsUsed", topTools);
+
+        return ResponseEntity.ok(stats);
     }
 }

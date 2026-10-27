@@ -146,20 +146,47 @@ Client (Nuxt 3 FE) ──> Controller ──> Service Layer ──> Repository �
 
 ---
 
-## 8. KẾ HOẠCH THỰC HIỆN
+## 8. KẾ HOẠCH THỰC HIỆN & TIẾN ĐỘ DỰ ÁN
 
-| Giai đoạn | Nội dung công việc |
-|---|---|
-| **Giai đoạn 1** | **Phân tích yêu cầu:** Xác định mục tiêu, phạm vi và xây dựng các kịch bản sử dụng hệ thống & Trợ lý AI. |
-| **Giai đoạn 2** | **Thiết kế hệ thống:** Thiết kế UI/UX Figma, xây dựng Use Case, Activity, Sequence, Class Diagram & DB Schema. |
-| **Giai đoạn 3** | **Phát triển Backend & AI:** Xây dựng CSDL, REST API (Product, Cart, Order, Inventory, Auth) và triển khai AI Function Calling. |
-| **Giai đoạn 4** | **Phát triển Frontend:** Lập trình Nuxt 3 cho các trang Storefront, bộ lọc thông số, Cart, Checkout, Admin Dashboard & UI AI Chat. |
-| **Giai đoạn 5** | **Tích hợp & Kiểm thử:** Kết nối FE-BE, kiểm thử tích hợp, kiểm tra độ chính xác của các truy vấn AI và phân quyền. |
-| **Giai đoạn 6** | **Hoàn thiện:** Sửa lỗi, tối ưu hiệu năng, đóng gói hệ thống và hoàn thiện tài liệu báo cáo dự án. |
+| Giai đoạn | Nội dung công việc | Trạng thái |
+|---|---|:---:|
+| **Giai đoạn 1** | **Phân tích yêu cầu:** Xác định mục tiêu, phạm vi và xây dựng các kịch bản sử dụng hệ thống & Trợ lý AI. | **Hoàn thành (100%)** |
+| **Giai đoạn 2** | **Thiết kế hệ thống:** Thiết kế UI/UX Figma, xây dựng Use Case, Activity, Sequence, Class Diagram & DB Schema. | **Hoàn thành (100%)** |
+| **Giai đoạn 3** | **Phát triển Backend & AI:** Xây dựng CSDL PostgreSQL, REST API (Product, Cart, Order, Inventory, Auth) và triển khai 15 AI Function Calling Tools. | **Hoàn thành (100%)** |
+| **Giai đoạn 4** | **Phát triển Frontend:** Lập trình Nuxt 4 cho Storefront, bộ lọc thông số kỹ thuật đa chiều, Cart, Checkout, Admin Dashboard & UI AI Chatbot Widget (BOM Card, 5 Visual Cards). | **Hoàn thành (100%)** |
+| **Giai đoạn 5** | **Tích hợp & Kiểm thử:** Kết nối FE-BE, kiểm thử tích hợp (45/45 Unit & Integration Tests pass 100%), đối soát BOM với CSDL thật, phân quyền tập trung AiToolPolicyService. | **Hoàn thành (100%)** |
+| **Giai đoạn 6** | **Hoàn thiện & Đóng gói:** Tối ưu hóa prompt chuẩn 7 phần, endpoint giám sát vận hành AI (/api/chat/admin/stats), đóng gói Backend JAR và bộ scripts khởi chạy tự động All-in-one (run.bat). | **Hoàn thành (100%)** |
 
 ---
 
-## 9. PHÂN CÔNG CÔNG VIỆC
+## 9. HƯỚNG DẪN KHỞI CHẠY HỆ THỐNG
+
+### 9.1. Khởi chạy nhanh (All-in-one)
+Hệ thống cung cấp sẵn file 
+un.bat tại thư mục gốc để khởi động đồng thời 4 service trong các cửa sổ độc lập:
+`cmd
+run.bat
+`
+Bao gồm:
+1. 
+un-redis.bat: Khởi động Redis Server trên cổng 6379 (quản lý session và cache).
+2. 
+un-ollama.bat: Khởi động Ollama AI Server với mô hình qwen2.5:7b-instruct.
+3. 
+un-be.bat: Khởi động Spring Boot Backend trên cổng 8080.
+4. 
+un-fe.bat: Khởi động Nuxt Frontend trên cổng 3000.
+
+### 9.2. Đóng gói Backend sản xuất (Production Build)
+`cmd
+cd BE\E-commerce-Electronic-Components-Backend
+mvnw.cmd clean package -DskipTests=false
+# File .jar tại: target/E-commerce-Electronic-Components-Backend-0.0.1-SNAPSHOT.jar
+`
+
+---
+
+## 10. PHÂN CÔNG CÔNG VIỆC
 
 | Thành viên | Tỷ lệ đóng góp | Trách nhiệm chính |
 |---|---|---|

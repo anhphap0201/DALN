@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="space-y-6">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
@@ -41,14 +40,14 @@
               :key="s.value"
               @click="filterStatus = s.value; loadOrders()"
               :class="[
-                'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                'px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-xs cursor-pointer',
                 filterStatus === s.value
-                  ? 'bg-[#09f] text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[#09f] text-white shadow-md shadow-[#09f]/25'
+                  : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
               ]"
             >
               {{ s.label }}
-              <span v-if="s.value === ''" class="ml-1 opacity-75">({{ totalElements }})</span>
+              <span v-if="s.value === ''" class="ml-1 opacity-90 font-mono">({{ totalElements }})</span>
             </button>
           </div>
         </div>
@@ -61,15 +60,15 @@
         </div>
 
         <table v-else class="min-w-full">
-          <thead class="bg-gray-50 border-b border-gray-200">
+          <thead class="bg-slate-900 text-white border-b border-slate-800">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Mã đơn</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Khách hàng</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tổng tiền</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Thanh toán</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Trạng thái</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Ngày tạo</th>
-              <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Thao tác</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Mã đơn</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Khách hàng</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Tổng tiền</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Thanh toán</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Trạng thái</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Ngày tạo</th>
+              <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-100">Thao tác</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -88,13 +87,13 @@
                 <span class="text-sm font-bold text-gray-900">{{ formatPrice(order.totalCost) }}</span>
               </td>
               <td class="px-6 py-4">
-                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold shadow-xs uppercase tracking-wider"
                   :class="getPaymentClass(order.paymentMethod)">
                   {{ getPaymentLabel(order.paymentMethod) }}
                 </span>
               </td>
               <td class="px-6 py-4">
-                <span :class="getStatusClass(order.status)" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium">
+                <span :class="getStatusClass(order.status)" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold shadow-xs">
                   {{ getStatusLabel(order.status) }}
                 </span>
               </td>
@@ -103,18 +102,18 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="viewOrder(order)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="Xem chi tiết">
+                  <button @click="viewOrder(order)" class="p-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg transition-all shadow-xs cursor-pointer" title="Xem chi tiết">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
-                  <button @click="openStatusModal(order)" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="Cập nhật trạng thái">
+                  <button @click="openStatusModal(order)" class="p-2 text-emerald-700 bg-emerald-100 hover:bg-emerald-600 hover:text-white border border-emerald-200 rounded-lg transition-all shadow-xs cursor-pointer" title="Cập nhật trạng thái">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                   </button>
-                  <button @click="confirmDeleteOrder(order)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Xóa">
+                  <button @click="confirmDeleteOrder(order)" class="p-2 text-rose-700 bg-rose-100 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg transition-all shadow-xs cursor-pointer" title="Xóa">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -236,12 +235,12 @@
               <h3 class="font-semibold text-gray-900 mb-3">Sản phẩm ({{ selectedOrder.orderItems?.length || 0 }})</h3>
               <div class="border rounded-lg overflow-hidden">
                 <table class="min-w-full">
-                  <thead class="bg-gray-50">
+                  <thead class="bg-slate-900 text-white">
                     <tr>
-                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Sản phẩm</th>
-                      <th class="px-4 py-3 text-center text-xs font-medium text-gray-500">SL</th>
-                      <th class="px-4 py-3 text-right text-xs font-medium text-gray-500">Đơn giá</th>
-                      <th class="px-4 py-3 text-right text-xs font-medium text-gray-500">Thành tiền</th>
+                      <th class="px-4 py-3 text-left text-xs font-bold text-slate-100 uppercase">Sản phẩm</th>
+                      <th class="px-4 py-3 text-center text-xs font-bold text-slate-100 uppercase">SL</th>
+                      <th class="px-4 py-3 text-right text-xs font-bold text-slate-100 uppercase">Đơn giá</th>
+                      <th class="px-4 py-3 text-right text-xs font-bold text-slate-100 uppercase">Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200">
@@ -320,7 +319,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -330,6 +328,7 @@ import { useNotification } from '~/composables/useNotification'
 import { useConfirm } from '~/composables/useConfirm'
 
 definePageMeta({
+  layout: 'admin',
   middleware: 'admin'
 })
 
@@ -472,15 +471,15 @@ const getStatusLabel = (status: string) => {
 
 const getStatusClass = (status: string) => {
   const map: Record<string, string> = {
-    PENDING: 'bg-yellow-100 text-yellow-800',
-    CONFIRMED: 'bg-blue-100 text-blue-800',
-    SHIPPED: 'bg-purple-100 text-purple-800',
-    DELIVERED: 'bg-green-100 text-green-800',
-    COMPLETED: 'bg-green-100 text-green-800',
-    RETURNED: 'bg-rose-100 text-rose-800',
-    CANCELLED: 'bg-red-100 text-red-800',
+    PENDING: 'bg-amber-500 text-white font-bold shadow-xs',
+    CONFIRMED: 'bg-blue-600 text-white font-bold shadow-xs',
+    SHIPPED: 'bg-indigo-600 text-white font-bold shadow-xs',
+    DELIVERED: 'bg-emerald-600 text-white font-bold shadow-xs',
+    COMPLETED: 'bg-emerald-600 text-white font-bold shadow-xs',
+    RETURNED: 'bg-rose-600 text-white font-bold shadow-xs',
+    CANCELLED: 'bg-rose-600 text-white font-bold shadow-xs',
   }
-  return map[status] || 'bg-gray-100 text-gray-800'
+  return map[status] || 'bg-slate-800 text-white font-bold shadow-xs'
 }
 
 const getPaymentLabel = (method: string) => {
@@ -503,12 +502,12 @@ const getPaymentLabel = (method: string) => {
 
 const getPaymentClass = (method: string) => {
   const m = (method || '').toLowerCase()
-  if (m === 'cod') return 'bg-orange-100 text-orange-700'
-  if (m === 'payos') return 'bg-emerald-100 text-emerald-800'
-  if (m === 'bank') return 'bg-blue-100 text-blue-700'
-  if (m === 'vnpay') return 'bg-blue-100 text-blue-800'
-  if (m === 'momo') return 'bg-pink-100 text-pink-700'
-  return 'bg-gray-100 text-gray-700'
+  if (m === 'cod') return 'bg-orange-600 text-white font-bold shadow-xs'
+  if (m === 'payos') return 'bg-emerald-600 text-white font-bold shadow-xs'
+  if (m === 'bank') return 'bg-blue-600 text-white font-bold shadow-xs'
+  if (m === 'vnpay') return 'bg-sky-600 text-white font-bold shadow-xs'
+  if (m === 'momo') return 'bg-pink-600 text-white font-bold shadow-xs'
+  return 'bg-slate-800 text-white font-bold shadow-xs'
 }
 
 onMounted(() => {

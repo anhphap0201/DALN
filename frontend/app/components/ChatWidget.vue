@@ -30,7 +30,7 @@
             AI
           </div>
           <div>
-            <h3 class="font-bold text-sm leading-tight">Trợ Lý Linh Kiện DALN</h3>
+            <h3 class="font-bold text-sm leading-tight">Trợ Lý ECSupport</h3>
             <div class="flex items-center gap-1.5 text-xs text-white/80">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Trò chuyện &amp; mua sắm</span>
@@ -241,6 +241,247 @@
                     </div>
                   </div>
 
+                  <!-- Case 6: Bill of Materials (BOM) Card (from build_bill_of_materials) -->
+                  <div v-else-if="ref.items && ref.grandTotal !== undefined && !ref.error" class="bg-gradient-to-br from-indigo-50/70 to-blue-50/50 border border-indigo-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 text-indigo-900 font-bold text-xs">
+                        <span>📋 Dự Toán Linh Kiện (BOM)</span>
+                      </div>
+                      <span :class="ref.stockStatus === 'FULL_IN_STOCK' ? 'text-emerald-800 bg-emerald-100' : 'text-amber-800 bg-amber-100'" class="text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                        {{ ref.stockStatus === 'FULL_IN_STOCK' ? 'Đủ 100% tại Shop' : 'Có linh kiện ngoài' }}
+                      </span>
+                    </div>
+
+                    <!-- Shop items list -->
+                    <div v-if="ref.items && ref.items.length" class="space-y-1.5 mb-2">
+                      <div class="text-[10px] text-gray-500 font-medium">Linh kiện có sẵn tại ECShop ({{ ref.items.length }}):</div>
+                      <div v-for="(it, itIdx) in ref.items.slice(0, 4)" :key="itIdx" class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-indigo-100 text-[11px]">
+                        <NuxtLink :to="'/products/' + it.productId" class="line-clamp-1 flex-1 font-medium text-gray-800 hover:text-[#09f]">
+                          {{ it.productName }} <span class="text-gray-400 text-[10px]">(x{{ it.quantity }})</span>
+                        </NuxtLink>
+                        <span class="font-bold text-indigo-700 ml-2 whitespace-nowrap">{{ it.formattedSubtotal }}</span>
+                      </div>
+                      <div v-if="ref.items.length > 4" class="text-[10px] text-indigo-600 text-right">
+                        + {{ ref.items.length - 4 }} linh kiện khác trong bảng BOM
+                      </div>
+                    </div>                    <!-- Total cost breakdown -->
+                    <div class="mt-2.5 pt-2 border-t border-indigo-200/80 flex items-center justify-between">
+                      <span class="text-[11px] text-gray-600 font-medium">Tổng chi phí dự tính:</span>
+                      <span class="text-sm font-extrabold text-indigo-900">{{ ref.formattedGrandTotal }}</span>
+                    </div>
+
+                    <!-- Add All BOM to Cart Action -->
+                    <button
+                      v-if="ref.items && ref.items.length"
+                      type="button"
+                      @click="addAllBomToCart(ref.items)"
+                      :disabled="isAddingBomToCart"
+                      class="mt-2.5 w-full py-1.5 px-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 active:scale-[0.99] text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <span>{{ isAddingBomToCart ? 'Đang thêm vào giỏ...' : 'Thêm ' + ref.items.length + ' linh kiện BOM vào giỏ' }}</span>
+                    </button>
+                  </div>
+
+                  <!-- Case 7: Component Compatibility Card (from check_component_compatibility) -->
+                  <div v-else-if="(ref.compatibilityScore !== undefined || ref.isCompatible !== undefined) && !ref.error" class="bg-gradient-to-br from-slate-50 to-blue-50/50 border border-slate-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 font-bold text-xs" :class="ref.isCompatible ? 'text-emerald-900' : 'text-rose-900'">
+                        <span>⚡ Kiểm Tra Tương Thích Kỹ Thuật</span>
+                      </div>
+                      <span :class="ref.isCompatible ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'" class="text-[10px] px-2 py-0.5 rounded-full font-bold">
+                        {{ ref.isCompatible ? 'Tương thích tốt' : 'Có xung đột' }} ({{ ref.compatibilityScore }}/100)
+                      </span>
+                    </div>
+
+                    <p v-if="ref.summary" class="text-[11px] text-gray-700 mb-2 leading-relaxed bg-white/70 p-2 rounded-lg border border-slate-100">
+                      {{ ref.summary }}
+                    </p>
+
+                    <!-- Errors -->
+                    <div v-if="ref.errors && ref.errors.length" class="space-y-1 mb-2">
+                      <div v-for="(err, eIdx) in ref.errors" :key="'e-'+eIdx" class="text-[10px] text-rose-700 bg-rose-50 px-2 py-1 rounded-md border border-rose-100 flex items-start gap-1">
+                        <span class="font-bold flex-shrink-0">✕</span>
+                        <span>{{ err }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Warnings -->
+                    <div v-if="ref.warnings && ref.warnings.length" class="space-y-1 mb-2">
+                      <div v-for="(warn, wIdx) in ref.warnings" :key="'w-'+wIdx" class="text-[10px] text-amber-800 bg-amber-50 px-2 py-1 rounded-md border border-amber-100 flex items-start gap-1">
+                        <span class="font-bold flex-shrink-0">⚠</span>
+                        <span>{{ warn }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div v-if="ref.recommendations && ref.recommendations.length" class="space-y-1">
+                      <div class="text-[10px] text-gray-500 font-semibold">Khuyến nghị kỹ thuật:</div>
+                      <div v-for="(rec, rIdx) in ref.recommendations" :key="'r-'+rIdx" class="text-[10px] text-indigo-700 bg-indigo-50/60 px-2 py-1 rounded-md border border-indigo-100 flex items-start gap-1">
+                        <span class="font-bold flex-shrink-0">💡</span>
+                        <span>{{ rec }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Case 8: Order Analytics Card (from get_order_analytics) -->
+                  <div v-else-if="ref.aov !== undefined && !ref.error" class="bg-gradient-to-br from-cyan-50 to-blue-50/60 border border-cyan-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 text-cyan-900 font-bold text-xs">
+                        <span>📊 Phân Tích Chỉ Số Đơn Hàng</span>
+                      </div>
+                      <span class="text-[10px] text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded-full font-semibold">
+                        Quản trị Admin
+                      </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-[11px] mb-2">
+                      <div class="bg-white/90 p-2 rounded-lg border border-cyan-100">
+                        <div class="text-[10px] text-gray-500 font-medium">Giá trị đơn TB (AOV)</div>
+                        <div class="text-xs sm:text-sm font-bold text-cyan-800">{{ ref.formattedAov || ref.aov }}</div>
+                      </div>
+                      <div class="bg-white/90 p-2 rounded-lg border border-cyan-100">
+                        <div class="text-[10px] text-gray-500 font-medium">Tỷ lệ hủy đơn</div>
+                        <div class="text-xs sm:text-sm font-bold" :class="ref.cancellationRatePercent > 15 ? 'text-rose-600' : 'text-emerald-700'">
+                          {{ ref.cancellationRatePercent }}%
+                        </div>
+                      </div>
+                    </div>
+
+                    <div v-if="ref.revenueGrowthPercent !== undefined" class="flex items-center justify-between text-[11px] bg-white/80 p-2 rounded-lg border border-cyan-100">
+                      <span class="text-gray-600">Tăng trưởng kỳ trước (PoP):</span>
+                      <span class="font-bold" :class="ref.revenueGrowthPercent >= 0 ? 'text-emerald-600' : 'text-rose-600'">
+                        {{ ref.revenueGrowthPercent >= 0 ? '+' : '' }}{{ ref.revenueGrowthPercent }}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Case 9: Inventory Report Card (from get_inventory_report) -->
+                  <div v-else-if="ref.totalInventoryValue !== undefined && !ref.error" class="bg-gradient-to-br from-amber-50 to-orange-50/60 border border-amber-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 text-amber-900 font-bold text-xs">
+                        <span>📦 Báo Cáo Giá Trị Vốn Lưu Kho</span>
+                      </div>
+                      <span class="text-[10px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-semibold">
+                        {{ ref.totalVariantsCount }} SKU
+                      </span>
+                    </div>
+
+                    <div class="bg-white/90 p-2 rounded-lg border border-amber-100 mb-2">
+                      <div class="text-[10px] text-gray-500">Tổng vốn lưu kho ước tính:</div>
+                      <div class="text-base font-black text-amber-800">{{ ref.formattedTotalInventoryValue }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-[11px] mb-2">
+                      <div class="bg-white/80 p-1.5 rounded-lg border border-amber-100">
+                        <span class="text-gray-500 text-[10px]">Mã cạn hàng:</span>
+                        <span class="font-bold text-rose-600 ml-1">{{ ref.outOfStockCount || 0 }}</span>
+                      </div>
+                      <div class="bg-white/80 p-1.5 rounded-lg border border-amber-100">
+                        <span class="text-gray-500 text-[10px]">Tồn chậm:</span>
+                        <span class="font-bold text-amber-700 ml-1">{{ ref.slowMovingCount || 0 }}</span>
+                      </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-amber-200/60 flex justify-end">
+                      <NuxtLink to="/admin/products" class="text-[11px] font-semibold text-amber-900 hover:underline">
+                        Đến trang quản lý kho hàng →
+                      </NuxtLink>
+                    </div>
+                  </div>
+
+                  <!-- Case 10: Customer Analytics Card (from get_customer_analytics) -->
+                  <div v-else-if="ref.retentionRatePercent !== undefined && ref.totalCustomers !== undefined && !ref.error" class="bg-gradient-to-br from-purple-50 to-pink-50/50 border border-purple-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 text-purple-900 font-bold text-xs">
+                        <span>👥 Báo Cáo Giữ Chân Khách Hàng</span>
+                      </div>
+                      <span class="text-[10px] text-purple-800 bg-purple-100 px-2 py-0.5 rounded-full font-semibold">
+                        Retention: {{ ref.retentionRatePercent }}%
+                      </span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+                      <div class="bg-white/90 p-1.5 rounded-lg border border-purple-100">
+                        <div class="text-[9px] text-gray-400">Tổng khách</div>
+                        <div class="font-bold text-purple-900">{{ ref.totalCustomers }}</div>
+                      </div>
+                      <div class="bg-white/90 p-1.5 rounded-lg border border-purple-100">
+                        <div class="text-[9px] text-gray-400">Khách mới</div>
+                        <div class="font-bold text-emerald-700">+{{ ref.newCustomers }}</div>
+                      </div>
+                      <div class="bg-white/90 p-1.5 rounded-lg border border-purple-100">
+                        <div class="text-[9px] text-gray-400">Mua lại</div>
+                        <div class="font-bold text-indigo-700">{{ ref.repeatCustomers }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Case 11: Product Performance Card (from get_product_performance) -->
+                  <div v-else-if="ref.categoryBreakdown && ref.categoryBreakdown.length && !ref.error" class="bg-gradient-to-br from-violet-50 to-indigo-50/50 border border-violet-200 rounded-xl p-3 shadow-2xs">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5 text-violet-900 font-bold text-xs">
+                        <span>🏆 Hiệu Suất Bán Theo Danh Mục</span>
+                      </div>
+                      <span class="text-[10px] text-violet-800 bg-violet-100 px-2 py-0.5 rounded-full font-semibold">
+                        {{ ref.categoryBreakdown.length }} ngành hàng
+                      </span>
+                    </div>
+
+                    <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      <div v-for="(cat, cIdx) in ref.categoryBreakdown" :key="cIdx" class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-violet-100 text-[11px]">
+                        <span class="font-medium text-gray-800 line-clamp-1">{{ cat.categoryName }}</span>
+                        <div class="text-right flex-shrink-0 ml-2">
+                          <span class="font-bold text-violet-800">{{ cat.formattedRevenue || cat.revenue }}</span>
+                          <span class="text-[9px] text-gray-400 ml-1">({{ cat.productCount }} SP)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Case 12: Customer Inquiry Analytics Card (from get_customer_inquiry_analytics) -->
+                  <div v-else-if="ref.topProjectTopics && ref.popularSearches && !ref.error" class="bg-gradient-to-br from-teal-50 to-emerald-50/50 border border-teal-200 rounded-xl p-3 shadow-2xs space-y-2.5">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-1.5 text-teal-900 font-bold text-xs">
+                        <span>📊 Xu Hướng Nhu Cầu & Chủ Đề Chat</span>
+                      </div>
+                      <span class="text-[10px] text-teal-800 bg-teal-100 px-2 py-0.5 rounded-full font-semibold">
+                        {{ ref.totalLogsAnalyzed || 0 }} tương tác
+                      </span>
+                    </div>
+
+                    <!-- Top Projects -->
+                    <div>
+                      <div class="text-[10px] font-bold text-teal-800 uppercase tracking-wider mb-1">Top Dự Án Khách Quan Tâm:</div>
+                      <div class="space-y-1">
+                        <div v-for="(p, pIdx) in ref.topProjectTopics.slice(0, 3)" :key="'proj-'+pIdx" class="flex items-center justify-between bg-white/90 px-2 py-1 rounded-lg border border-teal-100 text-[11px]">
+                          <span class="font-medium text-gray-800 line-clamp-1">#{{ pIdx + 1 }} {{ p.topic }}</span>
+                          <span class="font-bold text-teal-700 ml-2 shrink-0">{{ p.inquiryCount }} lượt</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Top Web Searches -->
+                    <div>
+                      <div class="text-[10px] font-bold text-teal-800 uppercase tracking-wider mb-1">Top Tìm Kiếm Trên Web:</div>
+                      <div class="flex flex-wrap gap-1">
+                        <span v-for="(s, sIdx) in ref.popularSearches.slice(0, 4)" :key="'s-'+sIdx" class="text-[10px] bg-white px-2 py-0.5 rounded-md border border-teal-200 text-teal-900 font-medium">
+                          {{ s.keyword }} ({{ s.searchCount }})
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Unmet Demand -->
+                    <div v-if="ref.unmetDemand && ref.unmetDemand.length" class="pt-1.5 border-t border-teal-200/60">
+                      <div class="text-[10px] font-bold text-rose-700 uppercase tracking-wider mb-1">⚠️ Nhu Cầu Cần Bổ Sung:</div>
+                      <p class="text-[11px] text-rose-800 leading-snug font-medium">
+                        {{ ref.unmetDemand[0] }}
+                      </p>
+                    </div>
+                  </div>
+
                   <!-- Case 5: Single Product Stock Details (from check_stock) -->
                   <div v-else-if="ref.productId && ref.variants && !ref.error" class="bg-white border border-gray-200 rounded-xl p-2.5 shadow-2xs">
                     <div class="flex items-center justify-between mb-1.5">
@@ -254,6 +495,40 @@
                         <span>{{ v.variantName || 'Biến thể' }}</span>
                         <span class="font-medium" :class="v.inStock > 0 ? 'text-gray-800' : 'text-rose-500'">{{ v.inStock }} còn lại</span>
                       </div>
+                    </div>
+                  </div>
+                
+                  <!-- Case 13: Warranty Lookup Card (from check_warranty) -->
+                  <div v-else-if="ref.type === 'WARRANTY_LOOKUP' || (ref.serialNumber && ref.status && !ref.error)" class="bg-gradient-to-br from-emerald-50/70 to-teal-50/50 border border-emerald-200 rounded-xl p-3 shadow-2xs space-y-2">
+                    <div class="flex items-center justify-between pb-2 border-b border-emerald-100">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-sm">🛡️</span>
+                        <span class="font-mono text-xs font-bold text-gray-900">{{ ref.serialNumber }}</span>
+                      </div>
+                      <span
+                        class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        :class="ref.isExpired ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'"
+                      >
+                        {{ ref.isExpired ? 'Hết hạn bảo hành' : `Còn ${ref.daysRemaining} ngày` }}
+                      </span>
+                    </div>
+
+                    <div class="text-[11px] text-gray-700 space-y-0.5">
+                      <div class="font-semibold text-gray-900 line-clamp-1">{{ ref.productName }}</div>
+                      <div v-if="ref.variantName" class="text-gray-500">Phân loại: {{ ref.variantName }}</div>
+                      <div class="flex justify-between text-gray-500 text-[10px] pt-1">
+                        <span>Hạn bảo hành: {{ ref.warrantyMonths || 12 }} tháng</span>
+                        <span class="font-medium text-emerald-800" v-if="!ref.isExpired">Đang có hiệu lực</span>
+                      </div>
+                    </div>
+
+                    <div class="pt-1 flex items-center justify-between">
+                      <NuxtLink
+                        to="/warranty"
+                        class="text-[11px] text-[#09f] hover:underline font-bold inline-flex items-center gap-1"
+                      >
+                        Mở trang bảo hành & tạo phiếu →
+                      </NuxtLink>
                     </div>
                   </div>
                 </div>
@@ -315,6 +590,8 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
+import { useCart } from '~/composables/useCart'
+import { useNotification } from '~/composables/useNotification'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -331,16 +608,51 @@ const messages = ref<Message[]>([])
 const messagesContainer = ref<HTMLElement | null>(null)
 
 const { user, token } = useAuth()
+const { addToCart } = useCart()
+const { success: showNotificationSuccess, error: showNotificationError } = useNotification()
+const isAddingBomToCart = ref(false)
+
+const addAllBomToCart = async (items: any[]) => {
+  if (!items || !items.length) return
+  isAddingBomToCart.value = true
+  let successCount = 0
+  let failedCount = 0
+  try {
+    for (const item of items) {
+      if (item.variantId) {
+        const price = item.unitPrice || 0
+        const qty = item.quantity || 1
+        const res = await addToCart(item.variantId, qty, price)
+        if (res !== false) {
+          successCount++
+        } else {
+          failedCount++
+        }
+      }
+    }
+    if (successCount > 0) {
+      showNotificationSuccess('Giỏ hàng', `Đã thêm ${successCount} linh kiện từ BOM vào giỏ hàng!`)
+    }
+    if (failedCount > 0) {
+      showNotificationError('Giỏ hàng', `${failedCount} linh kiện chưa thêm được (yêu cầu đăng nhập hoặc hết hàng)`)
+    }
+  } catch (err: any) {
+    showNotificationError('Lỗi', err?.message || 'Có lỗi xảy ra khi thêm vào giỏ')
+  } finally {
+    isAddingBomToCart.value = false
+  }
+}
 
 const suggestions = computed(() => {
   const isAdmin = user.value?.role === 'ROLE_ADMIN' || user.value?.role === 'ADMIN'
   if (isAdmin) {
     return [
-      'Chào bạn, hôm nay thế nào?',
+      'Người dùng thường hỏi bạn về vấn đề gì?',
       'Báo cáo doanh thu tháng này',
-      'Kiểm tra danh sách linh kiện sắp hết hàng',
-      'So sánh Arduino Uno R3 với Raspberry Pi 5',
-      'Gợi ý linh kiện Arduino dưới 200k'
+      'Phân tích tỷ lệ hủy đơn và giá trị đơn trung bình',
+      'Báo cáo tổng giá trị tồn kho và dự báo nhập hàng',
+      'Xếp hạng hiệu suất và danh mục bán chạy nhất',
+      'Phân tích khách hàng mới và tỷ lệ mua lại'
     ]
   }
   return [
@@ -378,6 +690,15 @@ const formatToolName = (tool: string) => {
     case 'get_top_selling_products': return 'Top bán chạy'
     case 'get_revenue_report': return 'Báo cáo doanh thu'
     case 'track_order': return 'Tra cứu đơn hàng'
+    case 'find_project_components': return 'Tìm linh kiện dự án'
+    case 'check_component_compatibility': return 'Kiểm tra tương thích'
+    case 'build_bill_of_materials': return 'Lập bảng BOM'
+    case 'get_order_analytics': return 'Phân tích đơn hàng'
+    case 'get_inventory_report': return 'Báo cáo tồn kho'
+    case 'get_product_performance': return 'Hiệu suất sản phẩm'
+    case 'get_customer_analytics': return 'Phân tích khách hàng'
+    case 'get_customer_inquiry_analytics': return 'Phân tích nhu cầu & chủ đề chat'
+    case 'check_warranty': return 'Tra cứu bảo hành'
     default: return tool
   }
 }

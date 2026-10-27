@@ -26,6 +26,7 @@ public class ProductSearchController {
     private final IProductSearchService productSearchService;
     private final IProductFilterService productFilterService;
     private final ProductRecommendationService productRecommendationService;
+    private final com.example.ecommerceelectroniccomponentsbackend.service.ISearchHistoryService searchHistoryService;
 
     @GetMapping("/by-category-name")
     @Operation(summary = "Tìm kiếm sản phẩm theo tên danh mục",
@@ -64,6 +65,9 @@ public class ProductSearchController {
             @Parameter(description = "Tên sản phẩm cần tìm", example = "Arduino Uno")
             @RequestParam String productName) {
         List<ProductWithVariantsDTO> products = productSearchService.searchProductsByName(productName);
+        if (searchHistoryService != null && productName != null && !productName.isBlank()) {
+            searchHistoryService.recordSearch(productName, null, products.size());
+        }
         return ResponseEntity.ok(products);
     }
 

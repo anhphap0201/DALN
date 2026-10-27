@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="space-y-6">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
@@ -39,49 +38,49 @@
         </div>
 
         <table v-else class="min-w-full">
-          <thead class="bg-gray-50 border-b border-gray-200">
+          <thead class="bg-slate-900 text-white border-b border-slate-800">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">ID</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Người dùng</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">SĐT</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Vai trò</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Đơn hàng</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tổng chi</th>
-              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Trạng thái</th>
-              <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Thao tác</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Người dùng</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">SĐT</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Vai trò</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Đơn hàng</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Tổng chi</th>
+              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-100">Trạng thái</th>
+              <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-100">Thao tác</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr v-for="u in users" :key="u.id" class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-sm text-gray-900">#{{ u.id }}</td>
+              <td class="px-6 py-4 text-sm font-bold text-gray-900">#{{ u.id }}</td>
               <td class="px-6 py-4">
                 <div>
-                  <div class="text-sm font-medium text-gray-900">{{ u.fullName || 'Chưa cập nhật' }}</div>
+                  <div class="text-sm font-bold text-gray-900">{{ u.fullName || 'Chưa cập nhật' }}</div>
                   <div class="text-xs text-gray-500">{{ u.email }}</div>
                 </div>
               </td>
-              <td class="px-6 py-4 text-sm text-gray-600">{{ u.phone || '-' }}</td>
+              <td class="px-6 py-4 text-sm font-mono text-gray-700">{{ u.phone || '-' }}</td>
               <td class="px-6 py-4">
                 <span :class="[
-                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium',
-                  u.role === 'ROLE_ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shadow-xs uppercase tracking-wider',
+                  u.role === 'ROLE_ADMIN' ? 'bg-purple-700 text-white' : 'bg-sky-600 text-white'
                 ]">
                   {{ u.role === 'ROLE_ADMIN' ? 'Admin' : 'User' }}
                 </span>
               </td>
-              <td class="px-6 py-4 text-sm text-gray-900 font-medium">{{ u.orderCount }}</td>
-              <td class="px-6 py-4 text-sm text-gray-900">{{ formatPrice(u.totalSpent) }}</td>
+              <td class="px-6 py-4 text-sm text-gray-900 font-bold">{{ u.orderCount }}</td>
+              <td class="px-6 py-4 text-sm font-extrabold text-slate-900">{{ formatPrice(u.totalSpent) }}</td>
               <td class="px-6 py-4">
                 <span :class="[
-                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium',
-                  u.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shadow-xs',
+                  u.isActive ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
                 ]">
                   {{ u.isActive ? 'Hoạt động' : 'Bị khóa' }}
                 </span>
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="viewUser(u)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="Xem chi tiết">
+                  <button @click="viewUser(u)" class="p-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg transition-all shadow-xs cursor-pointer" title="Xem chi tiết">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -90,8 +89,8 @@
                   <button
                     @click="toggleActive(u)"
                     :class="[
-                      'p-2 rounded-lg',
-                      u.isActive ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'
+                      'p-2 rounded-lg transition-all shadow-xs cursor-pointer border',
+                      u.isActive ? 'text-rose-700 bg-rose-100 hover:bg-rose-600 hover:text-white border-rose-200' : 'text-emerald-700 bg-emerald-100 hover:bg-emerald-600 hover:text-white border-emerald-200'
                     ]"
                     :title="u.isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'"
                   >
@@ -200,19 +199,18 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 pt-4 border-t">
-              <div class="bg-blue-50 rounded-lg p-3 text-center">
-                <p class="text-2xl font-bold text-blue-600">{{ selectedUser.orderCount }}</p>
-                <p class="text-xs text-gray-500">Đơn hàng</p>
+              <div class="bg-gradient-to-br from-[#09f] to-blue-700 text-white rounded-xl p-3 text-center shadow-xs">
+                <p class="text-2xl font-black text-white">{{ selectedUser.orderCount }}</p>
+                <p class="text-xs text-blue-100 font-semibold mt-0.5">Đơn hàng</p>
               </div>
-              <div class="bg-green-50 rounded-lg p-3 text-center">
-                <p class="text-xl font-bold text-green-600">{{ formatPrice(selectedUser.totalSpent) }}</p>
-                <p class="text-xs text-gray-500">Tổng chi tiêu</p>
+              <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-xl p-3 text-center shadow-xs">
+                <p class="text-xl font-black text-white">{{ formatPrice(selectedUser.totalSpent) }}</p>
+                <p class="text-xs text-emerald-100 font-semibold mt-0.5">Tổng chi tiêu</p>
               </div>
             </div>
 
             <div v-if="selectedUser.createdAt" class="text-xs text-gray-400 pt-2 border-t">
               Ngày tạo: {{ formatDate(selectedUser.createdAt) }}
-            </div>
           </div>
         </div>
       </div>
@@ -227,6 +225,7 @@ import { useNotification } from '~/composables/useNotification'
 import { useConfirm } from '~/composables/useConfirm'
 
 definePageMeta({
+  layout: 'admin',
   middleware: 'admin'
 })
 

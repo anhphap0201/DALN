@@ -2,7 +2,7 @@
   <div class="bg-gray-50 min-h-screen">
     <!-- Banner Carousel -->
     <section class="bg-white border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-6">
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#09f] to-[#0077cc] h-64">
           <Transition
             enter-active-class="transition-all duration-700 ease-out"
@@ -41,7 +41,7 @@
 
     <!-- Categories -->
     <section class="py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-2xl font-bold text-gray-800">Danh Mục Sản Phẩm</h2>
         </div>
@@ -70,7 +70,7 @@
 
     <!-- Sale Products -->
     <section class="py-12 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
         <div class="flex items-center justify-between mb-6">
           <div>
             <h2 class="text-2xl font-bold text-gray-800">Sản Phẩm Đang Sale</h2>
@@ -86,16 +86,12 @@
             class="bg-white border-2 border-gray-100 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 hover:-translate-y-1 hover:border-[#09f] group cursor-pointer"
           >
             <!-- Product Image -->
-            <div class=" relative aspect-square bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center overflow-hidden p-6">
+            <div class="relative aspect-square bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center overflow-hidden p-6">
               <img 
                 :src="product.img" 
                 :alt="product.name"
                 class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
               />
-              <!-- Sale Badge -->
-              <div class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold">
-                -{{ product.discount }}%
-              </div>
             </div>
 
             <!-- Product Info -->
@@ -104,14 +100,32 @@
                 {{ product.name }}
               </h3>
               
-              <!-- Price -->
-              <div class="flex items-center gap-2 mb-3">
+              <!-- Price: 10.000đ 20.000đ 50% -->
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
                 <span class="text-lg font-bold text-[#09f]">
                   {{ formatPrice(product.salePrice) }}
                 </span>
-                <span class="text-sm text-gray-400 line-through">
+                <span v-if="product.originalPrice && product.originalPrice > product.salePrice" class="text-sm text-gray-400 line-through">
                   {{ formatPrice(product.originalPrice) }}
                 </span>
+                <span v-if="product.discount" class="text-xs font-bold text-white bg-rose-600 px-1.5 py-0.5 rounded-md shadow-xs">
+                  {{ product.discount }}%
+                </span>
+              </div>
+
+              <!-- Rating, Đã bán, Còn lại -->
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-3 pt-2 border-t border-gray-100">
+                <div class="flex items-center gap-1 font-bold text-amber-500">
+                  <span>★</span>
+                  <span>{{ Number(product.rating || 5.0).toFixed(1) }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-gray-500">
+                  <span>Đã bán {{ product.soldQuantity || 0 }}</span>
+                  <span>•</span>
+                  <span :class="(product.totalStock || 0) > 0 ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'">
+                    {{ (product.totalStock || 0) > 0 ? `Còn ${product.totalStock}` : 'Hết hàng' }}
+                  </span>
+                </div>
               </div>
 
               <!-- Actions -->
@@ -119,8 +133,14 @@
                 <button @click.prevent="buyNow($event, product)" class="flex-1 bg-[#09f] text-white py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-[#0077cc] hover:shadow-lg active:scale-95">
                   Mua ngay
                 </button>
-                <button @click.prevent="addToCart($event, product)" class="w-10 h-10 border-2 border-gray-200 rounded-xl flex items-center justify-center transition-all duration-300 hover:border-[#09f] hover:text-[#09f] hover:scale-105 active:scale-95">
-                  +
+                <button 
+                  @click.prevent="addToCart($event, product)" 
+                  class="w-10 h-10 border-2 border-gray-200 text-gray-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:border-[#09f] hover:text-[#09f] hover:scale-105 active:scale-95"
+                  title="Thêm vào giỏ hàng"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -216,6 +236,9 @@ onMounted(async () => {
         originalPrice: Number(originalPrice),
         salePrice: Number(minPrice),
         discount,
+        rating: p.avgRating != null ? p.avgRating : 5.0,
+        soldQuantity: p.soldQuantity || 0,
+        totalStock: p.totalStock != null ? p.totalStock : (p.variants?.reduce((sum: number, v: any) => sum + (v.inStock || 0), 0) || 0)
       }
     })
   } catch (error) {

@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-sm text-gray-600 mb-6">
         <NuxtLink to="/" class="hover:text-[#09f] transition-colors">Trang chủ</NuxtLink>
@@ -49,15 +49,27 @@
             <!-- Title & Rating -->
             <div>
               <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ product.name }}</h1>
-              <div class="flex items-center gap-4">
-                <div class="flex items-center gap-1">
-                  <span v-for="i in 5" :key="i" class="text-yellow-400 text-lg">
-                    {{ i <= (reviewSummary?.averageRating || 0) ? '★' : '☆' }}
+              <div class="flex items-center gap-3 sm:gap-4 flex-wrap text-sm">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-amber-500 text-base">
+                    {{ Number(reviewSummary?.averageRating ?? product.rating ?? 5.0).toFixed(1) }}
                   </span>
-                  <span class="text-sm text-gray-600 ml-2">({{ reviewSummary?.totalReviews || 0 }} đánh giá)</span>
+                  <div class="flex items-center text-yellow-400 text-base">
+                    <span v-for="i in 5" :key="i">
+                      {{ i <= Math.round(reviewSummary?.averageRating ?? product.rating ?? 5) ? '★' : '☆' }}
+                    </span>
+                  </div>
+                  <span class="text-xs text-gray-500 ml-1">({{ reviewSummary?.totalReviews || 0 }} đánh giá)</span>
                 </div>
-                <span class="text-sm text-gray-600">|</span>
-                <span class="text-sm text-gray-600">Đã bán: {{ product.sold }}</span>
+                <span class="text-gray-300">|</span>
+                <span class="text-gray-600 font-medium">Đã bán: <strong class="text-gray-900">{{ product.sold }}</strong></span>
+                <span class="text-gray-300">|</span>
+                <span class="text-gray-600 font-medium">
+                  Còn lại: 
+                  <strong :class="currentStock > 0 ? 'text-emerald-700' : 'text-rose-600'">
+                    {{ currentStock > 0 ? `${currentStock} sản phẩm` : 'Hết hàng' }}
+                  </strong>
+                </span>
               </div>
             </div>
 
@@ -68,8 +80,8 @@
                 <span v-if="currentOriginalPrice > currentPrice" class="text-xl text-gray-400 line-through">
                   {{ formatPrice(currentOriginalPrice) }}
                 </span>
-                <span v-if="currentDiscount" class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-bold">
-                  -{{ currentDiscount }}%
+                <span v-if="currentDiscount" class="bg-rose-600 text-white px-2.5 py-1 rounded-lg text-sm font-bold shadow-xs">
+                  {{ currentDiscount }}%
                 </span>
               </div>
               <p class="text-sm text-gray-600">Giá đã bao gồm VAT</p>
@@ -78,8 +90,8 @@
             <!-- Stock Status -->
             <div class="flex items-center gap-2">
               <span class="text-gray-700 font-medium">Tình trạng:</span>
-              <span :class="currentStock > 0 ? 'text-green-600' : 'text-red-600'" class="font-semibold">
-                {{ currentStock > 0 ? `Còn hàng (${currentStock} sản phẩm)` : 'Hết hàng' }}
+              <span :class="currentStock > 0 ? 'text-emerald-700' : 'text-rose-600'" class="font-semibold">
+                {{ currentStock > 0 ? `Còn hàng (còn lại: ${currentStock} sản phẩm)` : 'Hết hàng' }}
               </span>
             </div>
 
@@ -121,6 +133,9 @@
                         </span>
                         <span v-if="variant.discountPrice && variant.discountPrice < variant.price" class="text-xs text-gray-400 line-through">
                           {{ formatPrice(variant.price) }}
+                        </span>
+                        <span v-if="variant.discountPrice && variant.discountPrice < variant.price" class="text-[11px] font-bold text-white bg-rose-600 px-1 py-0.5 rounded shadow-xs">
+                          {{ Math.round(((variant.price - variant.discountPrice) / variant.price) * 100) }}%
                         </span>
                       </div>
                       <span v-if="variant.inStock <= 0" class="text-xs text-red-500">Hết hàng</span>
@@ -173,8 +188,11 @@
                 v-if="currentStock > 0"
                 @click="addToCart"
                 :disabled="cartLoading"
-                class="flex-1  text-black py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:bg-gray-200 hover:shadow-xl hover:scale-105 active:scale-95 bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 text-black py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:bg-gray-200 hover:shadow-xl hover:scale-105 active:scale-95 bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
+                <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
                 <span v-if="cartLoading">Đang thêm...</span>
                 <span v-else>Thêm vào giỏ hàng</span>
               </button>
@@ -472,11 +490,24 @@
               <h3 class="text-sm font-semibold text-gray-800 mb-2 line-clamp-2 group-hover:text-[#09f] transition-colors">
                 {{ relatedProduct.name }}
               </h3>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 mb-2">
                 <span class="text-lg font-bold text-[#09f]">{{ formatPrice(relatedProduct.salePrice) }}</span>
                 <span v-if="relatedProduct.originalPrice > relatedProduct.salePrice" class="text-xs text-gray-400 line-through">
                   {{ formatPrice(relatedProduct.originalPrice) }}
                 </span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                <div class="flex items-center gap-1 font-bold text-amber-500">
+                  <span>★</span>
+                  <span>{{ Number(relatedProduct.rating || 5.0).toFixed(1) }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-gray-500">
+                  <span>Đã bán {{ relatedProduct.soldQuantity || 0 }}</span>
+                  <span>•</span>
+                  <span :class="relatedProduct.totalStock > 0 ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'">
+                    {{ relatedProduct.totalStock > 0 ? `Còn ${relatedProduct.totalStock}` : 'Hết hàng' }}
+                  </span>
+                </div>
               </div>
             </div>
           </NuxtLink>
@@ -774,7 +805,10 @@ const fetchRelatedProducts = async (currentProduct: any) => {
             name: p.name,
             img,
             salePrice: p.minDiscountPrice ?? p.minPrice ?? 0,
-            originalPrice: p.minPrice ?? 0
+            originalPrice: p.minPrice ?? 0,
+            rating: p.avgRating || 5.0,
+            soldQuantity: p.soldQuantity || 0,
+            totalStock: p.totalStock != null ? p.totalStock : (p.variants?.reduce((sum: number, v: any) => sum + (v.inStock || 0), 0) || 0)
           }
         })
     }

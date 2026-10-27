@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>ECShop — Đồ án liên ngành</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; }
+  body { font-family: Calibri, "Segoe UI", Arial, sans-serif; color: #111; }
+
+  .slide {
+    width: 1280px; height: 720px;
+    position: relative; overflow: hidden;
+    padding: 50px 88px 0;
+    background: #fff;
+    page-break-after: always;
+  }
+  .slide:last-child { page-break-after: auto; }
+
+  .rule-bottom { position: absolute; left: 88px; right: 88px; bottom: 46px; border-top: 1px solid #111; }
+  .caption {
+    position: absolute; left: 88px; right: 88px; bottom: 58px;
+    font-size: 13.5px; line-height: 1.45; color: #222;
+  }
+  .caption b { font-family: Arial, sans-serif; letter-spacing: .5px; }
+
+  h2.sec {
+    font-family: Arial, sans-serif; font-weight: bold;
+    font-size: 38px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .secbar { width: 340px; height: 5px; background: #111; margin-top: 16px; }
+  .sub { font-size: 17.5px; margin-top: 20px; color: #111; }
+
+  .kicker { font-family: Arial, sans-serif; font-weight: bold; font-size: 15px; letter-spacing: 4px; text-transform: uppercase; }
+
+  .chip {
+    display: inline-block; background: #111; color: #fff;
+    font-family: Arial, sans-serif; font-weight: bold; font-size: 19px;
+    padding: 7px 15px;
+  }
+
+  .grid { display: flex; gap: 36px; }
+  .col { flex: 1; min-width: 0; }
+
+  .celltitle { font-family: Arial, sans-serif; font-weight: bold; font-size: 18.5px; line-height: 1.25; }
+  .cellbody { font-size: 15px; line-height: 1.42; margin-top: 8px; color: #222; }
+
+  .rowsep { border-top: 3px solid #111; padding-top: 18px; }
+
+  table.tbl { width: 100%; border-collapse: collapse; }
+  .tbl th {
+    border-top: 3px solid #111; border-bottom: 1.5px solid #111;
+    text-align: left; padding: 10px 12px; font-family: Arial, sans-serif; font-size: 14.5px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .tbl td { border-bottom: 1px solid #c9c9c9; padding: 9px 12px; font-size: 15.5px; vertical-align: top; line-height: 1.35; }
+
+  .big { font-family: Arial, sans-serif; font-weight: bold; font-size: 50px; letter-spacing: -.5px; }
+  .biglabel { font-size: 15px; color: #222; margin-top: 4px; line-height: 1.35; }
+
+  .mono { font-family: Consolas, "Courier New", monospace; }
+
+  /* ===== diagram helpers ===== */
+  .tier { border: 2px solid #111; padding: 11px 16px; }
+  .tier .t-name { font-family: Arial, sans-serif; font-weight: bold; font-size: 15.5px; letter-spacing: 1px; }
+  .tier .t-desc { font-size: 13.5px; margin-top: 3px; color: #333; line-height: 1.35; }
+  .varrow { text-align: center; font-size: 12.5px; letter-spacing: 1.5px; margin: 7px 0; color: #111; }
+
+  .ent { border: 1.5px solid #111; padding: 6px 10px; font-family: Consolas, monospace; font-size: 12px; line-height: 1.3; margin-top: 8px; }
+  .ent b { font-size: 12.5px; }
+  .ent span { color: #444; }
+  .rel { font-size: 12.5px; color: #333; margin-top: 8px; line-height: 1.4; }
+
+  .step { display: flex; gap: 12px; align-items: baseline; padding: 6.5px 0; border-bottom: 1px solid #ddd; }
+  .step .n { font-family: Arial, sans-serif; font-weight: bold; font-size: 14px; min-width: 22px; }
+  .step .s { font-size: 14.5px; line-height: 1.35; }
+  .step .s b { font-family: Arial, sans-serif; }
+
+  .bar-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid #ddd; }
+  .bar-row .bl { font-family: Consolas, monospace; font-size: 12.5px; width: 300px; flex: none; }
+  .bar-row .btrack { flex: 1; height: 20px; position: relative; }
+  .bar-row .bfill { height: 20px; background: #111; }
+  .bar-row .bv { font-family: Arial, sans-serif; font-weight: bold; font-size: 14px; width: 26px; flex: none; text-align: right; }
+
+  .tag { display: inline-block; font-family: Arial, sans-serif; font-weight: bold; font-size: 12px; letter-spacing: 1.5px; padding: 4px 10px; border: 1.5px solid #111; }
+  .tag.solid { background: #111; color: #fff; }
+
+  .btn1click {
+    display: block; background: #E8630A; color: #fff; text-align: center;
+    font-family: Arial, sans-serif; font-weight: bold; font-size: 15.5px; letter-spacing: 1px;
+    padding: 12px 10px; margin-top: 12px;
+  }
+  .accent { color: #E8630A; }
+  .blue { color: #2F6DB4; }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 · BÌA ============ -->
+<div class="slide">
+  <div style="margin-top:34px;">
+    <div class="kicker">Đồ án liên ngành</div>
+    <div style="width:250px;height:5px;background:#111;margin-top:16px;"></div>
+  </div>
+  <div style="margin-top:74px;font-family:Arial,sans-serif;font-weight:bold;font-size:52px;line-height:1.2;letter-spacing:-1px;">
+    <div>WEBSITE BÁN LINH KIỆN ĐIỆN TỬ</div>
+    <div>TÍCH HỢP TRỢ LÝ KỸ THUẬT AI ECSHOP</div>
+  </div>
+  <div style="position:absolute;left:88px;right:88px;bottom:172px;border-top:2px solid #111;"></div>
+  <div style="position:absolute;left:88px;right:88px;bottom:96px;display:flex;gap:56px;">
+    <div style="width:270px;">
+      <div class="kicker" style="font-size:13px;">Giảng viên hướng dẫn</div>
+      <div style="font-size:16.5px;margin-top:6px;">ThS. Nguyễn Văn Sơn</div>
+    </div>
+    <div style="width:330px;">
+      <div class="kicker" style="font-size:13px;">Sinh viên thực hiện</div>
+      <div style="font-size:16.5px;margin-top:6px;">Đàm Anh Pháp · 23010360<br>Phạm Đức Tài · 23010379</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 2 · 1. ĐẶT VẤN ĐỀ ============ -->
+<div class="slide">
+  <h2 class="sec">1. Đặt vấn đề</h2>
+  <div class="secbar"></div>
+  <div class="sub">Vì sao các sàn thương mại điện tử tổng hợp (Shopee, Lazada, Tiki) không đáp ứng được nhu cầu mua linh kiện điện tử chuyên ngành?</div>
+  <div class="grid" style="margin-top:44px;">
+    <div class="col">
+      <span class="chip">01</span>
+      <div class="celltitle" style="margin-top:16px;">Thông số kỹ thuật phức tạp</div>
+      <div class="cellbody">Hàng chục đại lượng vật lý: điện áp danh định, dòng tải tối đa, chuẩn chân DIP/SMD, giao tiếp I2C/SPI/UART. Tìm kiếm theo từ khóa dễ chọn sai linh kiện — rủi ro cháy nổ mạch khi lắp ráp.</div>
+    </div>
+    <div class="col">
+      <span class="chip">02</span>
+      <div class="celltitle" style="margin-top:16px;">Khó thẩm định tương thích</div>
+      <div class="cellbody">Một hệ thống (trạm IoT, drone FPV) phải phối hợp hàng chục linh kiện. Kiểm tra nguồn cấp đủ dòng, mức logic 3,3V/5V đòi hỏi hàng giờ tra cứu datasheet.</div>
+    </div>
+    <div class="col">
+      <span class="chip">03</span>
+      <div class="celltitle" style="margin-top:16px;">Quá tải tư vấn kỹ thuật</div>
+      <div class="cellbody">Khách luôn cần tư vấn trước khi mua. Cửa hàng vừa và nhỏ không thể duy trì đội ngũ kỹ sư túc trực 24/7 — bỏ lỡ khách hàng hoặc tư vấn thiếu chuẩn xác.</div>
+    </div>
+    <div class="col">
+      <span class="chip">04</span>
+      <div class="celltitle" style="margin-top:16px;">Quản trị danh mục &amp; kho khó</div>
+      <div class="cellbody">Hàng nghìn mã SKU nhỏ lẻ; khó nắm linh kiện nào cạn kho, mặt hàng nào đọng vốn — thiếu công cụ truy vấn thông minh về tình hình kinh doanh.</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 3 · 2. GIẢI PHÁP ============ -->
+<div class="slide">
+  <h2 class="sec">2. Giải pháp — ba phân hệ trụ cột</h2>
+  <div class="secbar"></div>
+  <div class="sub">Nền tảng B2C chuyên ngành: cửa hàng bán lẻ trực tuyến + trợ lý ảo kỹ thuật chạy hoàn toàn cục bộ trên máy chủ riêng.</div>
+  <div class="grid" style="margin-top:42px;">
+    <div class="col">
+      <span class="chip">01</span>
+      <div class="celltitle" style="margin-top:16px;">Storefront — khách hàng</div>
+      <div class="cellbody">Lọc facet động theo thông số kỹ thuật (JSONB), đa biến thể SKU với giá &amp; tồn kho riêng, giỏ hàng lai (khách vãng lai + tài khoản), Guest Checkout một bước, thanh toán VNPAY / PayOS VietQR / COD, Smart Locker OTP, bảo hành trực tuyến.</div>
+    </div>
+    <div class="col">
+      <span class="chip">02</span>
+      <div class="celltitle" style="margin-top:16px;">Admin Dashboard — quản trị</div>
+      <div class="cellbody">Bảng điều khiển KPI thời gian thực; quản lý sản phẩm, danh mục đa cấp, tồn kho theo ngưỡng cảnh báo và vị trí kệ; xử lý đơn hàng, phê duyệt bảo hành, quản trị người dùng.</div>
+    </div>
+    <div class="col">
+      <span class="chip">03</span>
+      <div class="celltitle" style="margin-top:16px;">Trợ lý kỹ thuật AI — trọng tâm</div>
+      <div class="cellbody">ChatWidget tích hợp trên website, vận hành trên <b>Local LLM (Ollama — Qwen 2.5)</b>: tư vấn giải pháp mạch, so sánh datasheet, lập bảng BOM với nút <b>“1-Click Thêm vào giỏ”</b>, tra cứu đơn hàng; phân tích kinh doanh bằng ngôn ngữ tự nhiên cho quản trị viên.</div>
+    </div>
+  </div>
+  <div class="caption"><b>MỤC TIÊU CHẤT LƯỢNG&nbsp;&nbsp;</b> Kiến trúc full-stack decoupled chuẩn công nghiệp · bảo mật đa tầng theo OWASP · 45/45 bài kiểm thử tự động đạt 100% · đóng gói sẵn JAR sản xuất.</div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 4 · 3. NGĂN XẾP CÔNG NGHỆ ============ -->
+<div class="slide">
+  <h2 class="sec">3. Ngăn xếp công nghệ</h2>
+  <div class="secbar"></div>
+  <table class="tbl" style="margin-top:40px;">
+    <tr><th style="width:190px;">Phân tầng</th><th style="width:420px;">Công nghệ cốt lõi</th><th>Vai trò kỹ thuật</th></tr>
+    <tr>
+      <td><b>Giao diện</b></td>
+      <td>Nuxt 4 · Vue 3.5 · Tailwind CSS v4 · Pinia · Vite 7</td>
+      <td>SPA + Universal Rendering, file-based routing, thiết kế responsive 375px → 4K</td>
+    </tr>
+    <tr>
+      <td><b>Máy chủ dịch vụ</b></td>
+      <td>Spring Boot 4.0 · Spring Security 6 · Java 25</td>
+      <td>REST API, Virtual Threads chịu nghìn kết nối đồng thời, Stateless JWT Filter hai lớp</td>
+    </tr>
+    <tr>
+      <td><b>Cơ sở dữ liệu</b></td>
+      <td>PostgreSQL 16 · Hibernate JPA 6</td>
+      <td>Giao dịch ACID, cột JSONB + chỉ mục GIN cho thông số kỹ thuật động</td>
+    </tr>
+    <tr>
+      <td><b>Bộ nhớ đệm</b></td>
+      <td>Redis 7.2 / 8.0</td>
+      <td>Cache danh mục, Token Blacklist, Sliding-Window Rate Limiter bảo vệ AI</td>
+    </tr>
+    <tr>
+      <td><b>AI cục bộ</b></td>
+      <td>Ollama 0.5 · Qwen 2.5 7B/3B (Q4_K_M)</td>
+      <td>Suy luận on-premise, Native Tool Calling, 45–60 token/s trên GPU RTX 4060</td>
+    </tr>
+    <tr>
+      <td><b>Thanh toán &amp; IoT</b></td>
+      <td>VNPAY · PayOS VietQR · Smart Locker</td>
+      <td>Chữ ký HMAC SHA-512, Webhook tự động xác nhận 2–3 giây, mở tủ bằng mã OTP</td>
+    </tr>
+  </table>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 5 · 4. KIẾN TRÚC N-TIER ============ -->
+<div class="slide">
+  <h2 class="sec">4. Kiến trúc hệ thống N-Tier decoupled</h2>
+  <div class="secbar"></div>
+  <div style="margin-top:34px;">
+    <div class="tier">
+      <div class="t-name">1 · PRESENTATION — NUXT 4 / VUE 3.5</div>
+      <div class="t-desc">Storefront (Home · Facet Search · Chi tiết · Giỏ · Checkout) · Admin Dashboard · ChatWidget.vue (5 Interactive Cards)</div>
+    </div>
+    <div class="varrow">▼&nbsp;&nbsp;REST API · HTTPS · JSON PAYLOAD&nbsp;&nbsp;▼</div>
+    <div class="tier">
+      <div class="t-name">2 · API GATEWAY &amp; CONTROLLER — SPRING BOOT 4.0</div>
+      <div class="t-desc">Spring Security Filter Chain (Stateless JWT) · CORS / Anti-CSRF · REST Controllers (Auth, Product, Order, Payment, Chat, Admin) · Global Exception Handler</div>
+    </div>
+    <div class="varrow">▼&nbsp;&nbsp;SERVICE INVOCATION · DTO&nbsp;&nbsp;▼</div>
+    <div class="tier">
+      <div class="t-name">3 · BUSINESS LOGIC &amp; AI ORCHESTRATION</div>
+      <div class="t-desc">ProductService · OrderService · PaymentService &nbsp;|&nbsp; AiChatService (vòng lặp Multi-turn) · ChatIntentAnalyzer · AiSecuritySanitizer · AiToolPolicyService (PBAC) · Registry 16 Tools</div>
+    </div>
+    <div style="display:flex;margin-top:7px;">
+      <div class="varrow" style="flex:1;">▼&nbsp;&nbsp;SPRING DATA JPA&nbsp;&nbsp;▼</div>
+      <div class="varrow" style="flex:1;">▼&nbsp;&nbsp;HTTP · NATIVE JSON&nbsp;&nbsp;▼</div>
+    </div>
+    <div style="display:flex;gap:36px;">
+      <div class="tier" style="flex:1;">
+        <div class="t-name">4 · DATA PERSISTENCE &amp; CACHE</div>
+        <div class="t-desc">PostgreSQL 16 — giao dịch, JSONB, log AI &nbsp;·&nbsp; Redis — cache, rate limiting, token blacklist</div>
+      </div>
+      <div class="tier" style="flex:1;">
+        <div class="t-name">5 · LOCAL AI RUNTIME</div>
+        <div class="t-desc">Ollama daemon :11434 · Qwen 2.5 7B Instruct · suy luận tăng tốc GPU CUDA (RTX 4060 8GB)</div>
+      </div>
+    </div>
+  </div>
+  <div class="caption"><b>NGUYÊN TẮC&nbsp;&nbsp;</b> Các tầng tách rời hoàn toàn, giao tiếp qua hợp đồng REST/JSON chuẩn hóa — tích hợp Frontend–Backend không xung đột, dễ mở rộng và thay thế từng thành phần.</div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 6 · 5. CƠ SỞ DỮ LIỆU ============ -->
+<div class="slide">
+  <h2 class="sec">5. Cơ sở dữ liệu &amp; chiến lược đánh chỉ mục</h2>
+  <div class="secbar"></div>
+  <div class="grid" style="margin-top:32px;">
+    <div class="col">
+      <div class="tag solid">GIAO DỊCH</div>
+      <div class="ent"><b>USERS</b> <span>· email UK · role · BCrypt</span></div>
+      <div class="ent"><b>ORDERS</b> <span>· order_code · status · total</span></div>
+      <div class="ent"><b>ORDER_ITEMS</b> <span>· qty · unit_price</span></div>
+      <div class="ent"><b>PAYMENTS</b> <span>· transaction_id · VNPAY/PayOS</span></div>
+      <div class="ent"><b>WARRANTY_CLAIMS</b> <span>· serial · ảnh lỗi</span></div>
+      <div class="rel">USERS 1─n ORDERS · ORDERS 1─n ORDER_ITEMS / PAYMENTS / WARRANTY_CLAIMS</div>
+    </div>
+    <div class="col">
+      <div class="tag solid">DANH MỤC &amp; KHO</div>
+      <div class="ent"><b>CATEGORIES</b> <span>· phân cấp cha–con</span></div>
+      <div class="ent"><b>PRODUCTS</b> <span>· technical_specs JSONB</span></div>
+      <div class="ent"><b>PRODUCT_VARIANTS</b> <span>· sku UK · price · cost_price</span></div>
+      <div class="ent"><b>INVENTORIES</b> <span>· stock · threshold · vị trí kệ</span></div>
+      <div class="rel">CATEGORIES 1─n PRODUCTS 1─n VARIANTS 1─1 INVENTORIES · ORDER_ITEMS n─1 VARIANTS</div>
+    </div>
+    <div class="col">
+      <div class="tag solid">AI CHATBOT</div>
+      <div class="ent"><b>CHAT_SESSIONS</b> <span>· user_id · title</span></div>
+      <div class="ent"><b>CHAT_MESSAGES</b> <span>· sender · tools_used JSONB</span></div>
+      <div class="ent"><b>CHAT_TOOL_LOGS</b> <span>· tool_name · result · exec_ms</span></div>
+      <div class="rel">USERS 1─n SESSIONS · SESSIONS 1─n MESSAGES / TOOL_LOGS — kiểm toán toàn bộ lệnh gọi công cụ</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:36px;margin-top:26px;">
+    <div class="col rowsep">
+      <div class="celltitle" style="font-size:16px;">GIN <span class="mono">(technical_specs)</span></div>
+      <div class="cellbody" style="margin-top:4px;">Lọc facet theo cặp khóa–giá trị JSONB bất kỳ (<span class="mono">specs @&gt; '{"voltage":"5V"}'</span>) — tức thì, không đổi schema.</div>
+    </div>
+    <div class="col rowsep">
+      <div class="celltitle" style="font-size:16px;">Composite <span class="mono">(session_id, created_at)</span></div>
+      <div class="cellbody" style="margin-top:4px;">Nạp 10 tin nhắn ngữ cảnh gần nhất cho AI trong &lt; 5 ms.</div>
+    </div>
+    <div class="col rowsep">
+      <div class="celltitle" style="font-size:16px;">Audit <span class="mono">(tool_name, executed_at)</span></div>
+      <div class="cellbody" style="margin-top:4px;">Phân tích tần suất &amp; hiệu năng từng công cụ AI tại trang giám sát.</div>
+    </div>
+  </div>
+  <div class="caption"><b>CHUẨN HÓA 3NF&nbsp;&nbsp;</b> Bảng giao dịch đạt chuẩn 3NF; JSONB cho dữ liệu phi cấu trúc — mục tiêu phản hồi API &lt; 100 ms và cấp dữ liệu tức thì cho Tool Calling.</div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 7 · 6. STOREFRONT ============ -->
+<div class="slide">
+  <h2 class="sec">6. Storefront — trải nghiệm khách hàng</h2>
+  <div class="secbar"></div>
+  <div class="grid" style="margin-top:38px;">
+    <div class="col">
+      <div class="celltitle">01 · Lọc facet động</div>
+      <div class="cellbody">Chọn danh mục → hệ thống quét <span class="mono">technical_specs</span> tự sinh bộ lọc V<sub>in</sub>, V<sub>out</sub>, I<sub>max</sub>, hiệu suất; kết quả cập nhật thời gian thực.</div>
+    </div>
+    <div class="col">
+      <div class="celltitle">02 · Đa biến thể SKU</div>
+      <div class="cellbody">Chọn trực quan DIP/SMD, điện áp, màu sắc — giá niêm yết, ảnh và trạng thái còn/hết hàng đổi theo từng biến thể.</div>
+    </div>
+    <div class="col">
+      <div class="celltitle">03 · Giỏ hàng lai</div>
+      <div class="cellbody">Khách vãng lai lưu <span class="mono">localStorage</span>; đăng nhập hợp nhất qua <span class="mono">POST /api/cart/merge</span> — cộng dồn thông minh, tôn trọng giới hạn tồn kho.</div>
+    </div>
+  </div>
+  <div class="grid" style="margin-top:24px;">
+    <div class="col rowsep">
+      <div class="celltitle">04 · Guest Checkout một bước</div>
+      <div class="cellbody">Đặt hàng không cần tài khoản: họ tên, SĐT, địa chỉ hoặc chọn tủ locker. Giá &amp; phí tính hoàn toàn phía server — chống can thiệp giá từ client.</div>
+    </div>
+    <div class="col rowsep">
+      <div class="celltitle">05 · Thanh toán đa kênh</div>
+      <div class="cellbody">VNPAY-QR / thẻ Napas (HMAC SHA-512), VietQR PayOS tự động đổi trạng thái <span class="mono">PAID</span> sau 2–3 giây, COD cho khách kiểm tra hàng trước.</div>
+    </div>
+    <div class="col rowsep">
+      <div class="celltitle">06 · Smart Locker &amp; bảo hành</div>
+      <div class="cellbody">Nhận hàng 24/7 tại tủ tự động bằng mã OTP gửi qua email; tạo yêu cầu bảo hành kèm số serial và hình ảnh mô tả lỗi để thẩm định online.</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 8 · 7. ADMIN DASHBOARD ============ -->
+<div class="slide">
+  <h2 class="sec">7. Admin Dashboard — quản trị vận hành</h2>
+  <div class="secbar"></div>
+  <div class="grid" style="margin-top:38px;">
+    <div class="col">
+      <div class="celltitle">01 · Sản phẩm &amp; danh mục đa cấp</div>
+      <div class="cellbody">CRUD danh mục cha–con; quản lý sản phẩm cha + biến thể SKU; biên tập thông số kỹ thuật dạng JSON — bổ sung datasheet mới không cần đổi schema.</div>
+    </div>
+    <div class="col">
+      <div class="celltitle">02 · Kho hàng theo SKU</div>
+      <div class="cellbody">Tồn kho từng biến thể; ngưỡng <span class="mono">low_stock_threshold</span> → cảnh báo đỏ trên dashboard + tín hiệu cho Trợ lý AI; vị trí giá–kệ–ngăn để lấy hàng nhanh.</div>
+    </div>
+    <div class="col">
+      <div class="celltitle">03 · Xử lý đơn hàng</div>
+      <div class="cellbody">Danh sách đơn thời gian thực, lọc theo trạng thái; điều phối <span class="mono">PROCESSING → SHIPPING → COMPLETED</span>.</div>
+    </div>
+  </div>
+  <div class="grid" style="margin-top:24px;">
+    <div class="col rowsep">
+      <div class="celltitle">04 · Phê duyệt bảo hành</div>
+      <div class="cellbody">Tiếp nhận yêu cầu từ khách, phê duyệt hoặc từ chối kèm ghi chú lý do kỹ thuật trực tuyến.</div>
+    </div>
+    <div class="col rowsep">
+      <div class="celltitle">05 · Quản trị người dùng</div>
+      <div class="cellbody">Kích hoạt, khóa tài khoản vi phạm chính sách; quản lý vai trò <span class="mono">ROLE_USER / ROLE_ADMIN</span>.</div>
+    </div>
+    <div class="col rowsep">
+      <div class="celltitle">06 · BI bằng ngôn ngữ tự nhiên</div>
+      <div class="cellbody">Truy vấn doanh thu, AOV, cảnh báo kho, hàng đọng vốn ngay trong cửa sổ chat — AI trả kết quả dạng thẻ KPI trực quan.</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 9 · 8. AI ENGINE ============ -->
+<div class="slide">
+  <h2 class="sec">8. Trợ lý AI — vòng lặp Multi-turn Tool Calling</h2>
+  <div class="secbar"></div>
+  <div style="display:flex;gap:44px;margin-top:26px;">
+    <div style="width:420px;flex:none;">
+      <div class="tag solid">LOCAL LLM — ON-PREMISE</div>
+      <div style="margin-top:14px;font-size:15.5px;line-height:1.5;">
+        <b>Ollama :11434</b> · mô hình <b>Qwen 2.5 7B Instruct</b> lượng tử hóa 4-bit (Q4_K_M)<br>
+        Suy luận trên GPU <b>RTX 4060 8GB</b> — 45–60 token/s<br>
+        <b>100% dữ liệu nội bộ</b> — không gửi qua cloud API, không rò rỉ dữ liệu kinh doanh
+      </div>
+      <div style="border-top:3px solid #111;margin-top:18px;padding-top:14px;font-size:15.5px;line-height:1.55;">
+        <b>Ràng buộc vận hành</b><br>
+        · Tối đa <b>5 lượt</b> gọi công cụ cho mỗi câu hỏi<br>
+        · Bộ nhớ hội thoại: <b>10 tin nhắn gần nhất</b><br>
+        · Rate limit <b>15 tin/phút/IP</b> → HTTP 429<br>
+        · Virtual Threads giữ kết nối chờ suy luận không cạn luồng
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="step"><div class="n">1</div><div class="s"><b>Redis Rate Limit</b> — kiểm tra 15 yêu cầu/phút theo IP</div></div>
+      <div class="step"><div class="n">2</div><div class="s"><b>AiSecuritySanitizer</b> — làm sạch prompt, quét mẫu Jailbreak</div></div>
+      <div class="step"><div class="n">3</div><div class="s"><b>ChatIntentAnalyzer</b> — trích xuất ý định &amp; ràng buộc kỹ thuật; hỏi lại nếu câu hỏi mơ hồ</div></div>
+      <div class="step"><div class="n">4</div><div class="s"><b>ChatSessionMemoryService</b> — nạp ngữ cảnh 10 tin nhắn gần nhất</div></div>
+      <div class="step"><div class="n">5</div><div class="s"><b>Ollama / Qwen 2.5</b> — nhận prompt + 16 Tool Schemas, quyết định gọi công cụ</div></div>
+      <div class="step"><div class="n">6</div><div class="s"><b>AiToolPolicyService (PBAC)</b> — kiểm tra quyền trước khi thực thi</div></div>
+      <div class="step"><div class="n">7</div><div class="s"><b>AiToolService</b> — truy vấn PostgreSQL, mask dữ liệu nhạy cảm, ghi <span class="mono">chat_tool_logs</span></div></div>
+      <div class="step"><div class="n">8</div><div class="s"><b>Tổng hợp phản hồi</b> — dữ liệu thật + siêu metadata để render Interactive UI Cards</div></div>
+      <div class="varrow" style="text-align:left;margin-top:10px;">↺&nbsp;&nbsp;VÒNG LẶP 5 → 7 LẶP LẠI TỐI ĐA 5 LƯỢT (MULTI-TURN) KHI CẦN THÊM DỮ LIỆU&nbsp;&nbsp;↺</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 10 · 9. 16 AI TOOLS ============ -->
+<div class="slide">
+  <h2 class="sec">9. 16 Native AI Tools</h2>
+  <div class="secbar"></div>
+  <div class="sub">Định nghĩa bằng JSON Schema chuẩn; kết quả bọc payload <span class="mono">{success, data}</span>; mọi lệnh gọi đi qua PBAC và ghi log kiểm toán.</div>
+  <div class="grid" style="margin-top:30px;">
+    <div class="col">
+      <div class="tag solid">CÔNG KHAI · 8 CÔNG CỤ</div>
+      <div class="cellbody mono" style="line-height:1.85;font-size:14px;margin-top:12px;">
+        search_products<br>
+        recommend_products<br>
+        compare_products<br>
+        check_stock<br>
+        get_top_selling_products<br>
+        find_project_components<br>
+        check_component_compatibility<br>
+        build_bill_of_materials
+      </div>
+      <div class="cellbody" style="margin-top:10px;">Tìm kiếm theo thông số, đối đầu datasheet, đề xuất giải pháp mạch, lập BOM dự án DIY.</div>
+    </div>
+    <div class="col">
+      <div class="tag">CÓ XÁC THỰC · 1 CÔNG CỤ</div>
+      <div class="cellbody mono" style="line-height:1.85;font-size:14px;margin-top:12px;">track_order</div>
+      <div class="cellbody" style="margin-top:10px;">Tra cứu hành trình đơn hàng: khách hàng chỉ xem đơn của mình; khách vãng lai xác minh bằng SĐT đặt hàng; thông tin cá nhân luôn được che mờ.</div>
+      <div style="border-top:3px solid #111;margin-top:18px;padding-top:14px;">
+        <div class="celltitle" style="font-size:16px;">Phân quyền 3 nhóm</div>
+        <div class="cellbody">Cùng một cửa sổ chat — AI tự chọn đúng công cụ theo vai trò: <span class="mono">ROLE_USER</span> kế thừa công khai, <span class="mono">ROLE_ADMIN</span> mở nhóm BI.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="tag solid">QUẢN TRỊ · 7 CÔNG CỤ</div>
+      <div class="cellbody mono" style="line-height:1.85;font-size:14px;margin-top:12px;">
+        get_revenue_report<br>
+        get_low_stock_products<br>
+        get_order_analytics<br>
+        get_inventory_report<br>
+        get_product_performance<br>
+        get_customer_analytics<br>
+        get_customer_inquiry_analytics
+      </div>
+      <div class="cellbody" style="margin-top:10px;">Báo cáo doanh thu PoP %, AOV, cảnh báo cạn kho, tồn đọng vốn, xu hướng câu hỏi kỹ thuật.</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 11 · 10. ANTI-HALLUCINATION & PBAC ============ -->
+<div class="slide">
+  <h2 class="sec">10. Kiểm soát ảo giác 3 lớp &amp; tường lửa PBAC</h2>
+  <div class="secbar"></div>
+  <div style="display:flex;gap:40px;margin-top:30px;">
+    <div style="flex:1;">
+      <div class="tag solid">ANTI-HALLUCINATION GUARDRAILS</div>
+      <div style="margin-top:14px;">
+        <div class="celltitle">Lớp 1 · System prompt áp đặt</div>
+        <div class="cellbody">Chỉ được dùng dữ liệu do công cụ CSDL trả về — nghiêm cấm tự tạo mã SKU hoặc giá bán.</div>
+      </div>
+      <div style="margin-top:14px;border-top:3px solid #111;padding-top:12px;">
+        <div class="celltitle">Lớp 2 · Dữ liệu kiểm chứng</div>
+        <div class="cellbody">Mọi giá bán, tồn kho bắt buộc truy từ PostgreSQL — khóa chính xác thực, không suy đoán.</div>
+      </div>
+      <div style="margin-top:14px;border-top:3px solid #111;padding-top:12px;">
+        <div class="celltitle">Lớp 3 · Khung phản hồi 7 phần</div>
+        <div class="cellbody">Tóm tắt yêu cầu → giải pháp &amp; sơ đồ khối → bảng linh kiện (SKU + giá thật) → tương thích &amp; an toàn điện áp/dòng → hướng dẫn lắp ráp → dự toán chi phí → gợi ý tiếp theo.</div>
+      </div>
+    </div>
+    <div style="width:2px;background:#111;flex:none;"></div>
+    <div style="flex:1;">
+      <div class="tag solid">PBAC — POLICY-BASED ACCESS CONTROL</div>
+      <div style="margin-top:14px;">
+        <div class="celltitle">Chặn tại tầng mã nguồn Spring Boot</div>
+        <div class="cellbody"><span class="mono">enforceToolAccess(toolName, userRole)</span> kiểm tra mọi lệnh gọi công cụ trước khi thực thi.</div>
+      </div>
+      <div style="margin-top:14px;border-top:3px solid #111;padding-top:12px;">
+        <div class="celltitle">Jailbreak vẫn không vượt qua</div>
+        <div class="cellbody">Khách thường ép gọi <span class="mono">get_revenue_report</span> → hệ thống chặn và trả lỗi cho LLM: <i>“Từ chối quyền truy cập: Bạn không có thẩm quyền xem dữ liệu tài chính của cửa hàng.”</i></div>
+      </div>
+      <div style="margin-top:14px;border-top:3px solid #111;padding-top:12px;">
+        <div class="celltitle">Che mờ dữ liệu cá nhân</div>
+        <div class="cellbody">SĐT &amp; địa chỉ tự động mask khi tra cứu đơn: <span class="mono">098****123</span> · “Số 18, ***, Hà Đông, Hà Nội”.</div>
+      </div>
+    </div>
+  </div>
+  <div class="caption"><b>KẾT QUẢ ĐO LƯỜNG&nbsp;&nbsp;</b> 100% linh kiện AI đề xuất có mã SKU và giá trùng khớp CSDL PostgreSQL — <b>tỷ lệ ảo giác 0.0%</b> trên 412 lệnh gọi công cụ thực tế.</div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 12 · 11. BOM 1-CLICK ============ -->
+<div class="slide">
+  <h2 class="sec">11. Đột phá — BOM &amp; “1-Click Thêm vào giỏ”</h2>
+  <div class="secbar"></div>
+  <div style="display:flex;gap:44px;margin-top:26px;">
+    <div style="width:560px;flex:none;">
+      <div style="border:2px solid #111;padding:16px 20px;">
+        <div style="font-family:Arial,sans-serif;font-weight:bold;font-size:15px;letter-spacing:1px;">THẺ DỰ ÁN KỸ THUẬT (BOM CARD)</div>
+        <div style="font-size:14.5px;margin-top:2px;">Dự án: <b>Mạch sạc &amp; bảo vệ pin Li-ion 18650</b></div>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;">
+          <tr><td style="padding:5px 0;border-bottom:1px solid #ddd;">1× Module TP4056 Type-C (có bảo vệ)</td><td style="text-align:right;padding:5px 0;border-bottom:1px solid #ddd;" class="mono">12.000đ · Shop</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid #ddd;">1× Đế gắn 1 cell pin 18650</td><td style="text-align:right;padding:5px 0;border-bottom:1px solid #ddd;" class="mono">8.000đ · Shop</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid #ddd;">1× Pin sạc 18650 2600mAh</td><td style="text-align:right;padding:5px 0;border-bottom:1px solid #ddd;" class="mono">45.000đ · Shop</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid #ddd;">1× Cáp sạc Type-C 1m</td><td style="text-align:right;padding:5px 0;border-bottom:1px solid #ddd;" class="mono">20.000đ · Shop</td></tr>
+          <tr><td style="padding:5px 0;border-bottom:1px solid #ddd;">1× Đồng hồ đo áp mini 0–30V DC</td><td style="text-align:right;padding:5px 0;border-bottom:1px solid #ddd;" class="mono">15.000đ · Shop</td></tr>
+          <tr><td style="padding:8px 0;font-weight:bold;font-family:Arial,sans-serif;">TỔNG DỰ TOÁN — 4/5 món có sẵn</td><td style="text-align:right;padding:8px 0;font-family:Arial,sans-serif;font-weight:bold;" class="accent">100.000đ</td></tr>
+        </table>
+        <div class="btn1click">1-CLICK THÊM TOÀN BỘ VÀO GIỎ HÀNG</div>
+      </div>
+      <div class="cellbody" style="margin-top:12px;">BOM JSON gắn <span class="mono">variantId</span> → <span class="mono">POST /api/cart/batch-add</span> → toàn bộ linh kiện vào giỏ trong <b>~1 giây</b>.</div>
+    </div>
+    <div style="flex:1;">
+      <div class="tag solid">CHATWIDGET.VUE — BỘ 5 INTERACTIVE UI CARDS</div>
+      <div style="margin-top:12px;">
+        <div class="celltitle">1 · Thẻ đề xuất sản phẩm</div>
+        <div class="cellbody">Carousel ngang: ảnh, thông số cốt lõi, giá, nhãn còn/hết hàng, nút thêm nhanh.</div>
+      </div>
+      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:10px;">
+        <div class="celltitle">2 · Thẻ BOM dự án <span class="accent">+ nút 1-Click</span></div>
+        <div class="cellbody">Phân loại nguồn cung, tính tổng chi phí dự toán theo thời gian thực.</div>
+      </div>
+      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:10px;">
+        <div class="celltitle">3 · Thẻ timeline đơn hàng</div>
+        <div class="cellbody">Đã đặt → xác nhận → đóng gói → vận chuyển → đã giao, kèm mã vận đơn.</div>
+      </div>
+      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:10px;">
+        <div class="celltitle">4 · Thẻ cảnh báo tồn kho (Admin)</div>
+        <div class="cellbody">Danh sách SKU chạm ngưỡng đỏ + gợi ý tạo đơn nhập hàng.</div>
+      </div>
+      <div style="margin-top:10px;border-top:1px solid #ddd;padding-top:10px;">
+        <div class="celltitle">5 · Thẻ báo cáo kinh doanh (Admin)</div>
+        <div class="cellbody">KPI doanh thu, tăng trưởng PoP %, AOV — mã màu biến động xanh/đỏ.</div>
+      </div>
+    </div>
+  </div>
+  <div class="caption"><b>KỊCH BẢN THỰC TẾ&nbsp;&nbsp;</b> “Trạm quan trắc không khí ESP32”: AI lập BOM 5 linh kiện — dự toán 485.000đ — khách bấm một lần, đủ giỏ hàng, thanh toán ngay.</div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 13 · 12. KIỂM THỬ ============ -->
+<div class="slide">
+  <h2 class="sec">12. Kiểm thử tự động toàn diện</h2>
+  <div class="secbar"></div>
+  <div style="display:flex;gap:52px;margin-top:30px;">
+    <div style="width:250px;flex:none;">
+      <div class="big">45/45</div>
+      <div class="biglabel">bài kiểm thử Unit + Integration</div>
+      <div class="big" style="margin-top:26px;" >100%</div>
+      <div class="biglabel">tỷ lệ PASSED — 0 Failures · 0 Errors · BUILD SUCCESS</div>
+      <div style="border-top:3px solid #111;margin-top:26px;padding-top:12px;font-size:14.5px;line-height:1.5;">
+        <b>Công cụ</b><br>JUnit 5 · Mockito · Spring Boot Test<br><b>Thời gian chạy toàn bộ</b><br>14,3 giây
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="bar-row" style="border-top:3px solid #111;padding-top:12px;"><div class="bl">AiToolServiceTest</div><div class="btrack"><div class="bfill" style="width:100%;background:#E8630A;"></div></div><div class="bv">14</div></div>
+      <div class="bar-row"><div class="bl">AiChatServiceIntegrationTest</div><div class="btrack"><div class="bfill" style="width:50%;"></div></div><div class="bv">7</div></div>
+      <div class="bar-row"><div class="bl">AiToolPolicyServiceTest</div><div class="btrack"><div class="bfill" style="width:57%;"></div></div><div class="bv">8</div></div>
+      <div class="bar-row"><div class="bl">ChatIntentAnalyzerTest</div><div class="btrack"><div class="bfill" style="width:43%;"></div></div><div class="bv">6</div></div>
+      <div class="bar-row"><div class="bl">SecurityAndAuthIntegrationTest</div><div class="btrack"><div class="bfill" style="width:36%;"></div></div><div class="bv">5</div></div>
+      <div class="bar-row"><div class="bl">OrderAndPaymentFlowTest</div><div class="btrack"><div class="bfill" style="width:36%;"></div></div><div class="bv">5</div></div>
+      <div style="display:flex;gap:28px;font-size:13px;color:#555;margin-top:8px;"><span style="letter-spacing:1.5px;">SỐ TEST CASE / SUITE</span><span><span style="display:inline-block;width:12px;height:12px;background:#E8630A;margin-right:6px;"></span>logic 16 công cụ AI</span></div>
+      <div class="cellbody" style="margin-top:16px;">Phạm vi kiểm định: phân tích ý định, tường lửa PBAC, logic 16 công cụ, vòng lặp Multi-turn + phản hồi 7 phần, JWT/RBAC + Blacklist, đặt hàng — trừ kho — xác minh chữ ký HMAC webhook.</div>
+    </div>
+  </div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 14 · 13. METRICS ============ -->
+<div class="slide">
+  <h2 class="sec">13. Số liệu vận hành thực tế</h2>
+  <div class="secbar"></div>
+  <div class="grid" style="margin-top:36px;">
+    <div class="col rowsep"><div class="big" style="font-size:42px;">152</div><div class="biglabel">phiên hội thoại AI thử nghiệm</div></div>
+    <div class="col rowsep"><div class="big" style="font-size:42px;">840</div><div class="biglabel">lượt tin nhắn xử lý thành công</div></div>
+    <div class="col rowsep"><div class="big" style="font-size:42px;">412</div><div class="biglabel">lệnh gọi công cụ thực tế (Tool Calls)</div></div>
+  </div>
+  <div class="grid" style="margin-top:22px;">
+    <div class="col rowsep"><div class="big" style="font-size:42px;">99,2%</div><div class="biglabel">tỷ lệ thực thi công cụ thành công</div></div>
+    <div class="col rowsep"><div class="big" style="font-size:42px;">18,4 ms</div><div class="biglabel">thời gian thực thi công cụ trung bình (DB)</div></div>
+    <div class="col rowsep"><div class="big" style="font-size:42px;">0,0%</div><div class="biglabel">tỷ lệ ảo giác — 100% SKU &amp; giá khớp CSDL</div></div>
+  </div>
+  <div style="border-top:3px solid #111;margin-top:24px;padding-top:16px;display:flex;gap:36px;">
+    <div class="col"><div class="celltitle" style="font-size:16px;">API thương mại &lt; 250 ms</div><div class="cellbody" style="margin-top:4px;">Xem hàng, lọc facet, thêm giỏ — nhờ chỉ mục GIN + Redis.</div></div>
+    <div class="col"><div class="celltitle" style="font-size:16px;">AI TTFT &lt; 1,5 s</div><div class="cellbody" style="margin-top:4px;">Một lượt gọi công cụ + câu trả lời hoàn chỉnh &lt; 4 giây.</div></div>
+    <div class="col"><div class="celltitle" style="font-size:16px;">100 người dùng đồng thời</div><div class="cellbody" style="margin-top:4px;">Mượt mà nhờ Java Virtual Threads (Project Loom).</div></div>
+  </div>
+  <div class="caption"><b>KỊCH BẢN QUẢN TRỊ&nbsp;&nbsp;</b> “Báo cáo doanh thu tháng + cảnh báo hết kho”: doanh thu 128.500.000đ (+18,4% PoP) · AOV 420.000đ · 4 SKU chạm ngưỡng đỏ (LM358 còn 3, HC-SR04 còn 5).</div>
+  <div class="rule-bottom"></div>
+</div>
+
+<!-- ============ SLIDE 15 · 14. KẾT LUẬN ============ -->
+<div class="slide">
+  <h2 class="sec">14. Kết luận &amp; hướng phát triển</h2>
+  <div class="secbar"></div>
+  <div style="display:flex;gap:40px;margin-top:30px;">
+    <div style="flex:1;">
+      <div class="kicker" style="font-size:14px;">Kết quả đạt được</div>
+      <div class="cellbody" style="margin-top:14px;line-height:1.6;">
+        · Nền tảng full-stack hoàn chỉnh: storefront + admin + trợ lý AI, giao diện responsive, tốc độ phản hồi nhanh<br><br>
+        · Local LLM on-premise — bảo vệ 100% dữ liệu kinh doanh, không tốn chi phí cloud API<br><br>
+        · 16 Native AI Tools · chống ảo giác 3 lớp — <b>0,0% tỷ lệ ảo giác</b><br><br>
+        · BOM Planner + <b>“1-Click Thêm toàn bộ vào giỏ”</b> — trải nghiệm mua sắm kỹ thuật độc đáo<br><br>
+        · <b>45/45 kiểm thử 100%</b> · JAR sản xuất sẵn sàng vận hành doanh nghiệp
+      </div>
+    </div>
+    <div style="width:2px;background:#111;flex:none;"></div>
+    <div style="flex:1;">
+      <div class="kicker" style="font-size:14px;">Hướng phát triển</div>
+      <div class="cellbody" style="margin-top:14px;line-height:1.6;">
+        · <b>Vision AI đa phương thức:</b> chụp ảnh bo mạch hỏng → AI nhận dạng linh kiện cần thay (LLaVA / Qwen-VL)<br><br>
+        · <b>RAG datasheet:</b> pgvector đọc tài liệu PDF hàng trăm trang — pinout, giản đồ xung, biểu đồ tần số<br><br>
+        · <b>Ứng dụng di động:</b> Flutter / React Native + push notification trạng thái đơn &amp; hàng trở lại kho<br><br>
+        · <b>Đề xuất cá nhân hóa:</b> gợi ý combo linh kiện theo lịch sử mua &amp; trình độ kỹ thuật từng khách
+      </div>
+    </div>
+  </div>
+  <div class="caption"><b>BÀI HỌC RÚT RA&nbsp;&nbsp;</b> Chuẩn hóa kiến trúc decoupled ngay từ đầu · làm chủ công nghệ mũi nhọn · bảo mật &amp; kiểm thử là nguyên lý xuyên suốt, không phải công việc cuối dự án · phối hợp nhóm chặt chẽ qua Git.</div>
+  <div class="rule-bottom"></div>
+</div>
+
+</body>
+</html>

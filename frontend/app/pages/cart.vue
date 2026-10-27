@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-50 min-h-screen py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-sm text-gray-600 mb-6">
         <NuxtLink to="/" class="hover:text-[#09f] transition-colors">Trang chủ</NuxtLink>

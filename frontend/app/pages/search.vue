@@ -2,7 +2,7 @@
   <div class="bg-gray-50 min-h-screen">
     <!-- Breadcrumb -->
     <section class="bg-white border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-3">
         <div class="flex items-center gap-2 text-sm text-gray-600">
           <NuxtLink to="/" class="hover:text-[#09f] transition-colors duration-200">
             Trang chủ
@@ -14,7 +14,7 @@
     </section>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-8">
       <!-- Search Info -->
       <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-2">
@@ -197,10 +197,6 @@
                   :alt="product.name"
                   class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                 />
-                <!-- Sale Badge -->
-                <div v-if="product.hasDiscount" class="z-10 absolute bottom-3 left-3 bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold">
-                  Giảm giá
-                </div>
                 <!-- Category Badge -->
                 <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1 rounded-lg text-xs font-medium">
                   {{ product.category }}
@@ -217,11 +213,32 @@
                   {{ product.name }}
                 </h3>
                 
-                <!-- Price Range -->
-                <div class="flex flex-col mb-3">
-                  <span class=" font-bold text-[#09f]">
+                <!-- Price Range & Discount: 10.000đ 20.000đ 50% -->
+                <div class="flex items-center gap-2 mb-2 flex-wrap">
+                  <span class="font-bold text-[#09f]">
                     {{ product.priceRange }}
                   </span>
+                  <span v-if="product.originalPrice && product.originalPrice > product.minPrice" class="text-sm text-gray-400 line-through">
+                    {{ formatPrice(product.originalPrice) }}
+                  </span>
+                  <span v-if="product.hasDiscount && product.discountPercent" class="text-xs font-bold text-white bg-rose-600 px-1.5 py-0.5 rounded-md shadow-xs">
+                    {{ product.discountPercent }}%
+                  </span>
+                </div>
+
+                <!-- Rating, Đã bán, Còn lại -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3 pt-2 border-t border-gray-100">
+                  <div class="flex items-center gap-1 font-bold text-amber-500">
+                    <span>★</span>
+                    <span>{{ Number(product.rating || 5.0).toFixed(1) }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-[11px] text-gray-500">
+                    <span>Đã bán {{ product.soldQuantity || 0 }}</span>
+                    <span>•</span>
+                    <span :class="product.totalStock > 0 ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'">
+                      {{ product.totalStock > 0 ? `Còn ${product.totalStock}` : 'Hết hàng' }}
+                    </span>
+                  </div>
                 </div>
 
                 <!-- Actions -->
@@ -371,20 +388,39 @@ const relatedKeywords = computed(() => {
   return [...unique.values()].slice(0, 6)
 })
 
-const loadPopularSearches = () => {
+const loadPopularSearches = async () => {
+  try {
+    const res = await $fetch<any[]>(`${API_BASE_URL}/search/popular?limit=8`)
+    if (res && Array.isArray(res) && res.length > 0) {
+      popularSearches.value = res.map((item: any) => ({
+        query: item.keyword,
+        count: item.searchCount
+      }))
+      return
+    }
+  } catch (error) {
+    console.warn('Could not load popular searches from API:', error)
+  }
   try {
     const stored = localStorage.getItem('daln_search_terms')
     popularSearches.value = stored ? JSON.parse(stored) : []
   } catch (error) {
-    console.error('Could not load search history:', error)
     popularSearches.value = []
   }
 }
 
-const recordSearchTerm = (query: string) => {
+const recordSearchTerm = async (query: string, resultsCount: number = 0) => {
   const term = query.trim()
   if (!term || term.toLowerCase() === lastRecordedSearch.value.toLowerCase()) return
   lastRecordedSearch.value = term
+  try {
+    await $fetch(`${API_BASE_URL}/search/record`, {
+      method: 'POST',
+      body: { keyword: term, resultsCount }
+    })
+  } catch (e) {
+    // Non-blocking fallback
+  }
   try {
     const stored = localStorage.getItem('daln_search_terms')
     const counts: { query: string; count: number }[] = stored ? JSON.parse(stored) : []
@@ -393,7 +429,9 @@ const recordSearchTerm = (query: string) => {
     else counts.push({ query: term, count: 1 })
     counts.sort((a, b) => b.count - a.count)
     localStorage.setItem('daln_search_terms', JSON.stringify(counts.slice(0, 20)))
-    popularSearches.value = counts.slice(0, 5)
+    if (!popularSearches.value.length) {
+      popularSearches.value = counts.slice(0, 5)
+    }
   } catch (error) {
     console.error('Could not save search history:', error)
   }
@@ -603,6 +641,7 @@ const searchProducts = async () => {
     }
     if (searchQuery.value) {
       void loadRelatedProducts(products.value.slice(0, 3))
+      recordSearchTerm(searchQuery.value, products.value.length)
     } else {
       relatedProducts.value = []
     }
@@ -621,6 +660,7 @@ const mapProduct = (p: any) => {
   // Tính khoảng giá từ minPrice/maxPrice
   const minPrice = p.minDiscountPrice || p.minPrice || 0
   const maxPrice = p.maxDiscountPrice || p.maxPrice || 0
+  const originalPrice = p.minPrice || 0
   
   // Format price range
   let priceRange = ''
@@ -629,6 +669,10 @@ const mapProduct = (p: any) => {
   } else {
     priceRange = `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`
   }
+
+  const discountPercent = (originalPrice > minPrice && minPrice > 0)
+    ? Math.round(((originalPrice - minPrice) / originalPrice) * 100)
+    : (p.hasDiscount ? 30 : 0)
   
   return {
     id: p.id,
@@ -638,10 +682,14 @@ const mapProduct = (p: any) => {
     img: p.defaultImageUrl ? `http://localhost:8080${p.defaultImageUrl}` : (p.categories?.[0]?.imageUrl || '/images/Sub_Edunera_Logo_512.png'),
     minPrice: minPrice,
     maxPrice: maxPrice,
+    originalPrice: originalPrice,
     priceRange: priceRange,
     hasDiscount: p.hasDiscount || false,
+    discountPercent: discountPercent,
     variantCount: p.variants?.length || 0,
-    totalStock: p.totalStock || 0,
+    totalStock: p.totalStock != null ? p.totalStock : (p.variants?.reduce((sum: number, v: any) => sum + (v.inStock || 0), 0) || 0),
+    soldQuantity: p.soldQuantity || 0,
+    rating: p.avgRating != null ? p.avgRating : 5.0,
     isAvailable: (p.totalStock || 0) > 0
   }
 }

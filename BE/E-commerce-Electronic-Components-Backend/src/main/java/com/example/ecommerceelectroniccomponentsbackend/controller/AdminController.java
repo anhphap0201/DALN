@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final IAdminService adminService;
+    private final com.example.ecommerceelectroniccomponentsbackend.service.ISearchHistoryService searchHistoryService;
 
     // ==================== STATS ====================
 
@@ -30,6 +31,12 @@ public class AdminController {
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardDTO> getDashboard() {
         return ResponseEntity.ok(adminService.getDashboard());
+    }
+
+    @GetMapping("/search-stats")
+    public ResponseEntity<java.util.List<com.example.ecommerceelectroniccomponentsbackend.dto.SearchKeywordStatDTO>> getSearchStats(
+            @RequestParam(defaultValue = "20") int limit) {
+        return ResponseEntity.ok(searchHistoryService.getAdminSearchStats(limit));
     }
 
     @GetMapping("/chart")

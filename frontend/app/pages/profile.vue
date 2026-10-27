@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Hồ sơ của tôi</h1>
         <p class="mt-2 text-sm text-gray-600">Quản lý thông tin cá nhân, nhận hàng và mật khẩu</p>

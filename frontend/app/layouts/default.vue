@@ -8,7 +8,7 @@
     
     <!-- Header -->
     <header class="border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
         <!-- Top Row: Logo, Search, Auth -->
         <div class="flex items-center justify-between gap-4 py-4">
           <!-- Logo -->
@@ -22,7 +22,7 @@
           </NuxtLink>
 
           <!-- Search Bar -->
-          <div class="flex-1 max-w-2xl">
+          <div class="flex-1 max-w-3xl">
             <div class="relative">
               <input
                 v-model="searchQuery"
@@ -179,6 +179,16 @@
                       </svg>
                       Đơn hàng của tôi
                     </NuxtLink>
+                    <NuxtLink
+                      to="/warranty"
+                      class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      @click="showUserMenu = false"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      Bảo hành linh kiện
+                    </NuxtLink>
                     <button
                       @click="handleLogout"
                       class="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -227,7 +237,7 @@
 
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-auto">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-12">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Company Info -->
           <div class="col-span-1 md:col-span-2">
@@ -279,7 +289,7 @@
             <h3 class="font-semibold text-gray-800 mb-4">Hỗ trợ</h3>
             <ul class="space-y-2">
               <li>
-                <a href="#" class="text-sm text-gray-600 hover:text-[#09f] transition-colors duration-200">Chính sách bảo hành</a>
+                <NuxtLink to="/warranty" class="text-sm text-gray-600 hover:text-[#09f] transition-colors duration-200">Chính sách & Tra cứu bảo hành</NuxtLink>
               </li>
               <li>
                 <a href="#" class="text-sm text-gray-600 hover:text-[#09f] transition-colors duration-200">Chính sách đổi trả</a>

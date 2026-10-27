@@ -32,6 +32,9 @@ public class ChatSession {
     @Column(nullable = false, length = 20)
     private String status = "active";
 
+    @Column(name = "context_data", columnDefinition = "TEXT")
+    private String contextData;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

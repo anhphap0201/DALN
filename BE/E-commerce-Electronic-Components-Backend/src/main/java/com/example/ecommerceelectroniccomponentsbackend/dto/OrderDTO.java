@@ -1,6 +1,5 @@
 package com.example.ecommerceelectroniccomponentsbackend.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,14 +20,24 @@ public class OrderDTO {
 
     private Long id;
 
-    @NotNull(message = "User ID cannot be null")
+    // Optional for guest orders
     private Long userId;
 
     @Builder.Default
     private String status = "PENDING";
 
-    @NotNull(message = "Total price cannot be null")
     private BigDecimal totalPrice;
+    private BigDecimal subtotal;
+    private BigDecimal shippingFee;
+    private BigDecimal discount;
+
+    // Customer & Shipping information
+    private String fullName;
+    private String email;
+    private String phone;
+    private String address;
+    private String province;
+    private String ward;
 
     @Builder.Default
     private Set<OrderItemDTO> orderItems = new HashSet<>();

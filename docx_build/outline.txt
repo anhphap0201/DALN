@@ -1,0 +1,490 @@
+P001 <Normal> ĐẠI HỌC PHENIKAA
+P002 <Normal> TRƯỜNG CÔNG NGHỆ THÔNG TIN
+P003 <Normal> [IMG] 
+P004 <Normal> BÁO CÁO ĐỒ ÁN LIÊN NGÀNH
+P005 <Normal> XÂY DỰNG WEBSITE BÁN LINH KIỆN ĐIỆN TỬ
+TBL 3x3 first='Thành viên nhóm'
+P006 <Normal> Giảng viên hướng dẫn: ThS. Nguyễn Văn Sơn
+P007 <Normal> .
+P008 <Normal> LỜI CẢM ƠN
+P009 <Normal> Trước hết, chúng tôi xin gửi lời cảm ơn chân thành và sâu sắc đến THS Nguyễn Văn Sơn, giảng viên đã trực tiếp 
+P010 <Normal> Môn học Đồ án cơ sở công nghệ thông tin là một môn học quan trọng, giúp sinh viên vận dụng các kiến thức đã họ
+P011 <Normal> Chúng tôi xin chân thành cảm ơn THS Nguyễn Văn Sơn đã luôn nhiệt tình hỗ trợ, tạo điều kiện và truyền đạt nhữn
+P012 <Normal> .
+P013 <Normal> .
+P014 <Normal> .
+P015 <Normal> .
+P016 <Normal> LỜI CAM ĐOAN
+P017 <Normal> Chúng tôi xin cam đoan rằng đồ án môn học này là kết quả nghiên cứu và thực hiện của chính nhóm chúng tôi. Tất
+P018 <Normal> Chúng tôi hoàn toàn chịu trách nhiệm về tính trung thực cũng như toàn bộ nội dung của đồ án môn học đã nộp.
+P019 <Normal> .
+P020 <Normal> Hà nội, ngày … tháng … năm
+P021 <Normal> .
+P022 <Normal> .
+P023 <Normal> .
+P024 <Normal> Ký tên
+P025 <Normal> .
+P026 <Normal> .
+P027 <Normal> .
+P028 <Normal> .
+P029 <Normal> .
+P030 <Normal> .
+P031 <Normal> Phân công công việc và đóng góp của các thành viên
+TBL 3x5 first='STT'
+P032 <Normal> .
+P033 <Normal> ĐẠI HỌC PHENIKAA                               KỲ THI KẾT THÚC HỌC PHẦN
+P034 <Normal> KHOA CÔNG NGHỆ THÔNG TIN          HỌC KỲ … NĂM HỌC………
+P035 <Normal> .
+P036 <Normal> PHIẾU CHẤM THI TIỂU LUẬN/ĐỒ ÁN
+P037 <Normal> .
+P038 <Normal> Môn học: 									Lớp:
+P039 <Normal> Sinh viên thực hiện:
+P040 <Normal> 1.										Điểm:
+P041 <Normal> 2.										Điểm:
+P042 <Normal> 3.										Điểm:
+P043 <Normal> 4.										Điểm:
+P044 <Normal> 5.										Điểm:
+P045 <Normal> Ngày thi:									Phòng thi:
+P046 <Normal> .
+TBL 1x2 first='Giảng viên chấm thi 1\n(Ký và ghi rõ họ t'
+P047 <Normal> .
+P048 <Normal> .
+P049 <Normal> MỤC LỤC
+P050 <Normal> .
+P051 <Heading 1> .
+P052 <Normal> .
+P053 <Normal> .
+P054 <Normal> .
+P055 <Normal> Danh Mục Hình Ảnh
+P056 <Normal> .
+P057 <Normal> .
+P058 <Normal> .
+P059 <Normal> .
+P060 <Normal> .
+P061 <Normal> .
+P062 <Normal> .
+P063 <Normal> .
+P064 <Normal> .
+P065 <Normal> .
+P066 <Normal> .
+P067 <Normal> .
+P068 <Normal> .
+P069 <Normal> .
+P070 <Normal> .
+P071 <Normal> .
+P072 <Normal> .
+P073 <Normal> .
+P074 <Normal> .
+P075 <Normal> .
+P076 <Normal> .
+P077 <Normal> .
+P078 <Normal> .
+P079 <Normal> .
+P080 <Normal> .
+P081 <Heading 1> LỜI MỞ ĐẦU
+P082 <Normal> Trong bối cảnh chuyển đổi số đang diễn ra mạnh mẽ, thương mại điện tử ngày càng khẳng định vai trò quan trọng 
+P083 <Normal> .
+P084 <Normal> Tài liệu này là báo cáo đặc tả đầy đủ cho hệ thống Website Thương mại điện tử Linh kiện điện tử – một dự án ph
+P085 <Normal> .
+P086 <Normal> Nhóm xin chân thành cảm ơn sự hỗ trợ và định hướng từ giảng viên hướng dẫn trong suốt quá trình thực hiện đề t
+P087 <Heading 1> [PGBRK] 
+P088 <Heading 1> CHƯƠNG 1: GIỚI THIỆU TỔNG QUAN
+P089 <Heading 2> 1.1. Phạm vi dự án
+P090 <Normal> Hệ thống là một nền tảng thương mại điện tử mô hình B2C (Business-to-Consumer), chuyên biệt cho lĩnh vực linh 
+P091 <Heading 2> 1.2. Định nghĩa và thuật ngữ
+P092 <Normal> .
+TBL 6x2 first='Thuật ngữ'
+P093 <Heading 2> .
+P094 <Heading 2> .
+P095 <Heading 2> .
+P096 <Heading 2> .
+P097 <Heading 2> .
+P098 <Heading 2> 1.3. Thông tin dự án
+P099 <Normal> .
+TBL 5x2 first='Hạng mục'
+P100 <Normal> [PGBRK] 
+P101 <Heading 1> CHƯƠNG 2: MÔ TẢ HỆ THỐNG
+P102 <Heading 2> 2.1. Đối tượng sử dụng (User Roles)
+P103 <Normal> Hệ thống phục vụ ba nhóm người dùng chính với các quyền hạn và chức năng khác nhau:
+P104 <Normal> Khách hàng (Customer): Đối tượng mua hàng chủ yếu. Có thể duyệt sản phẩm, thêm giỏ hàng, đặt hàng và theo dõi 
+P105 <Normal> Quản trị viên (Admin): Người có quyền cao nhất, quản lý toàn bộ danh mục sản phẩm, nhân sự và theo dõi báo cáo
+P106 <Heading 2> 2.2. Công nghệ triển khai
+P107 <Normal> .
+TBL 6x2 first='Thành phần'
+P108 <Heading 2> .
+P109 <Heading 2> .
+P110 <Heading 2> .
+P111 <Heading 2> .
+P112 <Heading 2> 2.3. Kiến trúc tổng quan hệ thống
+P113 <Normal> Hệ thống được xây dựng theo mô hình Layered Architecture (Kiến trúc 3 tầng), đảm bảo phân tách rõ ràng giữa cá
+P114 <Normal> Controller Layer: Nhận HTTP request từ client, validate dữ liệu đầu vào (@Valid), gọi Service layer và trả về 
+P115 <Normal> Service Layer: Xử lý toàn bộ business logic, quản lý transactions (@Transactional), gọi Repository để truy xuấ
+P116 <Normal> Repository Layer: Interface kế thừa JpaRepository, thực hiện CRUD operations và các custom queries (JPQL/Nativ
+P117 <Heading 2> [PGBRK] 
+P118 <Heading 2> 2.4. Cấu trúc thư mục dự án (Backend)
+P119 <Normal> [IMG] 
+P120 <Heading 2> 2.5. Luồng dữ liệu tổng quát
+P121 <Normal> Mỗi request từ phía client đều đi qua một chuỗi xử lý chuẩn hóa trước khi trả về phản hồi:
+P122 <Normal> (1) Client gửi HTTP Request lên server.
+P123 <Normal> (2) Security Filter (JWT Authentication) kiểm tra và xác thực token.
+P124 <Normal> (3) Controller nhận request, validate dữ liệu đầu vào.
+P125 <Normal> (4) Controller gọi Service – nơi xử lý toàn bộ business logic.
+P126 <Normal> (5) Service gọi Repository để truy vấn cơ sở dữ liệu PostgreSQL.
+P127 <Normal> (6) Dữ liệu Entity được chuyển đổi thành DTO và trả về Client dưới dạng JSON.
+P128 <Heading 2> .
+P129 <Heading 2> .
+P130 <Heading 2> 2.6. Thiết kế cơ sở dữ liệu
+P131 <Normal> Cơ sở dữ liệu PostgreSQL bao gồm các bảng chính sau:
+P132 <Normal> .
+TBL 11x2 first='Bảng'
+P133 <Normal> [PGBRK] 
+P134 <Heading 1> CHƯƠNG 3: YÊU CẦU CHỨC NĂNG CHI TIẾT
+P135 <Heading 2> 3.1. Sơ đồ Use Case tổng quan
+P136 <Normal> Sơ đồ Use Case thể hiện tổng thể các chức năng mà hệ thống cung cấp cho từng nhóm người dùng, bao gồm Khách hà
+P137 <Normal> .
+P138 <Normal> [IMG] 
+P139 <Normal> Hình 3.1 – Sơ đồ Use Case Tổng Quan 1
+P140 <Heading 2> .
+P141 <Heading 2> .
+P142 <Heading 2> .
+P143 <Heading 2> .
+P144 <Heading 2> 3.2. Phân hệ dành cho Khách hàng (Customer)
+P145 <Normal> Phân hệ Khách hàng cho phép người dùng cuối tương tác trực tiếp với hệ thống nhằm tìm kiếm, lựa chọn, đặt mua 
+P146 <Heading 3> .
+P147 <Heading 3> 3.2.1. Xem danh sách sản phẩm linh kiện điện tử
+P148 <Normal> Mô tả chức năng:  Hệ thống cho phép khách hàng truy cập và xem danh sách toàn bộ các linh kiện điện tử hiện có
+P149 <Normal> Chi tiết yêu cầu chức năng:
+P150 <Normal> Hệ thống hiển thị danh sách sản phẩm dưới dạng danh sách hoặc lưới.
+P151 <Normal> Mỗi sản phẩm hiển thị các thông tin cơ bản bao gồm:
+P152 <Normal> Tên sản phẩm
+P153 <Normal> Hình ảnh minh họa
+P154 <Normal> Giá bán
+P155 <Normal> Danh mục sản phẩm
+P156 <Normal> Tình trạng tồn kho
+P157 <Normal> Danh sách sản phẩm hỗ trợ phân trang để đảm bảo hiệu năng khi số lượng sản phẩm lớn.
+P158 <Normal> Các sản phẩm được lấy dữ liệu từ cơ sở dữ liệu PostgreSQL thông qua API Backend.
+P159 <Heading 3> .
+P160 <Heading 3> .
+P161 <Heading 3> 3.2.2. Tìm kiếm sản phẩm
+P162 <Normal> Mô tả chức năng:  Khách hàng có thể tìm kiếm linh kiện điện tử dựa trên từ khóa hoặc mã định danh sản phẩm.
+P163 <Normal> Chi tiết yêu cầu chức năng:
+P164 <Normal> Hệ thống cho phép tìm kiếm theo:
+P165 <Normal> Tên sản phẩm
+P166 <Normal> Mã SKU
+P167 <Normal> Từ khóa liên quan
+P168 <Normal> Kết quả tìm kiếm được trả về dựa trên mức độ phù hợp.
+P169 <Normal> Trường hợp không tìm thấy sản phẩm, hệ thống hiển thị thông báo phù hợp cho người dùng.
+P170 <Normal> Tìm kiếm được thực hiện thông qua API Backend và hỗ trợ truy vấn hiệu quả.
+P171 <Heading 3> .
+P172 <Heading 3> 3.2.3. Lọc sản phẩm động theo thuộc tính kỹ thuật (Dynamic Filtering)
+P173 <Normal> Mô tả chức năng:  Hệ thống hỗ trợ cơ chế lọc động, cho phép khách hàng lọc sản phẩm theo các thuộc tính kỹ thu
+P174 <Normal> Chi tiết yêu cầu chức năng:
+P175 <Normal> Khi khách hàng chọn một danh mục linh kiện, hệ thống tự động hiển thị các bộ lọc phù hợp.
+P176 <Normal> Ví dụ:
+P177 <Normal> Tụ điện: lọc theo điện dung, điện áp
+P178 <Normal> IC: lọc theo số chân, loại IC
+P179 <Normal> Điện trở: lọc theo công suất, sai số
+P180 <Normal> Cho phép kết hợp nhiều tiêu chí lọc đồng thời.
+P181 <Normal> Kết quả lọc được cập nhật theo thời gian thực.
+P182 <Heading 3> .
+P183 <Heading 3> 3.2.4. Xem chi tiết sản phẩm
+P184 <Normal> Mô tả chức năng:  Cho phép khách hàng xem đầy đủ thông tin chi tiết của một linh kiện điện tử.
+P185 <Normal> Chi tiết yêu cầu chức năng:
+P186 <Normal> Hiển thị các thông tin:
+P187 <Normal> Tên sản phẩm
+P188 <Normal> Mô tả chi tiết
+P189 <Normal> Thông số kỹ thuật (Attributes)
+P190 <Normal> Danh sách các biến thể sản phẩm (Variants)
+P191 <Normal> Giá bán tương ứng từng biến thể
+P192 <Normal> Datasheet (nếu có)
+P193 <Normal> Hiển thị thông tin tồn kho theo từng biến thể SKU.
+P194 <Normal> Hiển thị đánh giá và nhận xét của khách hàng khác.
+P195 <Heading 3> .
+P196 <Heading 3> 3.2.5. Quản lý giỏ hàng
+P197 <Normal> Mô tả chức năng:  Cho phép khách hàng quản lý danh sách sản phẩm dự định mua.
+P198 <Normal> Chi tiết yêu cầu chức năng:
+P199 <Normal> Thêm sản phẩm hoặc biến thể SKU vào giỏ hàng.
+P200 <Normal> Cập nhật số lượng sản phẩm trong giỏ hàng.
+P201 <Normal> Xóa sản phẩm khỏi giỏ hàng.
+P202 <Normal> Hệ thống tự động tính toán:
+P203 <Normal> Tổng số lượng sản phẩm
+P204 <Normal> Tổng giá trị đơn hàng
+P205 <Normal> Kiểm tra tồn kho trước khi cho phép cập nhật số lượng.
+P206 <Heading 3> .
+P207 <Heading 3> .
+P208 <Heading 3> .
+P209 <Heading 3> .
+P210 <Heading 3> 3.2.6. Đặt hàng (Guest Checkout)
+P211 <Normal> Mô tả chức năng:  Hệ thống cho phép khách hàng đặt hàng mà không cần đăng nhập hoặc tạo tài khoản.
+P212 <Normal> Chi tiết yêu cầu chức năng:
+P213 <Normal> Khách hàng nhập thông tin giao hàng bao gồm:
+P214 <Normal> Họ và tên người nhận
+P215 <Normal> Số điện thoại
+P216 <Normal> Email
+P217 <Normal> Địa chỉ giao hàng
+P218 <Normal> Hệ thống xác thực dữ liệu đầu vào.
+P219 <Normal> Đơn hàng được tạo và lưu trong cơ sở dữ liệu.
+P220 <Normal> Trạng thái ban đầu của đơn hàng là “Chờ xác nhận”.
+P221 <Normal> .
+P222 <Heading 3> 3.2.7. Thanh toán đơn hàng
+P223 <Normal> Mô tả chức năng:  Hệ thống xử lý thanh toán đơn hàng thông qua các phương thức thanh toán được hỗ trợ.
+P224 <Normal> Chi tiết yêu cầu chức năng:
+P225 <Normal> Hỗ trợ các phương thức thanh toán:
+P226 <Normal> Thanh toán khi nhận hàng(COD-Cash On Delivery)
+P227 <Normal> Ví điện tử ( MoMo – giả lập)
+P228 <Normal> Hệ thống ghi nhận trạng thái giao dịch:
+P229 <Normal> Thành công
+P230 <Normal> Thất bại
+P231 <Normal> Đang xử lý
+P232 <Normal> Thông tin thanh toán được lưu vào bảng payments.
+P233 <Heading 3> .
+P234 <Heading 3> .
+P235 <Heading 3> .
+P236 <Heading 3> 3.2.8. Theo dõi trạng thái đơn hàng
+P237 <Normal> Cho phép khách hàng theo dõi tình trạng xử lý đơn hàng đã đặt.
+P238 <Normal> Chi tiết yêu cầu chức năng:
+P239 <Normal> Khách hàng tra cứu đơn hàng bằng:
+P240 <Normal> Mã đơn hàng
+P241 <Normal> Email hoặc số điện thoại
+P242 <Normal> Hệ thống hiển thị:
+P243 <Normal> Thông tin đơn hàng
+P244 <Normal> Danh sách sản phẩm
+P245 <Normal> Trạng thái đơn hàng (Chờ xác nhận, Đang giao, Hoàn thành, Đã hủy)
+P246 <Heading 3> 3.2.9. Đánh giá và nhận xét sản phẩm
+P247 <Normal> Mô tả chức năng:  Cho phép khách hàng gửi đánh giá và nhận xét về sản phẩm đã mua.
+P248 <Normal> Chi tiết yêu cầu chức năng:
+P249 <Normal> Khách hàng đánh giá sản phẩm bằng số sao (1–5).
+P250 <Normal> Gửi nội dung nhận xét.
+P251 <Normal> Chỉ cho phép đánh giá các sản phẩm đã được mua.
+P252 <Normal> Đánh giá được hiển thị công khai trên trang chi tiết sản phẩm.
+P253 <Heading 2> .
+P254 <Heading 2> 3.3. Phân hệ dành cho Quản trị viên (Admin)
+P255 <Normal> Phân hệ Quản trị viên (Admin) cung cấp các chức năng quản lý toàn diện hệ thống, bao gồm quản lý sản phẩm, đơn
+P256 <Heading 3> .
+P257 <Heading 3> 3.3.1. Quản lý sản phẩm & Biến thể SKU
+P258 <Normal> Mô tả chức năng quản lý sản phẩm :  Admin quản lý toàn bộ vòng đời của sản phẩm linh kiện điện tử.
+P259 <Normal> .
+P260 <Normal> .
+P261 <Normal> .
+P262 <Normal> Chi tiết yêu cầu chức năng:
+P263 <Normal> Thêm mới sản phẩm linh kiện.
+P264 <Normal> Cập nhật thông tin sản phẩm:
+P265 <Normal> Tên sản phẩm
+P266 <Normal> Mô tả
+P267 <Normal> Giá bán
+P268 <Normal> Danh mục
+P269 <Normal> Xóa sản phẩm khi không phát sinh đơn hàng liên quan.
+P270 <Normal> Quản lý hình ảnh sản phẩm.
+P271 <Normal> Mô tả chức năng quản lý biến thể SKU :  Admin quản lý các biến thể sản phẩm dựa trên thuộc tính kỹ thuật.
+P272 <Normal> Chi tiết yêu cầu chức năng:
+P273 <Normal> Tạo các biến thể sản phẩm dựa trên Attributes.
+P274 <Normal> Gán mã SKU cho từng biến thể.
+P275 <Normal> Đảm bảo mỗi SKU là duy nhất trong hệ thống.
+P276 <Normal> Quản lý tồn kho cho từng SKU.
+P277 <Heading 3> .
+P278 <Heading 3> 3.3.2. Quản lý danh mục và thương hiệu
+P279 <Normal> Mô tả chức năng:  Admin quản lý cấu trúc phân loại sản phẩm.
+P280 <Normal> Chi tiết yêu cầu chức năng:
+P281 <Normal> Thêm, sửa, xóa danh mục sản phẩm.
+P282 <Normal> Quản lý thương hiệu linh kiện.
+P283 <Normal> Gán sản phẩm vào danh mục và thương hiệu phù hợp.
+P284 <Heading 3> 3.3.3. Quản lý đơn hàng
+P285 <Normal> Mô tả chức năng:  Admin theo dõi và xử lý các đơn hàng của khách hàng.
+P286 <Normal> Chi tiết yêu cầu chức năng:
+P287 <Normal> Xem danh sách đơn hàng.
+P288 <Normal> Xác nhận đơn hàng.
+P289 <Normal> Cập nhật trạng thái đơn hàng (Đang giao, Hoàn thành).
+P290 <Normal> Hủy đơn hàng theo yêu cầu nghiệp vụ.
+P291 <Normal> Đảm bảo tuân thủ các Business Rules đã định nghĩa.
+P292 <Heading 3> .
+P293 <Heading 3> 3.3.4. Quản lý kho (Inventory Management)
+P294 <Normal> Mô tả chức năng:  Admin theo dõi và cập nhật số lượng linh kiện trong kho.
+P295 <Normal> Chi tiết yêu cầu chức năng:
+P296 <Normal> Cập nhật số lượng nhập kho.
+P297 <Normal> Tự động trừ kho khi đơn hàng được duyệt.
+P298 <Normal> Hiển thị cảnh báo khi sản phẩm sắp hết hàng.
+P299 <Heading 3> .
+P300 <Heading 3> .
+P301 <Heading 3> 3.3.5. Báo cáo và thống kê
+P302 <Normal> Mô tả chức năng:  Cung cấp các báo cáo hỗ trợ quản lý và phân tích.
+P303 <Normal> Chi tiết yêu cầu chức năng:
+P304 <Normal> Biểu đồ doanh thu theo ngày, tháng.
+P305 <Normal> Thống kê các sản phẩm bán chạy.
+P306 <Normal> Thống kê tình trạng tồn kho.
+P307 <Normal> Dữ liệu phục vụ theo dõi tài chính và vận hành.
+P308 <Heading 3> .
+P309 <Heading 3> .
+P310 <Heading 3> 3.3.6. Quản lý nhân sự
+P311 <Normal> [PGBRK] Tạo tài khoản và phân quyền cho nhân viên (Staff). Admin là người duy nhất có quyền quản lý tài khoản hệ thống
+P312 <Heading 1> CHƯƠNG 4: SƠ ĐỒ HOẠT ĐỘNG (ACTIVITY DIAGRAMS)
+P313 <Heading 2> 4.1. Quy trình Đặt hàng (Activity Diagram)
+P314 <Normal> Sơ đồ mô tả luồng tương tác giữa Khách hàng, Hệ thống Web và Cổng thanh toán trong quá trình đặt hàng và thanh
+P315 <Normal> [IMG] 
+P316 <Normal> Hình 4.1 – Sơ đồ Activity Đặt Hàng 1
+P317 <Normal> .
+P318 <Normal> Luồng xử lý chính bao gồm: Khách hàng vào giỏ hàng/Checkout → Hệ thống kiểm tra đăng nhập → Hiển thị form đặt 
+P319 <Heading 2> 4.2. Quy trình Đăng nhập (Login)
+P320 <Normal> Sơ đồ hoạt động mô tả toàn bộ quy trình xác thực người dùng, từ bước nhập thông tin đến khi cấp phát token và 
+P321 <Normal> .
+P322 <Normal> [IMG] 
+P323 <Normal> Hình 4.2 – Activity Diagram: Đăng nhập 1
+P324 <Normal> .
+P325 <Normal> Các bước xử lý chính:
+P326 <Normal> (1) Validate phía Client;
+P327 <Normal> (2) Server nhận request và kiểm tra validation;
+P328 <Normal> (3) AuthenticationManager xác thực credentials;
+P329 <Normal> (4) Tìm user trong Database;
+P330 <Normal> (5) Xác minh mật khẩu;
+P331 <Normal> (6) Kiểm tra tài khoản có bị khóa và email đã xác thực hay chưa;
+P332 <Normal> (7) Generate Access Token (1 giờ) và Refresh Token (7 ngày);
+P333 <Normal> (8) Build AuthResponse và trả về 200 OK;
+P334 <Normal> (9) Client lưu token vào localStorage;
+P335 <Normal> .
+P336 <Heading 2> 4.3. Quy trình Đăng ký (Register)
+P337 <Normal> Sơ đồ mô tả quy trình tạo tài khoản mới, bao gồm kiểm tra trùng lặp username/email và mã hóa mật khẩu trước kh
+P338 <Normal> .
+P339 <Normal> [IMG] 
+P340 <Normal> Hình 4.3 – Activity Diagram: Đăng ký 1
+P341 <Normal> .
+P342 <Normal> Quy trình: Người dùng nhập Username, Email, Password, Full Name, Phone → Validate phía Client → Gửi POST /api/
+P343 <Heading 2> 4.4. Quy trình Đăng xuất (Logout)
+P344 <Normal> Sơ đồ mô tả quy trình đăng xuất an toàn, bao gồm xóa token phía client và vô hiệu hóa token trên server thông 
+P345 <Normal> [IMG] 
+P346 <Normal> Hình 4.4 – Activity Diagram: Đăng xuất 1
+P347 <Normal> Quy trình: User click Logout → Xác nhận đăng xuất → Xóa localStorage (accessToken, refreshToken) → Clear sessi
+P348 <Heading 2> 4.5. Quy trình xử lý Request JWT
+P349 <Normal> Sơ đồ mô tả cơ chế xác thực JWT cho mỗi request gửi lên server, bao gồm kiểm tra token, phân quyền và xử lý kh
+P350 <Normal> .
+P351 <Normal> [IMG] 
+P352 <Normal> Hình 4.5 – Activity Diagram: Request JWT 1
+P353 <Normal> .
+P354 <Normal> Luồng xử lý: Request đi qua JwtAuthenticationFilter → Kiểm tra có JWT token không → Extract và Validate JWT (v
+P355 <Heading 2> [PGBRK] 
+P356 <Heading 2> 4.6. Quy trình Refresh Token
+P357 <Normal> Sơ đồ mô tả cơ chế tự động làm mới Access Token khi hết hạn, đảm bảo trải nghiệm người dùng liên tục mà không 
+P358 <Normal> .
+P359 <Normal> [IMG] 
+P360 <Normal> Hình 4.6 –Activity Diagram:Refresh Token 1
+P361 <Normal> .
+P362 <Normal> Khi Access Token hết hạn (nhận 401 response), Client lấy Refresh Token từ localStorage và gửi POST /api/auth/r
+P363 <Normal> .
+P364 <Normal> .
+P365 <Normal> .
+P366 <Heading 2> 4.7. Quy trình Phân quyền User và Admin
+P367 <Normal> Sơ đồ tổng hợp mô tả toàn bộ cơ chế kiểm soát truy cập dựa trên vai trò (RBAC – Role-Based Access Control) cho
+P368 <Normal> .
+P369 <Normal> [IMG] 
+P370 <Normal> Hình 4.7 – Phân quyền User và Admin 1
+P371 <Normal> .
+P372 <Normal> Hệ thống phân quyền theo từng nhóm API endpoint: Public endpoints (không cần token), User endpoints (yêu cầu R
+P373 <Normal> .
+P374 <Heading 1> [PGBRK] 
+P375 <Heading 1> CHƯƠNG 5: THIẾT KẾ LỚP (CLASS DIAGRAM)
+P376 <Heading 2> 5.1. Sơ đồ lớp Module Người dùng và Bảo mật
+P377 <Normal> Sơ đồ lớp sau đây mô tả cấu trúc các lớp trong module quản lý người dùng và bảo mật của hệ thống backend, được
+P378 <Normal> [IMG] 
+P379 <Normal> Hình 5.1 – Sơ đồ lớp  1
+P380 <Normal> .
+P381 <Heading 2> .
+P382 <Heading 2> .
+P383 <Heading 2> .
+P384 <Heading 2> .
+P385 <Heading 2> .
+P386 <Heading 2> .
+P387 <Heading 2> 5.2. Mô tả các lớp chính
+TBL 12x2 first='Lớp'
+P388 <Heading 1> .
+P389 <Heading 1> CHƯƠNG 6: ĐẶC TẢ API ENDPOINTS
+P390 <Heading 2> 6.1. Authentication API
+P391 <Normal> .
+TBL 10x4 first='Method'
+P392 <Heading 2> .
+P393 <Heading 2> .
+P394 <Heading 2> 6.2. Products API
+P395 <Normal> .
+TBL 6x4 first='Method'
+P396 <Heading 2> .
+P397 <Heading 2> .
+P398 <Heading 2> .
+P399 <Heading 2> .
+P400 <Heading 2> .
+P401 <Heading 2> .
+P402 <Heading 2> .
+P403 <Heading 2> .
+P404 <Heading 2> .
+P405 <Heading 2> 6.3. Cart & Orders API
+P406 <Normal> .
+TBL 9x4 first='Method'
+P407 <Normal> .
+P408 <Heading 2> .
+P409 <Heading 2> .
+P410 <Heading 2> .
+P411 <Heading 2> .
+P412 <Heading 2> 6.4. Users API
+P413 <Normal> .
+TBL 5x4 first='Method'
+P414 <Heading 2> .
+P415 <Heading 2> 6.5. Categories API
+P416 <Heading 2> .
+P417 <Heading 2> .
+P418 <Heading 2> 6.6. Reviews API
+P419 <Normal> .
+P420 <Normal> .
+P421 <Heading 2> 6.7. Payment API
+P422 <Normal> .
+P423 <Normal> .
+P424 <Heading 1> .
+P425 <Heading 1> .
+P426 <Heading 1> CHƯƠNG 7: YÊU CẦU PHI CHỨC NĂNG VÀ RÀNG BUỘC
+P427 <Heading 2> 7.1. Hiệu năng (Performance)
+P428 <Normal> Thời gian phản hồi API trung bình dưới 500ms.
+P429 <Normal> Hỗ trợ ít nhất 50 người dùng truy cập đồng thời tại một thời điểm (đáp ứng quy mô đồ án).
+P430 <Normal> Danh sách sản phẩm hỗ trợ phân trang để tối ưu hiệu năng truy vấn.
+P431 <Heading 2> 7.2. Bảo mật (Security)
+P432 <Normal> Toàn bộ mật khẩu của người dùng phải được băm (Hash) bằng BCryptPasswordEncoder trước khi lưu trữ vào cơ sở dữ
+P433 <Normal> API quản trị phải được bảo vệ bằng cơ chế JWT (Access Token + Refresh Token), ngăn chặn truy cập trái phép.
+P434 <Normal> Cơ chế Blacklist token đảm bảo token bị vô hiệu hóa ngay khi người dùng đăng xuất.
+P435 <Normal> Phân quyền theo vai trò (RBAC): ROLE_USER và ROLE_ADMIN với các quyền truy cập khác nhau.
+P436 <Heading 2> 7.3. Tính khả dụng (Usability)
+P437 <Normal> Giao diện tương thích (Responsive) với cả máy tính để bàn và thiết bị di động.
+P438 <Normal> Các thông báo lỗi phải rõ ràng, dễ hiểu, đúng mã HTTP status (400, 401, 403, 404, 500).
+P439 <Normal> Trải nghiệm Guest Checkout không yêu cầu đăng nhập, tối ưu tỷ lệ chuyển đổi.
+P440 <Normal> .
+P441 <Normal> .
+P442 <Heading 2> 7.4. Ràng buộc nghiệp vụ (Business Rules)
+P443 <Normal> .
+TBL 5x2 first='Mã'
+P444 <Heading 1> .
+P445 <Heading 1> .
+P446 <Heading 1> .
+P447 <Heading 1> .
+P448 <Heading 1> .
+P449 <Heading 1> .
+P450 <Heading 1> .
+P451 <Heading 1> .
+P452 <Normal> .
+P453 <Heading 1> KẾT LUẬN
+P454 <Normal> Tài liệu báo cáo đặc tả này đã trình bày một cách toàn diện và có hệ thống toàn bộ thiết kế và yêu cầu của Web
+P455 <Normal> .
+P456 <Normal> Qua quá trình phân tích và thiết kế, nhóm đã làm rõ những điểm đặc thù của hệ thống, cụ thể:
+P457 <Normal> Cơ chế bảo mật JWT hai lớp (Access Token + Refresh Token) đảm bảo trải nghiệm người dùng liền mạch và an toàn.
+P458 <Normal> Mô hình phân quyền RBAC với hai vai trò chính (ROLE_USER, ROLE_ADMIN) cho phép kiểm soát truy cập linh hoạt và
+P459 <Normal> Tính năng Dynamic Filtering đặc thù cho linh kiện điện tử – một tính năng quan trọng giúp phân biệt hệ thống v
+P460 <Normal> Kiến trúc Layered Architecture tách biệt rõ ràng giữa các tầng xử lý, dễ bảo trì và mở rộng.
+P461 <Normal> Luồng đặt hàng Guest Checkout linh hoạt, không bắt buộc đăng nhập, tối ưu trải nghiệm khách hàng.
+P462 <Normal> .
+P463 <Normal> Trong quá trình thực hiện, nhóm đã gặp không ít thách thức trong việc thiết kế luồng xác thực JWT phức tạp, xâ
+P464 <Normal> Nhóm phát triển xin chân thành cảm ơn sự hướng dẫn tận tình của giảng viên và hy vọng tài liệu này phục vụ tốt
+P465 <Normal> .
+P466 <Normal> .
+P467 <Normal> .
+P468 <Normal> Tài Liệu Tham Khảo
+P469 <Normal> .
+P470 <Normal> Tài liệu tiếng Anh (tài liệu chính thức):
+P471 <Normal> Spring Boot Documentation – Spring Framework Reference – https://docs.spring.io/spring-boot/docs/current/refer
+P472 <Normal> Spring Security Reference – JWT Authentication – https://docs.spring.io/spring-security/reference/
+P473 <Normal> Nuxt.js Documentation – https://nuxt.com/docs
+P474 <Normal> JSON Web Token (JWT) – RFC 7519 – https://datatracker.ietf.org/doc/html/rfc7519
+P475 <Normal> Redis Documentation – https://redis.io/docs/
+P476 <Normal> MOMO Developer Documentation – https://developers.momo.vn/v2/#/
+P477 <Normal> .

@@ -151,15 +151,23 @@ public class ChatSessionMemoryService {
 
         // Lưu vào DB nếu có thay đổi
         if (modified) {
-            try {
-                session.setContextData(objectMapper.writeValueAsString(memory));
-                chatSessionRepository.save(session);
-            } catch (JsonProcessingException e) {
-                log.error("Lỗi khi lưu StructuredMemory: {}", e.getMessage());
-            }
+            saveMemory(session, memory);
         }
 
         return memory;
+    }
+
+    /**
+     * Lưu trạng thái bộ nhớ ngữ cảnh của phiên vào CSDL
+     */
+    public void saveMemory(ChatSession session, StructuredMemory memory) {
+        if (session == null || memory == null) return;
+        try {
+            session.setContextData(objectMapper.writeValueAsString(memory));
+            chatSessionRepository.save(session);
+        } catch (JsonProcessingException e) {
+            log.error("Lỗi khi lưu StructuredMemory: {}", e.getMessage());
+        }
     }
 
     /**

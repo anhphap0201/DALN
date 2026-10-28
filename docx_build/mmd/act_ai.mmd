@@ -1,0 +1,20 @@
+flowchart TD
+    Start([Người dùng gửi tin nhắn chat]) --> RateLimit{Kiểm tra Redis Rate Limit?}
+    RateLimit -- Vượt ngưỡng 15 req/phút --> ErrRate[Trả về mã lỗi HTTP 429: Too Many Requests] --> End([Dừng])
+    RateLimit -- Hợp lệ --> Sanitize[AiSecuritySanitizer: Làm sạch Prompt & Quét Jailbreak]
+    Sanitize --> AnalyzeIntent[ChatIntentAnalyzer: Trích xuất Ý định & Ràng buộc kỹ thuật]
+    AnalyzeIntent --> GetContext[ChatSessionMemoryService: Lấy 10 tin nhắn gần nhất]
+    GetContext --> BuildPrompt[Đóng gói System Prompt, Schema 16 Tools & Context]
+    BuildPrompt --> CallOllama[Gửi yêu cầu tới Ollama Native Tool Calling]
+    CallOllama --> CheckCall{Mô hình yêu cầu gọi Tool?}
+    
+    CheckCall -- Không gọi Tool --> StreamReply[Trả về câu trả lời tự nhiên dạng văn bản] --> SaveDB[Lưu tin nhắn vào CSDL] --> End
+    CheckCall -- Có gọi Tool --> CheckPolicy{AiToolPolicyService: Kiểm tra quyền PBAC?}
+    CheckPolicy -- Không có quyền --> MockError[Trả về thông báo lỗi: Từ chối quyền truy cập] --> FeedBackOllama[Gửi lỗi lại cho Ollama tổng hợp lời đáp] --> StreamReply
+    CheckPolicy -- Có quyền --> ExecTool[AiToolService: Thực thi câu lệnh SQL/Logic nghiệp vụ]
+    ExecTool --> MaskData[Lọc bỏ/Che mờ thông tin cá nhân nhạy cảm]
+    MaskData --> LogTool[Lưu lịch sử gọi hàm vào bảng chat_tool_logs]
+    LogTool --> MultiTurn{Cần gọi thêm công cụ khác?}
+    MultiTurn -- Có (Multi-turn) --> CallOllama
+    MultiTurn -- Không --> FormatResponse[Cấu trúc hóa phản hồi: Trả kèm Interactive UI Cards JSON]
+    FormatResponse --> SaveDB --> End

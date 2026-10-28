@@ -1,0 +1,15 @@
+flowchart TD
+    ReqStart([Client gửi HTTP Request kèm Access Token]) --> FilterCheck{Có Header Authorization Bearer?}
+    FilterCheck -- Không --> PublicCheck{Tuyến đường công khai?}
+    PublicCheck -- Đúng --> AllowReq[Cho phép truy cập tài nguyên] --> EndReq([Kết thúc])
+    PublicCheck -- Sai --> Return401[Trả về mã lỗi HTTP 401 Unauthorized] --> EndReq
+    
+    FilterCheck -- Có --> ValidateJWT{Chữ ký hợp lệ & Chưa hết hạn?}
+    ValidateJWT -- Hợp lệ --> SetContext[Nạp UserDetails vào SecurityContext] --> AllowReq
+    ValidateJWT -- Hết hạn --> CheckRefresh{Client gửi yêu cầu /api/auth/refresh?}
+    
+    CheckRefresh -- Không --> Return401Expired[Trả về lỗi: Token Expired] --> EndReq
+    CheckRefresh -- Có --> ValidateRefresh{Refresh Token hợp lệ & Chưa revoked?}
+    ValidateRefresh -- Không hợp lệ --> ForceLogin[Buộc người dùng đăng nhập lại] --> EndReq
+    ValidateRefresh -- Hợp lệ --> IssueNewToken[Sinh cặp Access Token & Refresh Token mới]
+    IssueNewToken --> Return200Token[Trả về token mới cho Client tiếp tục thao tác] --> EndReq

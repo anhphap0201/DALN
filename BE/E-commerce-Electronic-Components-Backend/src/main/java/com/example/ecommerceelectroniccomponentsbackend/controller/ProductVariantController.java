@@ -40,4 +40,29 @@ public class ProductVariantController {
         productVariantService.deleteVariantById(id);
         return "Product variant with id: " + id + " has been deleted";
     }
+
+    public static record DiscountUpdateRequest(java.math.BigDecimal discountPrice) {}
+    public static record BatchDiscountRequest(List<Long> variantIds, Integer discountPercent) {}
+
+    // PATCH /product-variants/{id}/discount
+    @PatchMapping("/{id}/discount")
+    public org.springframework.http.ResponseEntity<ProductVariantAdminDTO> updateDiscount(
+            @PathVariable Long id,
+            @RequestBody DiscountUpdateRequest request
+    ) {
+        ProductVariantAdminDTO updated = productVariantService.updateDiscount(id, request != null ? request.discountPrice() : null);
+        return org.springframework.http.ResponseEntity.ok(updated);
+    }
+
+    // POST /product-variants/batch-discount
+    @PostMapping("/batch-discount")
+    public org.springframework.http.ResponseEntity<List<ProductVariantAdminDTO>> batchDiscount(
+            @RequestBody BatchDiscountRequest request
+    ) {
+        List<ProductVariantAdminDTO> updated = productVariantService.updateBatchDiscount(
+                request != null ? request.variantIds() : null,
+                request != null ? request.discountPercent() : null
+        );
+        return org.springframework.http.ResponseEntity.ok(updated);
+    }
 }

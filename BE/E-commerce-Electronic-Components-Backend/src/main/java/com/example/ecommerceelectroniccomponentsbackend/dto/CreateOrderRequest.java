@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +22,26 @@ public class CreateOrderRequest {
 
     // Smart Locker fields
     private String lockerId;
+
+    // Customer & Shipping information (for Guest checkout or address override)
+    private String fullName;
+    private String email;
+    private String phone;
+    private String address;
+    private String province;
+    private String ward;
+    private String provinceCode;
+    private String wardCode;
+
+    // Items list for Guest checkout
+    private List<OrderItemRequest> items;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class OrderItemRequest {
+        private Long productVariantId;
+        private Integer quantity;
+    }
 }

@@ -980,8 +980,12 @@ const addToCart = async () => {
   
   const price = variant.discountPrice || variant.price
   
-  // Call API to add to cart (requires login)
-  const success = await addToCartComposable(variantId, quantity.value, price)
+  const success = await addToCartComposable(variantId, quantity.value, price, {
+    productName: product.value?.name,
+    variantName: variant?.variantName,
+    imageUrl: variant?.imageUrl || product.value?.images?.[0]?.imageUrl,
+    inStock: variant?.inStock
+  })
   
   if (success) {
     // Reset quantity after successful add
@@ -1012,8 +1016,12 @@ const buyNow = async () => {
   
   const price = variant.discountPrice || variant.price
   
-  // Call API to add to cart (requires login)
-  const success = await addToCartComposable(variantId, quantity.value, price)
+  const success = await addToCartComposable(variantId, quantity.value, price, {
+    productName: product.value?.name,
+    variantName: variant?.variantName,
+    imageUrl: variant?.imageUrl || product.value?.images?.[0]?.imageUrl,
+    inStock: variant?.inStock
+  })
   
   if (success) {
     // Navigate to checkout

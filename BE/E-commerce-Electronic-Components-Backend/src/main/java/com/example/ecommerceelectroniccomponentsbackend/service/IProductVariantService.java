@@ -14,5 +14,9 @@ public interface IProductVariantService {
     ProductVariant updateVariantById(Long id, ProductVariant updatedVariant);
 
     void deleteVariantById(Long id);
+
+    ProductVariantAdminDTO updateDiscount(Long id, java.math.BigDecimal discountPrice);
+
+    List<ProductVariantAdminDTO> updateBatchDiscount(List<Long> variantIds, Integer discountPercent);
 }
 

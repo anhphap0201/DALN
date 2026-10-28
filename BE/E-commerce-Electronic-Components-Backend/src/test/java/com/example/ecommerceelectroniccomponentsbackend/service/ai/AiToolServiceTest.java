@@ -93,6 +93,26 @@ class AiToolServiceTest {
     }
 
     @Test
+    @DisplayName("Kiểm tra phân quyền Tool Catalog theo vai trò: Khách chỉ nhận 10 public tools, Admin nhận đủ 17 tools")
+    void testRoleBasedToolDefinitions() {
+        List<Map<String, Object>> guestTools = aiToolService.getToolDefinitions("ROLE_GUEST");
+        assertEquals(10, guestTools.size(), "Khách vãng lai chỉ được nhận 10 public tools");
+
+        List<String> guestNames = guestTools.stream()
+                .map(t -> (Map<String, Object>) t.get("function"))
+                .map(f -> (String) f.get("name"))
+                .toList();
+
+        assertFalse(guestNames.contains("get_revenue_report"), "Catalog của khách không được chứa get_revenue_report");
+        assertFalse(guestNames.contains("get_order_analytics"), "Catalog của khách không được chứa get_order_analytics");
+        assertFalse(guestNames.contains("get_inventory_report"), "Catalog của khách không được chứa get_inventory_report");
+        assertFalse(guestNames.contains("get_low_stock_products"), "Catalog của khách không được chứa get_low_stock_products");
+
+        List<Map<String, Object>> adminTools = aiToolService.getToolDefinitions("ROLE_ADMIN");
+        assertEquals(17, adminTools.size(), "Admin phải nhận đủ 17 tools");
+    }
+
+    @Test
     @DisplayName("Bảo mật RBAC: Khách thường hoặc Khách vãng lai bị từ chối truy cập 4 tool Dashboard")
     void testAdminAnalyticsRBACProtection() {
         UUID sid = UUID.randomUUID();

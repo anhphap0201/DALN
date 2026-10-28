@@ -8,32 +8,32 @@
 
     <!-- ==================== TOP HEADER (ĐỒNG NHẤT VỚI TEMPLATE GỐC CỦA SHOP) ==================== -->
     <header class="border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6">
+      <div class="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto px-3 sm:px-6 lg:px-8">
         <!-- Top Row: Logo, Search, Cart, Auth Menu -->
-        <div class="flex items-center justify-between gap-4 py-4">
+        <div class="flex items-center justify-between gap-2 sm:gap-4 py-3 sm:py-4">
           <!-- Logo -->
-          <NuxtLink to="/" class="flex items-center gap-2 group flex-shrink-0">
+          <NuxtLink to="/" class="flex items-center gap-2 group shrink-0">
             <img
               src="/images/Sub_Edunera_Logo_512.svg"
               alt="Electronic Components Logo"
-              class="w-10 h-10 transition-all duration-300 group-hover:scale-110"
+              class="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300 group-hover:scale-110"
             />
             <div class="flex items-center gap-1.5">
-              <span class="font-bold text-xl text-gray-800 hidden sm:block">ECShop</span>
-              <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#09f] text-white shadow-xs">
+              <span class="font-bold text-lg sm:text-xl text-gray-800 hidden sm:block">ECShop</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#09f] text-white shadow-xs">
                 Admin
               </span>
             </div>
           </NuxtLink>
 
           <!-- Search Bar -->
-          <div class="flex-1 max-w-3xl">
+          <div class="flex-1 max-w-3xl mx-1 sm:mx-2">
             <div class="relative">
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Tìm kiếm linh kiện điện tử..."
-                class="w-full px-4 py-2.5 pr-12 border-2 border-gray-200 rounded-xl text-sm transition-all duration-300 outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)] hover:border-[#33adff] placeholder:text-gray-400"
+                placeholder="Tìm kiếm linh kiện..."
+                class="w-full px-3 sm:px-4 py-2 sm:py-2.5 pr-10 sm:pr-12 border-2 border-gray-200 rounded-xl text-xs sm:text-sm transition-all duration-300 outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)] hover:border-[#33adff] placeholder:text-gray-400"
                 role="combobox"
                 aria-autocomplete="list"
                 :aria-expanded="showSearchSuggestions && filteredSearchSuggestions.length > 0"
@@ -44,9 +44,10 @@
               />
               <button
                 @click="handleSearch"
-                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#09f] rounded-lg flex items-center justify-center text-white transition-all duration-300 hover:bg-[#0077cc] hover:scale-105 active:scale-95 cursor-pointer"
+                class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 bg-[#09f] rounded-lg flex items-center justify-center text-white transition-all duration-300 hover:bg-[#0077cc] hover:scale-105 active:scale-95 cursor-pointer"
+                aria-label="Tìm kiếm"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
@@ -83,18 +84,18 @@
           </div>
 
           <!-- Cart & Auth Menu -->
-          <div class="flex items-center gap-3 flex-shrink-0">
+          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
             <!-- Cart Icon -->
-            <NuxtLink to="/cart" class="relative group">
-              <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-[#09f] group-hover:scale-105">
-                <svg class="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <NuxtLink to="/cart" class="relative group" aria-label="Xem giỏ hàng">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gray-100 flex items-center justify-center transition-all duration-300 group-hover:bg-[#09f] group-hover:scale-105">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
               <ClientOnly>
                 <span
                   v-if="cartItemCount > 0"
-                  class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white"
+                  class="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center border-2 border-white"
                 >
                   {{ cartItemCount > 9 ? '9+' : cartItemCount }}
                 </span>
@@ -104,21 +105,22 @@
             <!-- User Menu -->
             <ClientOnly>
               <template #fallback>
-                <div class="h-10 w-24"></div>
+                <div class="h-8 w-16 sm:h-10 sm:w-24"></div>
               </template>
 
               <div v-if="isLoggedIn" class="relative">
                 <button
                   @click="showUserMenu = !showUserMenu"
-                  class="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all duration-200 cursor-pointer"
+                  class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-all duration-200 cursor-pointer"
+                  aria-label="Menu tài khoản quản trị"
                 >
-                  <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#09f] to-[#0077cc] flex items-center justify-center text-white font-semibold text-sm">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-[#09f] to-[#0077cc] flex items-center justify-center text-white font-semibold text-xs sm:text-sm shrink-0">
                     {{ (user?.fullName || user?.email)?.charAt(0).toUpperCase() }}
                   </div>
-                  <span class="text-sm font-medium text-gray-700 hidden md:block max-w-[150px] truncate">
+                  <span class="text-xs sm:text-sm font-medium text-gray-700 hidden md:block max-w-[120px] lg:max-w-[160px] truncate">
                     {{ user?.fullName || user?.email }}
                   </span>
-                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-3.5 h-3.5 text-gray-600 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
@@ -183,7 +185,7 @@
               <NuxtLink
                 v-else
                 to="/auth/auth"
-                class="px-4 py-2 text-sm font-medium text-[#09f] hover:text-[#0077cc] transition-colors duration-200 whitespace-nowrap"
+                class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-[#09f] hover:text-[#0077cc] transition-colors duration-200 whitespace-nowrap"
               >
                 Đăng nhập
               </NuxtLink>
@@ -191,15 +193,15 @@
           </div>
         </div>
 
-        <!-- Popular Keywords row -->
-        <div class="pb-3 border-t border-gray-100 pt-3">
+        <!-- Popular Keywords row (ẩn trên mobile để tối ưu chiều cao, hiện trên sm+) -->
+        <div class="hidden sm:block pb-3 border-t border-gray-100 pt-2.5">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-xs text-gray-500 whitespace-nowrap">Từ khóa phổ biến:</span>
             <button
               v-for="keyword in popularKeywords"
               :key="keyword"
               @click="searchQuery = keyword; handleSearch()"
-              class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full transition-all duration-200 hover:bg-[#09f] hover:text-white hover:scale-105 cursor-pointer"
+              class="px-2.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full transition-all duration-200 hover:bg-[#09f] hover:text-white hover:scale-105 cursor-pointer"
             >
               {{ keyword }}
             </button>
@@ -209,33 +211,33 @@
     </header>
 
     <!-- ==================== MAIN CONTENT: KHUNG QUẢN TRỊ KÈM CỘT MENU TRÁI ==================== -->
-    <main class="flex-grow py-6 sm:py-8">
-      <div class="w-[90%] max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 space-y-6">
+    <main class="flex-grow py-4 sm:py-6 lg:py-8">
+      <div class="w-full max-w-[1920px] 2xl:max-w-[2400px] mx-auto px-3 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
 
-        <!-- Banner thông tin định vị trang Admin (Light theme, hài hòa với website) -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+        <!-- Banner thông tin định vị trang Admin -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 bg-white p-3.5 sm:p-5 rounded-2xl border border-gray-200/80 shadow-xs">
           <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#09f] to-[#0077cc] text-white flex items-center justify-center shadow-md shadow-[#09f]/20 shrink-0">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-[#09f] to-[#0077cc] text-white flex items-center justify-center shadow-md shadow-[#09f]/20 shrink-0">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h2 class="text-base sm:text-lg font-bold text-gray-900">Quản Trị Cửa Hàng</h2>
+                <h2 class="text-sm sm:text-base lg:text-lg font-bold text-gray-900">Quản Trị Cửa Hàng</h2>
                 <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-[#09f] border border-blue-200">
                   {{ activeTabTitle }}
                 </span>
               </div>
-              <p class="text-xs text-gray-500 mt-0.5">Hệ thống điều hành danh mục, sản phẩm, đơn hàng và phân tích kinh doanh</p>
+              <p class="text-xs text-gray-500 mt-0.5 line-clamp-1 sm:line-clamp-none">Hệ thống điều hành danh mục, sản phẩm, đơn hàng và phân tích kinh doanh</p>
             </div>
           </div>
 
-          <div class="flex items-center gap-2.5 self-start sm:self-auto">
+          <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
             <NuxtLink
               to="/admin/products?action=create"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#09f] to-[#0077cc] hover:from-[#33adff] hover:to-[#0088ea] text-white text-xs font-bold rounded-xl shadow-md shadow-[#09f]/20 hover:shadow-lg hover:shadow-[#09f]/30 active:scale-95 transition-all cursor-pointer"
+              class="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 bg-gradient-to-r from-[#09f] to-[#0077cc] hover:from-[#33adff] hover:to-[#0088ea] text-white text-xs font-bold rounded-xl shadow-md shadow-[#09f]/20 hover:shadow-lg hover:shadow-[#09f]/30 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -245,7 +247,7 @@
 
             <NuxtLink
               to="/"
-              class="inline-flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition-colors"
+              class="flex-1 sm:flex-none justify-center inline-flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition-colors whitespace-nowrap"
             >
               <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -256,16 +258,16 @@
         </div>
 
         <!-- Layout 2 Cột: Cột Menu Nhỏ Nhỏ Bên Trái + Khu Vực Nội Dung Trang Bên Phải -->
-        <div class="flex flex-col lg:flex-row gap-6 items-start">
+        <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
 
           <!-- ==================== CỘT MENU NHỎ GỌN BÊN TRÁI (TABS CHUYỂN TRANG) ==================== -->
-          <aside class="w-full lg:w-60 xl:w-64 shrink-0 bg-white rounded-2xl border border-gray-200/80 p-3 shadow-xs lg:sticky lg:top-28">
+          <aside class="w-full lg:w-56 xl:w-64 shrink-0 bg-white rounded-2xl border border-gray-200/80 p-2 sm:p-3 shadow-xs lg:sticky lg:top-24 z-20">
             <p class="px-3 pt-1 pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider hidden lg:block">
               Danh Mục Quản Trị
             </p>
 
-            <!-- Menu List (Dạng cột trên desktop, có thể cuộn ngang nhẹ nhàng trên mobile) -->
-            <nav class="flex lg:flex-col overflow-x-auto lg:overflow-visible gap-1.5 p-1 lg:p-0 scrollbar-none">
+            <!-- Menu List (Dạng cột trên desktop, cuộn ngang mượt mà trên mobile/tablet) -->
+            <nav class="flex lg:flex-col overflow-x-auto lg:overflow-visible gap-1 sm:gap-1.5 p-1 lg:p-0 scrollbar-none touch-pan-x">
               <!-- 1. Dashboard -->
               <NuxtLink
                 to="/admin"
@@ -288,6 +290,18 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
                 <span>Quản Lý Sản Phẩm</span>
+              </NuxtLink>
+
+              <!-- 3. Thiết lập Giảm Giá -->
+              <NuxtLink
+                to="/admin/discounts"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 lg:shrink"
+                :class="route.path.startsWith('/admin/discounts') ? 'bg-[#09f] text-white shadow-md shadow-[#09f]/25 font-bold' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'"
+              >
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Thiết Lập Giảm Giá</span>
               </NuxtLink>
 
               <!-- 3. Danh mục -->
@@ -450,6 +464,7 @@ const activeTabTitle = computed(() => {
   const p = route.path
   if (p === '/admin') return 'Dashboard'
   if (p.startsWith('/admin/products')) return 'Sản Phẩm'
+  if (p.startsWith('/admin/discounts')) return 'Giảm Giá'
   if (p.startsWith('/admin/categories')) return 'Danh Mục'
   if (p.startsWith('/admin/orders')) return 'Đơn Hàng'
   if (p.startsWith('/admin/users')) return 'Người Dùng'

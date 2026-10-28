@@ -260,15 +260,13 @@ import { useCart } from '~/composables/useCart'
 import { useConfirm } from '~/composables/useConfirm'
 import { useNotification } from '~/composables/useNotification'
 
-definePageMeta({
-  middleware: ['auth']
-})
+// Allow guest checkout without login
 
 const API_BASE_URL = 'http://localhost:8080'
 
 // Composables
 const { cart, loading, fetchCart, updateCartItem, removeFromCart, clearCart, addToCart } = useCart()
-const { getAuthHeader } = useAuth()
+const { getAuthHeader, isAuthenticated } = useAuth()
 
 // Local state
 const selectAll = ref(false)
@@ -288,7 +286,11 @@ const reorderItems = computed(() => orderHistory.value
 
 // Fetch cart on mount
 onMounted(async () => {
-  await Promise.all([fetchCart(), fetchOrderHistory()])
+  const promises: Promise<any>[] = [fetchCart()]
+  if (isAuthenticated.value) {
+    promises.push(fetchOrderHistory())
+  }
+  await Promise.all(promises)
   // Select all items by default
   if (cart.value?.cartItems && cart.value.cartItems.length > 0) {
     cart.value.cartItems.forEach(item => selectedItems.value.add(item.id))

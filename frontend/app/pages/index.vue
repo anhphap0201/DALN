@@ -265,13 +265,10 @@ const handleCategoryClick = (categoryId: number) => {
 
 const auth = useAuth()
 const notify = useNotification()
+const { addToCart: addToCartComposable } = useCart()
 
 const addToCart = async (event: Event, productOrVariant: any) => {
   event.stopPropagation()
-  if (!auth.isAuthenticated.value) {
-    notify.info('Vui lòng đăng nhập', 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng')
-    return navigateTo('/auth/auth')
-  }
 
   try {
     // If this is a product with variants (from search API), pick a variant
@@ -288,21 +285,15 @@ const addToCart = async (event: Event, productOrVariant: any) => {
       return
     }
 
-    const payload = {
-      productVariantId: variant.id,
-      quantity: 1,
-      price: variant.discountPrice ?? variant.price ?? productOrVariant.salePrice ?? 0,
+    const price = variant.discountPrice ?? variant.price ?? productOrVariant.salePrice ?? 0
+    const extra = {
       productName: variant.productName ?? productOrVariant.name,
-      imageUrl: variant.imageUrl ?? productOrVariant.img ?? productOrVariant.defaultImageUrl
+      variantName: variant.variantName,
+      imageUrl: variant.imageUrl ?? productOrVariant.img ?? productOrVariant.defaultImageUrl,
+      inStock: variant.inStock
     }
 
-    await $fetch('http://localhost:8080/api/cart/items', {
-      method: 'POST',
-      body: payload,
-      headers: auth.getAuthHeader()
-    })
-
-    notify.success('Thành công', 'Đã thêm sản phẩm vào giỏ hàng')
+    await addToCartComposable(variant.id, 1, price, extra)
   } catch (err) {
     console.error('Add to cart error:', err)
     notify.error('Lỗi', 'Không thể thêm sản phẩm vào giỏ hàng')
@@ -311,10 +302,6 @@ const addToCart = async (event: Event, productOrVariant: any) => {
 
 const buyNow = async (event: Event, product: any) => {
   event.stopPropagation()
-  if (!auth.isAuthenticated.value) {
-    notify.info('Vui lòng đăng nhập', 'Bạn cần đăng nhập để mua hàng')
-    return navigateTo('/auth/auth')
-  }
 
   try {
     // Fetch real product + variants from backend
@@ -325,10 +312,9 @@ const buyNow = async (event: Event, product: any) => {
       return
     }
 
-    // Add selected variant to cart (without creating order)
+    // Add selected variant to cart
     await addToCart(event, productDetail)
 
-    notify.success('Đã thêm vào giỏ', 'Sản phẩm đã được thêm vào giỏ hàng. Vui lòng xác nhận tại giỏ hàng để thanh toán.')
     // Redirect user to cart so they can confirm and checkout explicitly
     return navigateTo('/cart')
   } catch (err) {

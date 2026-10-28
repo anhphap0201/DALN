@@ -63,7 +63,7 @@ class AdminAnalyticsServiceTest {
                 .id(1L)
                 .status(Order.OrderStatus.DELIVERED)
                 .total(new BigDecimal("400000"))
-                .paymentMethod("VNPAY")
+                .paymentMethod("PAYOS")
                 .createdAt(LocalDateTime.now())
                 .build();
 

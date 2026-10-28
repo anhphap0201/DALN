@@ -1,0 +1,53 @@
+classDiagram
+    class AiChatService {
+        -OllamaClient ollamaClient
+        -AiToolService toolService
+        -AiToolPolicyService policyService
+        -ChatIntentAnalyzer intentAnalyzer
+        -ChatSessionMemoryService memoryService
+        +processChatMessage(session, prompt, user) ChatResponseDTO
+        +executeMultiTurnLoop(messages, tools, user) String
+    }
+
+    class AiToolService {
+        -ProductRepository productRepo
+        -InventoryRepository inventoryRepo
+        -OrderRepository orderRepo
+        -AdminAnalyticsService analyticsService
+        +searchProducts(args) ToolResult
+        +recommendProducts(args) ToolResult
+        +compareProducts(args) ToolResult
+        +checkStock(args) ToolResult
+        +buildBillOfMaterials(args) ToolResult
+        +trackOrder(args, user) ToolResult
+        +getRevenueReport(args) ToolResult
+        +getLowStockProducts(args) ToolResult
+    }
+
+    class AiToolPolicyService {
+        +enforceToolAccess(toolName, userRole) void
+        +canAccessTool(toolName, userRole) Boolean
+        +maskSensitiveData(ToolResult) ToolResult
+    }
+
+    class ChatIntentAnalyzer {
+        +analyzeIntent(userPrompt) IntentAnalysisResult
+        +extractTechnicalConstraints(prompt) Map
+    }
+
+    class ChatSessionMemoryService {
+        -ChatMessageRepository messageRepo
+        +getRecentContext(sessionId, maxTokens) List~ChatMessage~
+        +pruneContextIfNecessary(sessionId) void
+    }
+
+    class ProjectPlanningService {
+        +generateProjectBOM(projectTopic, budget) BOMResultDTO
+        +validateHardwareCompatibility(components) CompatibilityReport
+    }
+
+    AiChatService --> AiToolService : executes
+    AiChatService --> AiToolPolicyService : guards with
+    AiChatService --> ChatIntentAnalyzer : analyzes with
+    AiChatService --> ChatSessionMemoryService : manages memory
+    AiToolService --> ProjectPlanningService : delegates BOM

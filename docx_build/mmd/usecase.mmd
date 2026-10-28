@@ -1,0 +1,65 @@
+flowchart LR
+    Guest["Khách vãng lai (Guest)"]
+    Customer["Khách hàng (Customer)"]
+    Admin["Quản trị viên (Admin)"]
+    AI["AI Engine (Ollama - Qwen 2.5)"]
+    Payment["Cổng Thanh toán (VNPAY / PayOS)"]
+
+    subgraph "HỆ THỐNG THƯƠNG MẠI ĐIỆN TỬ LINH KIỆN ECSHOP"
+        subgraph "Phân hệ Tài khoản & Bảo mật"
+            UC_Auth["Đăng ký / Xác thực Email / Đăng nhập JWT"]
+            UC_Profile["Quản lý Hồ sơ & Sổ địa chỉ"]
+        end
+
+        subgraph "Phân hệ Storefront Mua hàng"
+            UC_Search["Tìm kiếm & Lọc động thông số kỹ thuật"]
+            UC_Cart["Quản lý Giỏ hàng (Đồng bộ Hybrid)"]
+            UC_Checkout["Đặt hàng linh hoạt (Guest Checkout)"]
+            UC_Pay["Thanh toán số (VNPAY / VietQR PayOS)"]
+            UC_Track["Theo dõi Đơn hàng & Tủ Smart Locker"]
+            UC_Warranty["Yêu cầu Bảo hành & Đánh giá sản phẩm"]
+        end
+
+        subgraph "Phân hệ Quản trị Vận hành"
+            UC_ManageProd["Quản trị Sản phẩm & Biến thể SKU"]
+            UC_ManageInv["Quản lý Kho & Ngưỡng cảnh báo cạn hàng"]
+            UC_ManageOrder["Xử lý Đơn hàng & Phê duyệt Bảo hành"]
+            UC_ManageReport["Báo cáo Doanh thu & Quản lý Người dùng"]
+        end
+
+        subgraph "Phân hệ Trợ lý Kỹ thuật AI (Trọng tâm)"
+            UC_AIConsult["Tư vấn giải pháp mạch & Tra cứu datasheet"]
+            UC_AICompat["Kiểm tra tương thích phần cứng linh kiện"]
+            UC_AIBOM["Lập Bảng Dự toán BOM & 1-Click Thêm vào giỏ"]
+            UC_AITrack["Tra cứu hành trình đơn hàng bảo mật"]
+            UC_AIAdminNLP["Truy vấn Doanh thu & Cảnh báo Kho qua NLP"]
+        end
+    end
+
+    Guest --> UC_Auth
+    Guest --> UC_Search
+    Guest --> UC_Cart
+    Guest --> UC_Checkout
+    Guest --> UC_AIConsult
+    Guest --> UC_AICompat
+    Guest --> UC_AIBOM
+    Guest --> UC_AITrack
+
+    Customer -- "Kế thừa quyền" --> Guest
+    Customer --> UC_Profile
+    Customer --> UC_Track
+    Customer --> UC_Warranty
+
+    Admin --> UC_Auth
+    Admin --> UC_ManageProd
+    Admin --> UC_ManageInv
+    Admin --> UC_ManageOrder
+    Admin --> UC_ManageReport
+    Admin --> UC_AIAdminNLP
+
+    UC_Pay <--> Payment
+    UC_AIConsult <--> AI
+    UC_AICompat <--> AI
+    UC_AIBOM <--> AI
+    UC_AITrack <--> AI
+    UC_AIAdminNLP <--> AI

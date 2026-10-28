@@ -172,4 +172,98 @@ public class AiToolPolicyService {
     public boolean isAdminOnlyTool(String toolName) {
         return toolName != null && ADMIN_TOOLS.contains(toolName);
     }
+
+    /**
+     * Nhận diện xem câu hỏi của người dùng có yêu cầu dữ liệu quản trị / nhạy cảm hay không
+     * (Doanh thu, tài chính, vốn tồn kho, phân tích đơn hàng, phân tích khách hàng...)
+     */
+    public boolean isPrivilegedAdminQuery(ChatIntentAnalyzer.AnalysisResult analysis, String userMessage, String lastIntent) {
+        if (userMessage == null || userMessage.isBlank()) {
+            return false;
+        }
+
+        String norm = normalizeText(userMessage);
+
+        // 1. Kiểm tra từ khóa trực tiếp về doanh thu / tài chính
+        if (norm.contains("doanh thu") || norm.contains("bao cao doanh thu") || norm.contains("tien ban")
+                || norm.contains("doanh so") || norm.contains("loi nhuan") || norm.contains("tai chinh")
+                || norm.contains("thong ke doanh thu") || norm.contains("hieu suat san pham")
+                || norm.contains("danh muc nao ban chay") || norm.contains("doanh thu theo danh muc")) {
+            return true;
+        }
+
+        // 2. Kiểm tra từ khóa tồn kho nội bộ / cảnh báo quản trị
+        if (norm.contains("canh bao ton kho") || norm.contains("hang sap het") || norm.contains("ton kho thap")
+                || norm.contains("sap het hang") || norm.contains("gia tri ton kho") || norm.contains("von luu kho")
+                || norm.contains("bao cao ton kho") || norm.contains("hang ton lau") || norm.contains("cham luan chuyen")
+                || norm.contains("nhap them bao nhieu") || norm.contains("can nhap them")) {
+            return true;
+        }
+
+        // 3. Kiểm tra phân tích đơn hàng / AOV / tỷ lệ hủy hoàn
+        if (norm.contains("ty le huy") || norm.contains("ty le hoan") || norm.contains("aov")
+                || norm.contains("gia tri don trung binh") || norm.contains("phan tich don hang")) {
+            return true;
+        }
+
+        // 4. Kiểm tra phân tích khách hàng
+        if (norm.contains("khach hang moi") || norm.contains("khach quay lai") || norm.contains("ty le giu chan")
+                || norm.contains("phan tich khach hang") || norm.contains("ti le mua lai")) {
+            return true;
+        }
+
+        // 5. Kiểm tra phân tích thắc mắc người dùng
+        if (norm.contains("nguoi dung thuong hoi") || norm.contains("hay hoi") || norm.contains("khach hang quan tam")
+                || norm.contains("chu de hoi") || norm.contains("nhu cau khach") || norm.contains("thong ke tim kiem")
+                || norm.contains("hoi ve van de gi")) {
+            return true;
+        }
+
+        // 6. Intent phân loại từ ChatIntentAnalyzer
+        if (analysis != null && analysis.intent() != null) {
+            ChatIntentAnalyzer.Intent it = analysis.intent();
+            if (it == ChatIntentAnalyzer.Intent.SALES_ANALYTICS
+                    || it == ChatIntentAnalyzer.Intent.INVENTORY_ANALYTICS
+                    || it == ChatIntentAnalyzer.Intent.ORDER_ANALYTICS
+                    || it == ChatIntentAnalyzer.Intent.CUSTOMER_ANALYTICS
+                    || it == ChatIntentAnalyzer.Intent.INQUIRY_ANALYTICS) {
+                return true;
+            }
+        }
+
+        // 7. Ngữ cảnh nối tiếp: Lượt chat trước đó đang hỏi về nghiệp vụ quản trị
+        if (lastIntent != null && isPrivilegedIntentName(lastIntent)) {
+            // Người dùng bổ sung mốc thời gian hoặc câu trả lời ngắn
+            if (norm.matches(".*\\b(thang nay|thang truoc|hom nay|hom qua|tuan nay|tuan truoc|nam nay|quy nay|xem di|cho xem|thong ke di|chi tiet|ok|dung roi|co)\\b.*")
+                    || norm.matches(".*\\d{1,2}[/-]\\d{1,2}.*")
+                    || norm.length() <= 25) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isPrivilegedIntentName(String intentName) {
+        if (intentName == null) return false;
+        return intentName.equals("SALES_ANALYTICS")
+                || intentName.equals("INVENTORY_ANALYTICS")
+                || intentName.equals("ORDER_ANALYTICS")
+                || intentName.equals("CUSTOMER_ANALYTICS")
+                || intentName.equals("INQUIRY_ANALYTICS");
+    }
+
+    public String getAdminRefusalMessage() {
+        return "Xin lỗi bạn, các thông tin về doanh thu, tình hình tài chính và báo cáo quản trị nội bộ chỉ dành riêng cho Quản trị viên hệ thống (Admin). Vui lòng đăng nhập với tài khoản Quản trị viên để tra cứu các thông tin này.";
+    }
+
+    private String normalizeText(String input) {
+        if (input == null) return "";
+        String normalized = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD);
+        return normalized.replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .replace('đ', 'd')
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
 }

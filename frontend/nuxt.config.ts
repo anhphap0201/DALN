@@ -4,7 +4,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   experimental: {
-    oxcParser: false
+    oxcParser: false,
+    appManifest: false
   },
 
   postcss: {

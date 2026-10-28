@@ -97,7 +97,7 @@
 
             <!-- Unpaid / Awaiting Online Payment Notice Banner -->
             <div
-              v-if="isAwaitingVnpay(order)"
+              v-if="isAwaitingPayment(order)"
               class="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
             >
               <div class="flex items-center gap-2">
@@ -223,9 +223,9 @@
               </div>
 
               <div class="flex items-center gap-2 flex-wrap justify-end">
-                <!-- Action: Retry VNPAY Payment button -->
+                <!-- Action: Retry PayOS Payment button -->
                 <button
-                  v-if="isAwaitingVnpay(order)"
+                  v-if="isAwaitingPayment(order)"
                   @click="retryPayment(order)"
                   :disabled="retryingOrderIds.has(order.id)"
                   class="px-4 py-2 bg-[#09f] hover:bg-[#0077cc] text-white rounded-xl text-xs sm:text-sm font-semibold transition-colors shadow-xs disabled:opacity-60"
@@ -437,10 +437,10 @@
             <div class="grid grid-cols-2 gap-2 text-xs">
               <label
                 class="flex items-center gap-2 p-2.5 border rounded-xl cursor-pointer transition-colors"
-                :class="returnRefundMethod === 'VNPAY' ? 'border-[#09f] bg-blue-50/50 text-[#09f] font-semibold' : 'border-gray-200 text-gray-700 hover:bg-gray-50'"
+                :class="returnRefundMethod === 'PAYOS' ? 'border-[#09f] bg-blue-50/50 text-[#09f] font-semibold' : 'border-gray-200 text-gray-700 hover:bg-gray-50'"
               >
-                <input type="radio" value="VNPAY" v-model="returnRefundMethod" class="sr-only" />
-                <span>💳 Ví / Cổng VNPAY</span>
+                <input type="radio" value="PAYOS" v-model="returnRefundMethod" class="sr-only" />
+                <span>💳 Ví / Cổng PayOS (VietQR)</span>
               </label>
               <label
                 class="flex items-center gap-2 p-2.5 border rounded-xl cursor-pointer transition-colors"
@@ -544,7 +544,7 @@ const returnTargetOrder = ref<Order | null>(null)
 const selectedReturnItemIds = ref<number[]>([])
 const returnReason = ref('')
 const returnProofNote = ref('')
-const returnRefundMethod = ref('VNPAY')
+const returnRefundMethod = ref('PAYOS')
 
 type TabKey = 'ALL' | 'UNPAID' | 'PENDING' | 'SHIPPING' | 'DELIVERED' | 'RETURNED' | 'CANCELLED'
 
@@ -560,10 +560,10 @@ const statusTabs: { key: TabKey; label: string }[] = [
   { key: 'CANCELLED', label: 'Đã hủy' },
 ]
 
-const isAwaitingVnpay = (order: Order) => {
+const isAwaitingPayment = (order: Order) => {
   const method = order.paymentMethod?.toUpperCase()
   return (
-    (method === 'VNPAY' || method === 'PAYOS') &&
+    method === 'PAYOS' &&
     (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
     order.status === 'PENDING'
   )
@@ -574,9 +574,9 @@ const getOrderTabKey = (order: Order): TabKey => {
   if (status === 'CANCELLED') return 'CANCELLED'
   if (status === 'RETURNED') return 'RETURNED'
 
-  // If VNPAY/PAYOS and unpaid/awaiting_payment
+  // If PAYOS and unpaid/awaiting_payment
   const pm = order.paymentMethod?.toUpperCase()
-  if ((pm === 'VNPAY' || pm === 'PAYOS') &&
+  if (pm === 'PAYOS' &&
       (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
       status === 'PENDING') {
     return 'UNPAID'
@@ -655,7 +655,7 @@ const getPaymentRemainingTime = (order: Order): string => {
 
 const statusLabel = (status: string, order?: Order) => {
   const pm = order?.paymentMethod?.toUpperCase()
-  if (order && (pm === 'VNPAY' || pm === 'PAYOS') &&
+  if (order && pm === 'PAYOS' &&
       (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
       normalizeStatus(order.status) === 'PENDING') {
     return order.paymentStatus === 'AWAITING_PAYMENT' ? 'Chờ thanh toán (24h)' : 'Chưa thanh toán'
@@ -688,7 +688,7 @@ const statusLabel = (status: string, order?: Order) => {
 
 const statusClass = (status: string, order?: Order) => {
   const pm = order?.paymentMethod?.toUpperCase()
-  if (order && (pm === 'VNPAY' || pm === 'PAYOS') &&
+  if (order && pm === 'PAYOS' &&
       (order.paymentStatus === 'UNPAID' || order.paymentStatus === 'AWAITING_PAYMENT') &&
       normalizeStatus(order.status) === 'PENDING') {
     return 'bg-amber-100 text-amber-800 border border-amber-200'
@@ -823,10 +823,7 @@ const createOrderFromCart = async () => {
 const retryPayment = async (order: Order) => {
   retryingOrderIds.value.add(order.id)
   try {
-    const isPayOs = order.paymentMethod?.toUpperCase() === 'PAYOS'
-    const endpoint = isPayOs
-      ? `${API_BASE_URL}/api/payos/retry-payment/${order.id}`
-      : `${API_BASE_URL}/api/vnpay/retry-payment/${order.id}`
+    const endpoint = `${API_BASE_URL}/api/payos/retry-payment/${order.id}`
     const res: any = await $fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -852,7 +849,7 @@ const openReturnModal = (order: Order) => {
   selectedReturnItemIds.value = order.orderItems?.map(i => i.id) || []
   returnReason.value = 'Sản phẩm lỗi kỹ thuật / không hoạt động'
   returnProofNote.value = ''
-  returnRefundMethod.value = 'VNPAY'
+  returnRefundMethod.value = 'PAYOS'
   showReturnModal.value = true
 }
 

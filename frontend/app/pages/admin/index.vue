@@ -2,27 +2,29 @@
   <div class="space-y-6 antialiased">
 
       <!-- ==================== 1. DASHBOARD HEADER & LIVE TELEMETRY ==================== -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <div class="flex items-center gap-3">
-            <span class="w-3 h-3 rounded-full bg-[#09f] shadow-[0_0_10px_rgba(0,153,255,0.6)] animate-pulse"></span>
-            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          <div class="flex items-center gap-2 sm:gap-3">
+            <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#09f] shadow-[0_0_10px_rgba(0,153,255,0.6)] animate-pulse shrink-0"></span>
+            <h1 class="text-xl sm:text-2xl 2xl:text-3xl font-extrabold tracking-tight text-slate-900">
               Dashboard Quản Trị
             </h1>
           </div>
-          <p class="text-slate-500 text-sm mt-1">
+          <p class="text-slate-500 text-xs sm:text-sm mt-0.5 sm:mt-1">
             Trung tâm điều hành kinh doanh & phân tích hiệu suất bán linh kiện điện tử ECShop
           </p>
         </div>
 
         <!-- Toolbar: Date & Refresh -->
-        <div class="flex flex-wrap items-center gap-3">
-          <div class="bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-xs text-xs font-medium text-slate-600 flex items-center gap-2">
-            <svg class="w-4 h-4 text-[#09f]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>{{ currentDateFormatted }}</span>
-            <span v-if="lastUpdated" class="text-slate-400 text-[11px] border-l border-slate-200 pl-2">
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div class="bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-slate-200 shadow-xs text-xs font-medium text-slate-600 flex items-center justify-between sm:justify-start gap-2 flex-1 sm:flex-none">
+            <div class="flex items-center gap-1.5 sm:gap-2 truncate">
+              <svg class="w-4 h-4 text-[#09f] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span class="truncate">{{ currentDateFormatted }}</span>
+            </div>
+            <span v-if="lastUpdated" class="text-slate-400 text-[11px] border-l border-slate-200 pl-2 shrink-0">
               Đồng bộ: {{ lastUpdated }}
             </span>
           </div>
@@ -30,7 +32,7 @@
           <button
             @click="fetchDashboard"
             :disabled="loading"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 shadow-xs hover:shadow-sm transition-all duration-200 disabled:opacity-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
+            class="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 shadow-xs hover:shadow-sm transition-all duration-200 disabled:opacity-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f] shrink-0"
             aria-label="Làm mới dữ liệu dashboard"
           >
             <svg class="w-4 h-4 text-[#09f]" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -38,24 +40,14 @@
             </svg>
             <span>Làm mới</span>
           </button>
-
-          <NuxtLink
-            to="/admin/products?action=create"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#09f] to-[#0077cc] hover:from-[#33adff] hover:to-[#0088ea] text-white rounded-xl text-sm font-bold shadow-md shadow-[#09f]/25 hover:shadow-lg hover:shadow-[#09f]/35 active:scale-[0.98] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-            </svg>
-            <span>+ Mặt Hàng Mới</span>
-          </NuxtLink>
         </div>
       </div>
 
       <!-- ==================== SKELETON LOADING STATE (CLS < 0.1) ==================== -->
-      <div v-if="loading && !dashboard" class="space-y-8 animate-pulse" aria-busy="true" aria-label="Đang nạp dữ liệu thống kê">
+      <div v-if="loading && !dashboard" class="space-y-6 sm:space-y-8 animate-pulse" aria-busy="true" aria-label="Đang nạp dữ liệu thống kê">
         <!-- 4 KPI Card Skeletons -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div v-for="i in 4" :key="'sk-kpi-' + i" class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+          <div v-for="i in 4" :key="'sk-kpi-' + i" class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-4">
             <div class="flex items-center justify-between">
               <div class="h-3 w-16 bg-slate-200 rounded-md"></div>
               <div class="w-9 h-9 bg-slate-100 rounded-xl"></div>
@@ -66,24 +58,24 @@
         </div>
 
         <!-- Chart Grid Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs space-y-4">
             <div class="h-5 w-48 bg-slate-200 rounded-md"></div>
-            <div class="h-64 bg-slate-100 rounded-xl"></div>
+            <div class="h-52 sm:h-64 bg-slate-100 rounded-xl"></div>
           </div>
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs space-y-4">
             <div class="h-5 w-36 bg-slate-200 rounded-md"></div>
-            <div class="h-64 bg-slate-100 rounded-xl"></div>
+            <div class="h-52 sm:h-64 bg-slate-100 rounded-xl"></div>
           </div>
         </div>
 
         <!-- Secondary Grid Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs space-y-4">
             <div class="h-5 w-36 bg-slate-200 rounded-md"></div>
-            <div class="h-48 bg-slate-100 rounded-full mx-auto w-48"></div>
+            <div class="h-44 sm:h-48 bg-slate-100 rounded-full mx-auto w-44 sm:w-48"></div>
           </div>
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs space-y-4">
             <div class="h-5 w-48 bg-slate-200 rounded-md"></div>
             <div class="space-y-3">
               <div v-for="j in 5" :key="'sk-row-' + j" class="h-8 bg-slate-100 rounded-lg"></div>
@@ -118,23 +110,23 @@
 
         <!-- 2. HÀNG 4 THẺ THỐNG KÊ CHU KỲ (HÔM NAY, TUẦN NÀY, THÁNG NÀY, NĂM NÀY) -->
         <section aria-label="Thống kê doanh thu theo kỳ">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
             <!-- Thẻ 1: Hôm nay -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-[#09f] hover:border-[#09f] p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-[#09f] hover:border-[#09f] p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
               <div class="flex items-center justify-between mb-3 relative">
                 <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Hôm nay</span>
-                <div class="w-11 h-11 bg-gradient-to-tr from-[#0088ea] to-[#09f] text-white rounded-xl flex items-center justify-center shadow-md shadow-[#09f]/30 transition-transform duration-300 group-hover:scale-110">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-tr from-[#0088ea] to-[#09f] text-white rounded-xl flex items-center justify-center shadow-md shadow-[#09f]/30 transition-transform duration-300 group-hover:scale-110 shrink-0">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
               </div>
-              <p class="text-2xl font-black text-slate-900 tracking-tight">
+              <p class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
                 {{ formatPrice(dashboard.today?.revenue) }}
               </p>
-              <div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
-                <span class="font-bold text-slate-900">{{ dashboard.today?.orderCount || 0 }}</span> đơn hàng
-                <span class="text-slate-300">•</span>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+                <span><strong class="font-bold text-slate-900">{{ dashboard.today?.orderCount || 0 }}</strong> đơn hàng</span>
+                <span class="text-slate-300 hidden xs:inline">•</span>
                 <span class="inline-flex items-center gap-1 font-bold text-white bg-[#09f] px-2 py-0.5 rounded-md text-[11px] shadow-xs">
                   +{{ dashboard.today?.newUsers || 0 }} khách mới
                 </span>
@@ -142,21 +134,21 @@
             </div>
 
             <!-- Thẻ 2: Tuần này -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-emerald-500 hover:border-emerald-500 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-emerald-500 hover:border-emerald-500 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
               <div class="flex items-center justify-between mb-3 relative">
                 <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Tuần này</span>
-                <div class="w-11 h-11 bg-gradient-to-tr from-emerald-700 to-emerald-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30 transition-transform duration-300 group-hover:scale-110">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-tr from-emerald-700 to-emerald-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30 transition-transform duration-300 group-hover:scale-110 shrink-0">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
               </div>
-              <p class="text-2xl font-black text-slate-900 tracking-tight">
+              <p class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
                 {{ formatPrice(dashboard.thisWeek?.revenue) }}
               </p>
-              <div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
-                <span class="font-bold text-slate-900">{{ dashboard.thisWeek?.orderCount || 0 }}</span> đơn hàng
-                <span class="text-slate-300">•</span>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+                <span><strong class="font-bold text-slate-900">{{ dashboard.thisWeek?.orderCount || 0 }}</strong> đơn hàng</span>
+                <span class="text-slate-300 hidden xs:inline">•</span>
                 <span class="inline-flex items-center gap-1 font-bold text-white bg-emerald-600 px-2 py-0.5 rounded-md text-[11px] shadow-xs">
                   +{{ dashboard.thisWeek?.newUsers || 0 }} khách mới
                 </span>
@@ -164,21 +156,21 @@
             </div>
 
             <!-- Thẻ 3: Tháng này -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-purple-600 hover:border-purple-600 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-purple-600 hover:border-purple-600 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
               <div class="flex items-center justify-between mb-3 relative">
                 <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Tháng này</span>
-                <div class="w-11 h-11 bg-gradient-to-tr from-purple-800 to-purple-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-purple-600/30 transition-transform duration-300 group-hover:scale-110">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-tr from-purple-800 to-purple-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-purple-600/30 transition-transform duration-300 group-hover:scale-110 shrink-0">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
               </div>
-              <p class="text-2xl font-black text-slate-900 tracking-tight">
+              <p class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
                 {{ formatPrice(dashboard.thisMonth?.revenue) }}
               </p>
-              <div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
-                <span class="font-bold text-slate-900">{{ dashboard.thisMonth?.orderCount || 0 }}</span> đơn hàng
-                <span class="text-slate-300">•</span>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+                <span><strong class="font-bold text-slate-900">{{ dashboard.thisMonth?.orderCount || 0 }}</strong> đơn hàng</span>
+                <span class="text-slate-300 hidden xs:inline">•</span>
                 <span class="inline-flex items-center gap-1 font-bold text-white bg-purple-600 px-2 py-0.5 rounded-md text-[11px] shadow-xs">
                   +{{ dashboard.thisMonth?.newUsers || 0 }} khách mới
                 </span>
@@ -186,21 +178,21 @@
             </div>
 
             <!-- Thẻ 4: Năm này -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-amber-500 hover:border-amber-500 p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+            <div class="bg-white rounded-2xl border border-slate-200/80 border-t-4 border-t-amber-500 hover:border-amber-500 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
               <div class="flex items-center justify-between mb-3 relative">
                 <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Năm này</span>
-                <div class="w-11 h-11 bg-gradient-to-tr from-amber-600 to-amber-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-amber-500/30 transition-transform duration-300 group-hover:scale-110">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-tr from-amber-600 to-amber-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-amber-500/30 transition-transform duration-300 group-hover:scale-110 shrink-0">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
               </div>
-              <p class="text-2xl font-black text-slate-900 tracking-tight">
+              <p class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
                 {{ formatPrice(dashboard.thisYear?.revenue) }}
               </p>
-              <div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
-                <span class="font-bold text-slate-900">{{ dashboard.thisYear?.orderCount || 0 }}</span> đơn hàng
-                <span class="text-slate-300">•</span>
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+                <span><strong class="font-bold text-slate-900">{{ dashboard.thisYear?.orderCount || 0 }}</strong> đơn hàng</span>
+                <span class="text-slate-300 hidden xs:inline">•</span>
                 <span class="inline-flex items-center gap-1 font-bold text-white bg-amber-600 px-2 py-0.5 rounded-md text-[11px] shadow-xs">
                   +{{ dashboard.thisYear?.newUsers || 0 }} khách mới
                 </span>
@@ -210,17 +202,17 @@
         </section>
 
         <!-- ==================== 3. BIỂU ĐỒ 1 & 2: XU HƯỚNG DOANH THU & SỐ LƯỢNG ĐƠN HÀNG ==================== -->
-        <section aria-label="Biểu đồ phân tích doanh thu và số lượng đơn hàng" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section aria-label="Biểu đồ phân tích doanh thu và số lượng đơn hàng" class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
 
-          <!-- BIỂU ĐỒ 1: Area Spline Chart (Chiếm 2 cột) -->
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between relative">
+          <!-- BIỂU ĐỒ 1: Area Spline Chart (Chiếm 2 cột trên xl+) -->
+          <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between relative">
             <div>
               <!-- Header biểu đồ & nút chọn khoảng thời gian -->
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#09f]"></span>
-                    <h2 class="text-base font-bold text-slate-900">Xu Hướng Doanh Thu Bán Hàng</h2>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#09f] shrink-0"></span>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">Xu Hướng Doanh Thu Bán Hàng</h2>
                   </div>
                   <p class="text-xs text-slate-500 mt-0.5">Biểu đồ đường cong diện tích biểu diễn giá trị đơn hàng theo từng ngày</p>
                 </div>
@@ -233,7 +225,7 @@
                     @click="changeRange(days)"
                     :disabled="chartLoading"
                     :class="selectedRange === days ? 'bg-white text-[#09f] shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                    class="px-3.5 py-1.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
+                    class="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f] text-[11px] sm:text-xs"
                   >
                     {{ days }} ngày
                   </button>
@@ -241,18 +233,18 @@
               </div>
 
               <!-- Thẻ tóm tắt chỉ số nhanh trong kỳ -->
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6 bg-slate-50/80 p-3 sm:p-3.5 rounded-xl border border-slate-100">
                 <div>
-                  <p class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Tổng doanh thu kỳ</p>
-                  <p class="text-base font-extrabold text-[#09f] mt-0.5">{{ formatPrice(periodTotalRevenue) }}</p>
+                  <p class="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Tổng doanh thu kỳ</p>
+                  <p class="text-sm sm:text-base font-extrabold text-[#09f] mt-0.5 truncate">{{ formatPrice(periodTotalRevenue) }}</p>
                 </div>
                 <div>
-                  <p class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Trung bình / ngày</p>
-                  <p class="text-base font-extrabold text-slate-800 mt-0.5">{{ formatPrice(dailyAverageRevenue) }}</p>
+                  <p class="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Trung bình / ngày</p>
+                  <p class="text-sm sm:text-base font-extrabold text-slate-800 mt-0.5 truncate">{{ formatPrice(dailyAverageRevenue) }}</p>
                 </div>
                 <div class="hidden sm:block">
-                  <p class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Ngày cao nhất</p>
-                  <p class="text-base font-extrabold text-emerald-600 mt-0.5">{{ formatPrice(peakRevenue) }}</p>
+                  <p class="text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Ngày cao nhất</p>
+                  <p class="text-sm sm:text-base font-extrabold text-emerald-600 mt-0.5 truncate">{{ formatPrice(peakRevenue) }}</p>
                 </div>
               </div>
 
@@ -265,7 +257,7 @@
 
                 <svg
                   :viewBox="`0 0 ${svgWidth} ${svgHeight}`"
-                  class="w-full h-64 overflow-visible select-none"
+                  class="w-full h-52 sm:h-64 2xl:h-72 overflow-visible select-none"
                   @mousemove="handleSvgMouseMove"
                   role="img"
                   aria-label="Biểu đồ diện tích biểu diễn doanh thu"
@@ -389,13 +381,13 @@
                   </div>
                 </div>
               </div>
-              <div v-else class="h-64 flex items-center justify-center text-slate-400 text-sm">
+              <div v-else class="h-52 sm:h-64 2xl:h-72 flex items-center justify-center text-slate-400 text-sm">
                 Chưa có dữ liệu biểu đồ cho kỳ đã chọn
               </div>
             </div>
 
             <!-- Chart Footer Legend -->
-            <div class="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100 mt-2">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-500 pt-3 border-t border-slate-100 mt-2">
               <div class="flex items-center gap-4">
                 <span class="flex items-center gap-1.5">
                   <span class="w-3 h-1 bg-[#09f] rounded-full"></span> Doanh thu
@@ -408,24 +400,24 @@
             </div>
           </div>
 
-          <!-- BIỂU ĐỒ 2: Bar Chart Số lượng đơn hàng (Chiếm 1 cột) -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
+          <!-- BIỂU ĐỒ 2: Bar Chart Số lượng đơn hàng (Chiếm 1 cột trên xl+) -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <h2 class="text-base font-bold text-slate-900">Số Lượng Đơn Hàng</h2>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">Số Lượng Đơn Hàng</h2>
                   </div>
                   <p class="text-xs text-slate-500 mt-0.5">Tần suất đặt hàng phát sinh trong chu kỳ</p>
                 </div>
-                <span class="text-xs font-bold text-white bg-emerald-600 shadow-xs px-2.5 py-0.5 rounded-full">
+                <span class="text-xs font-bold text-white bg-emerald-600 shadow-xs px-2.5 py-0.5 rounded-full shrink-0">
                   {{ periodTotalOrders }} đơn
                 </span>
               </div>
 
               <!-- Bar Chart Container -->
-              <div class="h-64 w-full flex items-end gap-1 relative pt-6 pb-6 select-none" v-if="chartData.length > 0">
+              <div class="h-52 sm:h-64 2xl:h-72 w-full flex items-end gap-0.5 sm:gap-1 relative pt-6 pb-6 select-none" v-if="chartData.length > 0">
                 <div
                   v-for="(day, idx) in chartData"
                   :key="'bar-' + idx"
@@ -440,14 +432,14 @@
                   <!-- Bar Representation -->
                   <div class="w-full flex items-end justify-center h-full">
                     <div
-                      class="w-full max-w-[14px] rounded-t-md transition-all duration-300"
+                      class="w-full max-w-[8px] sm:max-w-[14px] 2xl:max-w-[18px] rounded-t-md transition-all duration-300"
                       :class="day.orderCount === peakOrders && day.orderCount > 0 ? 'bg-gradient-to-t from-emerald-500 to-emerald-400 shadow-xs' : 'bg-emerald-200/80 group-hover:bg-emerald-400'"
                       :style="{ height: getOrderBarPercent(day.orderCount) + '%' }"
                     ></div>
                   </div>
                 </div>
               </div>
-              <div v-else class="h-64 flex items-center justify-center text-slate-400 text-sm">
+              <div v-else class="h-52 sm:h-64 2xl:h-72 flex items-center justify-center text-slate-400 text-sm">
                 Không có dữ liệu đơn hàng
               </div>
             </div>
@@ -461,26 +453,26 @@
         </section>
 
         <!-- ==================== 4. BIỂU ĐỒ 3 & 4: VÀNH KHĂN TRẠNG THÁI & TOP BÁN CHẠY ==================== -->
-        <section aria-label="Cơ cấu trạng thái đơn hàng và sản phẩm bán chạy" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section aria-label="Cơ cấu trạng thái đơn hàng và sản phẩm bán chạy" class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
 
-          <!-- BIỂU ĐỒ 3: Donut Chart Cơ cấu Trạng thái Đơn -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
+          <!-- BIỂU ĐỒ 3: Donut Chart Cơ cấu Trạng thái Đơn (Chiếm 1 cột trên xl+) -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-                  <h2 class="text-base font-bold text-slate-900">Trạng Thái Đơn Hàng</h2>
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900">Trạng Thái Đơn Hàng</h2>
                 </div>
-                <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200/60 font-mono">
+                <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200/60 font-mono shrink-0">
                   {{ dashboard.totalOrders || 0 }} đơn
                 </span>
               </div>
               <p class="text-xs text-slate-500 mb-5">Phân bổ tỷ trọng trạng thái xử lý đơn hàng trên toàn hệ thống</p>
 
               <!-- Donut Container -->
-              <div class="flex flex-col sm:flex-row items-center justify-center gap-6 my-2">
+              <div class="flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-center justify-center gap-4 sm:gap-6 my-2">
                 <!-- SVG Donut -->
-                <div class="relative w-44 h-44 shrink-0 flex items-center justify-center">
+                <div class="relative w-36 h-36 sm:w-44 sm:h-44 shrink-0 flex items-center justify-center">
                   <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90 transform select-none" role="img" aria-label="Biểu đồ hình vành khăn">
                     <!-- Background Circle -->
                     <circle
@@ -515,22 +507,22 @@
                   <!-- Donut Center Dynamic Readout -->
                   <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-2 select-none">
                     <template v-if="hoveredSegmentData">
-                      <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 truncate max-w-[110px]">
+                      <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 truncate max-w-[100px] sm:max-w-[110px]">
                         {{ hoveredSegmentData.label }}
                       </span>
-                      <span class="text-2xl font-black text-slate-900 my-0.5">
+                      <span class="text-xl sm:text-2xl font-black text-slate-900 my-0.5">
                         {{ hoveredSegmentData.count }}
                       </span>
                       <span
-                        class="text-[11px] font-bold text-white px-2 py-0.5 rounded-full shadow-xs"
+                        class="text-[10px] sm:text-[11px] font-bold text-white px-2 py-0.5 rounded-full shadow-xs"
                         :style="{ backgroundColor: hoveredSegmentData.color }"
                       >
                         {{ hoveredSegmentData.percent }}%
                       </span>
                     </template>
                     <template v-else>
-                      <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tổng cộng</span>
-                      <span class="text-2xl font-black text-slate-900 my-0.5">
+                      <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Tổng cộng</span>
+                      <span class="text-xl sm:text-2xl font-black text-slate-900 my-0.5">
                         {{ dashboard.totalOrders || 0 }}
                       </span>
                       <span class="text-[10px] text-white font-bold bg-emerald-600 shadow-xs px-2.5 py-0.5 rounded-full mt-0.5">
@@ -587,13 +579,13 @@
             </div>
           </div>
 
-          <!-- BIỂU ĐỒ 4: Top Sản Phẩm Bán Chạy (Chiếm 2 cột) -->
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
+          <!-- BIỂU ĐỒ 4: Top Sản Phẩm Bán Chạy (Chiếm 2 cột trên xl+) -->
+          <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div>
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                  <h2 class="text-base font-bold text-slate-900">Bảng Xếp Hạng Linh Kiện Bán Chạy</h2>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900">Bảng Xếp Hạng Linh Kiện Bán Chạy</h2>
                 </div>
 
                 <!-- Tab: Doanh thu vs Số lượng -->
@@ -601,14 +593,14 @@
                   <button
                     @click="rankingTab = 'revenue'"
                     :class="rankingTab === 'revenue' ? 'bg-white text-[#09f] shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                    class="px-3 py-1 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
+                    class="px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f] text-[11px] sm:text-xs"
                   >
                     Theo Doanh Thu
                   </button>
                   <button
                     @click="rankingTab = 'rating'"
                     :class="rankingTab === 'rating' ? 'bg-white text-[#09f] shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                    class="px-3 py-1 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
+                    class="px-2.5 sm:px-3 py-1 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f] text-[11px] sm:text-xs"
                   >
                     Đánh Giá Cao
                   </button>
@@ -625,8 +617,8 @@
                   :key="idx"
                   class="group p-2 -mx-2 rounded-xl hover:bg-slate-50/80 transition-colors"
                 >
-                  <div class="flex items-center justify-between text-xs mb-1.5">
-                    <div class="flex items-center gap-2 min-w-0 pr-2">
+                  <div class="flex items-center justify-between text-xs mb-1.5 gap-2">
+                    <div class="flex items-center gap-2 min-w-0 pr-1 flex-1">
                       <span
                         class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[11px] shrink-0 border"
                         :class="getRankBadgeClass(idx)"
@@ -636,14 +628,14 @@
                       <span class="font-bold text-slate-800 truncate" :title="prod.productName">
                         {{ prod.productName }}
                       </span>
-                      <span v-if="prod.variantName" class="text-slate-400 text-[11px] truncate hidden sm:inline">
+                      <span v-if="prod.variantName" class="text-slate-400 text-[11px] truncate hidden md:inline shrink-0">
                         ({{ prod.variantName }})
                       </span>
                     </div>
-                    <div class="flex items-center gap-3 shrink-0">
-                      <span class="font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">{{ prod.totalQuantity }} sp</span>
-                      <span class="text-slate-300">|</span>
-                      <span class="font-extrabold text-[#09f]">{{ formatPrice(prod.totalRevenue) }}</span>
+                    <div class="flex items-center gap-2 sm:gap-3 shrink-0 text-right">
+                      <span class="font-semibold text-slate-600 bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-md text-[11px] sm:text-xs shrink-0">{{ prod.totalQuantity }} sp</span>
+                      <span class="text-slate-300 hidden xs:inline">|</span>
+                      <span class="font-extrabold text-[#09f] text-xs sm:text-sm shrink-0">{{ formatPrice(prod.totalRevenue) }}</span>
                     </div>
                   </div>
 
@@ -665,23 +657,23 @@
                   :key="idx"
                   class="group p-2 -mx-2 rounded-xl hover:bg-slate-50/80 transition-colors"
                 >
-                  <div class="flex items-center justify-between text-xs mb-1.5">
-                    <div class="flex items-center gap-2 min-w-0 pr-2">
+                  <div class="flex items-center justify-between text-xs mb-1.5 gap-2">
+                    <div class="flex items-center gap-2 min-w-0 pr-1 flex-1">
                       <span
                         class="w-6 h-6 rounded-lg flex items-center justify-center font-black text-[11px] shrink-0 border"
                         :class="getRankBadgeClass(idx)"
                       >
                         {{ idx + 1 }}
                       </span>
-                      <span class="font-bold text-slate-800 truncate">
+                      <span class="font-bold text-slate-800 truncate" :title="prod.productName">
                         {{ prod.productName }}
                       </span>
                     </div>
-                    <div class="flex items-center gap-3 shrink-0">
-                      <span class="flex items-center gap-1 font-bold text-white bg-amber-500 shadow-xs px-2 py-0.5 rounded-md">
+                    <div class="flex items-center gap-2 sm:gap-3 shrink-0 text-right">
+                      <span class="flex items-center gap-1 font-bold text-white bg-amber-500 shadow-xs px-2 py-0.5 rounded-md text-[11px] sm:text-xs shrink-0">
                         ★ {{ (prod.avgRating || 5.0).toFixed(1) }}
                       </span>
-                      <span class="text-slate-400 text-xs">Đã bán {{ prod.soldQuantity || 0 }} sp</span>
+                      <span class="text-slate-400 text-xs shrink-0 hidden xs:inline">Đã bán {{ prod.soldQuantity || 0 }} sp</span>
                     </div>
                   </div>
                   <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
@@ -707,34 +699,34 @@
         </section>
 
         <!-- ==================== 5. BIỂU ĐỒ 5 & 6: ĐÁNH GIÁ CHẤT LƯỢNG & CHỈ SỐ HIỆU SUẤT VẬN HÀNH ==================== -->
-        <section aria-label="Đánh giá chất lượng và chỉ số KPI vận hành" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section aria-label="Đánh giá chất lượng và chỉ số KPI vận hành" class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
 
-          <!-- BIỂU ĐỒ 5: Rating Breakdown -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
+          <!-- BIỂU ĐỒ 5: Rating Breakdown (Chiếm 1 cột trên xl+) -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                  <h2 class="text-base font-bold text-slate-900">Đánh Giá Sản Phẩm</h2>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900">Đánh Giá Sản Phẩm</h2>
                 </div>
-                <span class="text-xs text-slate-400">Phản hồi</span>
+                <span class="text-xs text-slate-400 shrink-0">Phản hồi</span>
               </div>
-              <p class="text-xs text-slate-500 mb-6">Mức độ thỏa mãn và điểm chất lượng sản phẩm</p>
+              <p class="text-xs text-slate-500 mb-5 sm:mb-6">Mức độ thỏa mãn và điểm chất lượng sản phẩm</p>
 
               <!-- Star Score Highlight -->
-              <div class="flex items-center gap-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white p-4 rounded-xl shadow-md mb-5">
+              <div class="flex items-center gap-3 sm:gap-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white p-3.5 sm:p-4 rounded-xl shadow-md mb-5">
                 <div class="text-center shrink-0">
-                  <p class="text-3xl font-black text-white tracking-tight">
+                  <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">
                     {{ (dashboard.productStats?.averageRating || 5.0).toFixed(1) }}
                   </p>
                   <div class="flex items-center justify-center gap-0.5 text-amber-200 text-xs mt-1">
                     <span v-for="s in 5" :key="s">★</span>
                   </div>
                 </div>
-                <div class="h-10 w-px bg-white/30"></div>
+                <div class="h-10 w-px bg-white/30 shrink-0"></div>
                 <div class="text-xs">
                   <p class="font-bold text-white">Chỉ số uy tín chất lượng</p>
-                  <p class="text-amber-100 mt-0.5">Dựa trên hàng trăm phản hồi của khách hàng đã mua sắm linh kiện</p>
+                  <p class="text-amber-100 text-[11px] sm:text-xs mt-0.5">Dựa trên hàng trăm phản hồi của khách hàng đã mua sắm linh kiện</p>
                 </div>
               </div>
 
@@ -745,7 +737,7 @@
                   :key="sIdx"
                   class="flex items-center gap-2 text-xs"
                 >
-                  <span class="w-12 text-slate-600 font-medium flex items-center gap-1">
+                  <span class="w-12 text-slate-600 font-medium flex items-center gap-1 shrink-0">
                     {{ star.stars }} <span class="text-amber-400">★</span>
                   </span>
                   <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -754,7 +746,7 @@
                       :style="{ width: star.percent + '%' }"
                     ></div>
                   </div>
-                  <span class="w-10 text-right text-slate-400 font-mono text-[11px]">{{ star.count }}</span>
+                  <span class="w-10 text-right text-slate-400 font-mono text-[11px] shrink-0">{{ star.count }}</span>
                 </div>
               </div>
             </div>
@@ -766,23 +758,23 @@
             </div>
           </div>
 
-          <!-- BIỂU ĐỒ 6: Gauges Vận Hành & Chuyển Đổi (Chiếm 2 cột) -->
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
+          <!-- BIỂU ĐỒ 6: Gauges Vận Hành & Chuyển Đổi (Chiếm 2 cột trên xl+) -->
+          <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-                  <h2 class="text-base font-bold text-slate-900">Chỉ Số Vận Hành & Chuyển Đổi (KPIs)</h2>
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900">Chỉ Số Vận Hành & Chuyển Đổi (KPIs)</h2>
                 </div>
-                <span class="text-xs text-slate-400">Đo lường tự động</span>
+                <span class="text-xs text-slate-400 shrink-0">Đo lường tự động</span>
               </div>
-              <p class="text-xs text-slate-500 mb-6">Thước đo trọng yếu phản ánh tốc độ hoàn tất đơn hàng và hiệu quả doanh thu</p>
+              <p class="text-xs text-slate-500 mb-5 sm:mb-6">Thước đo trọng yếu phản ánh tốc độ hoàn tất đơn hàng và hiệu quả doanh thu</p>
 
               <!-- 3 Gauges Grid -->
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <!-- Gauge 1: Tỷ lệ Giao Thành Công -->
                 <div class="bg-slate-50/80 rounded-xl p-4 border border-slate-100 flex flex-col items-center text-center">
-                  <div class="relative w-24 h-24 mb-3 flex items-center justify-center">
+                  <div class="relative w-20 h-20 sm:w-24 sm:h-24 mb-3 flex items-center justify-center">
                     <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90 transform">
                       <path
                         class="text-slate-200"
@@ -803,7 +795,7 @@
                       />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <span class="text-lg font-black text-slate-900">{{ deliverySuccessRate }}%</span>
+                      <span class="text-base sm:text-lg font-black text-slate-900">{{ deliverySuccessRate }}%</span>
                     </div>
                   </div>
                   <h4 class="text-xs font-bold text-slate-800">Tỷ Lệ Giao Thành Công</h4>
@@ -812,21 +804,21 @@
 
                 <!-- Gauge 2: AOV (Giá trị trung bình đơn hàng) -->
                 <div class="bg-slate-50/80 rounded-xl p-4 border border-slate-100 flex flex-col items-center text-center justify-between">
-                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0088ea] to-[#09f] text-white flex items-center justify-center my-2 shadow-md shadow-[#09f]/25">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-[#0088ea] to-[#09f] text-white flex items-center justify-center my-2 shadow-md shadow-[#09f]/25 shrink-0">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <div>
+                  <div class="w-full">
                     <p class="text-xs font-bold text-slate-800">Giá Trị TB / Đơn (AOV)</p>
-                    <p class="text-lg font-black text-[#09f] mt-1">{{ formatPrice(averageOrderValue) }}</p>
+                    <p class="text-base sm:text-lg font-black text-[#09f] mt-1 truncate">{{ formatPrice(averageOrderValue) }}</p>
                     <p class="text-[11px] text-slate-400 mt-0.5">Doanh thu / đơn hoàn tất</p>
                   </div>
                 </div>
 
                 <!-- Gauge 3: Tỷ lệ hủy đơn -->
                 <div class="bg-slate-50/80 rounded-xl p-4 border border-slate-100 flex flex-col items-center text-center">
-                  <div class="relative w-24 h-24 mb-3 flex items-center justify-center">
+                  <div class="relative w-20 h-20 sm:w-24 sm:h-24 mb-3 flex items-center justify-center">
                     <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90 transform">
                       <path
                         class="text-slate-200"
@@ -847,7 +839,7 @@
                       />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <span class="text-lg font-black text-rose-600">{{ cancellationRate }}%</span>
+                      <span class="text-base sm:text-lg font-black text-rose-600">{{ cancellationRate }}%</span>
                     </div>
                   </div>
                   <h4 class="text-xs font-bold text-slate-800">Tỷ Lệ Đơn Hủy</h4>
@@ -857,9 +849,9 @@
             </div>
 
             <!-- Pipeline status line -->
-            <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-500">
               <span>Đang lưu chuyển trong quy trình:</span>
-              <strong class="text-white font-bold bg-indigo-600 shadow-xs px-2.5 py-0.5 rounded-md">
+              <strong class="text-white font-bold bg-indigo-600 shadow-xs px-2.5 py-0.5 rounded-md self-start sm:self-auto">
                 {{ activeTransitOrders }} đơn hàng cần xử lý
               </strong>
             </div>
@@ -867,20 +859,20 @@
         </section>
 
         <!-- ==================== 6. BẢNG GIAO DỊCH ĐƠN HÀNG GẦN ĐÂY ==================== -->
-        <section aria-label="Danh sách đơn hàng mới nhất" class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all space-y-5">
+        <section aria-label="Danh sách đơn hàng mới nhất" class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all space-y-4 sm:space-y-5">
           <!-- Header Bảng & Quick Action -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#09f]"></span>
-                <h3 class="text-base font-bold text-slate-900">Giao Dịch Đơn Hàng Mới Nhất</h3>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#09f] shrink-0"></span>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900">Giao Dịch Đơn Hàng Mới Nhất</h3>
               </div>
               <p class="text-xs text-slate-500 mt-0.5">Các đơn đặt hàng phát sinh gần đây trên hệ thống cửa hàng</p>
             </div>
 
             <NuxtLink
               to="/admin/orders"
-              class="text-xs font-bold text-white bg-gradient-to-r from-[#09f] to-[#0077cc] hover:from-[#33adff] hover:to-[#0088ea] flex items-center gap-1.5 px-3.5 py-2 rounded-xl shadow-md shadow-[#09f]/25 transition-all self-start sm:self-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
+              class="text-xs font-bold text-white bg-gradient-to-r from-[#09f] to-[#0077cc] hover:from-[#33adff] hover:to-[#0088ea] flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl shadow-md shadow-[#09f]/25 transition-all self-start sm:self-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
             >
               <span>Xem toàn bộ {{ dashboard.totalOrders }} đơn</span>
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -890,20 +882,20 @@
           </div>
 
           <!-- Controls: Bộ lọc trạng thái & Ô tìm kiếm nhanh -->
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-2">
-            <!-- Tabs lọc trạng thái -->
-            <div class="flex flex-wrap items-center gap-1.5">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-1 sm:pt-2">
+            <!-- Tabs lọc trạng thái (Hỗ trợ vuốt ngang trên mobile) -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 md:pb-0 scrollbar-none -mx-1 px-1">
               <button
                 v-for="tab in filterTabs"
                 :key="tab.value"
                 @click="orderFilterStatus = tab.value"
-                class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
-                :class="orderFilterStatus === tab.value ? 'bg-[#09f] text-white shadow-md shadow-[#09f]/25 font-bold' : 'bg-slate-200 text-slate-800 font-bold hover:bg-slate-300'"
+                class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f] shrink-0"
+                :class="orderFilterStatus === tab.value ? 'bg-[#09f] text-white shadow-md shadow-[#09f]/25 font-bold' : 'bg-slate-100 text-slate-700 font-bold hover:bg-slate-200'"
               >
                 {{ tab.label }}
                 <span
                   class="ml-1 px-1.5 py-0.2 rounded-full text-[10px]"
-                  :class="orderFilterStatus === tab.value ? 'bg-white/25 text-white' : 'bg-slate-300 text-slate-900 font-bold'"
+                  :class="orderFilterStatus === tab.value ? 'bg-white/25 text-white' : 'bg-slate-200 text-slate-800 font-bold'"
                 >
                   {{ tab.count }}
                 </span>
@@ -916,7 +908,7 @@
                 v-model="orderSearch"
                 type="text"
                 placeholder="Tìm khách, mã đơn, SĐT..."
-                class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#09f] focus:bg-white focus:ring-2 focus:ring-[#09f]/10 transition-all placeholder:text-slate-400"
+                class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#09f] focus:bg-white focus:ring-2 focus:ring-[#09f]/10 transition-all placeholder:text-slate-400"
               />
               <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -937,17 +929,17 @@
             <div
               v-for="order in filteredOrders"
               :key="order.id"
-              class="py-3.5 px-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-slate-50/80 rounded-xl transition-colors group"
+              class="py-3 sm:py-3.5 px-2 sm:px-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-slate-50/80 rounded-xl transition-colors group"
             >
               <!-- Cột trái: Mã đơn, Khách hàng, Trạng thái -->
-              <div class="flex items-start gap-3 min-w-0">
+              <div class="flex items-start gap-2.5 sm:gap-3 min-w-0 flex-1">
                 <!-- Avatar viết tắt -->
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 flex items-center justify-center font-bold text-slate-700 text-xs shrink-0 border border-slate-200/60 shadow-xs">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 flex items-center justify-center font-bold text-slate-700 text-xs shrink-0 border border-slate-200/60 shadow-xs">
                   {{ (order.fullName || 'K').charAt(0).toUpperCase() }}
                 </div>
 
-                <div class="min-w-0">
-                  <div class="flex flex-wrap items-center gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <!-- Mã đơn + Copy button -->
                     <button
                       @click="copyOrderNumber(order.orderNumber || `#${order.id}`)"
@@ -962,13 +954,13 @@
                     </button>
 
                     <!-- Status Pill with Pulsing Dot -->
-                    <span :class="getStatusClass(order.status)" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-xs">
+                    <span :class="getStatusClass(order.status)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-xs">
                       <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
                       {{ getStatusLabel(order.status) }}
                     </span>
 
                     <!-- Payment Badge -->
-                    <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-900 text-white font-bold uppercase shadow-xs">
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-900 text-white font-bold uppercase shadow-xs">
                       {{ order.paymentMethod || 'COD' }}
                     </span>
                   </div>
@@ -984,7 +976,7 @@
               </div>
 
               <!-- Cột phải: Giá tiền & Link thao tác -->
-              <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0 sm:text-right pl-13 sm:pl-0">
+              <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 sm:text-right pl-0 sm:pl-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                 <div>
                   <p class="text-sm font-black text-slate-900">{{ formatPrice(order.totalCost) }}</p>
                   <p class="text-[11px] text-slate-400">
@@ -994,7 +986,7 @@
 
                 <NuxtLink
                   :to="`/admin/orders`"
-                  class="p-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg transition-colors cursor-pointer shadow-xs"
+                  class="p-2 text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg transition-colors cursor-pointer shadow-xs shrink-0"
                   title="Xem đơn hàng chi tiết"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1023,13 +1015,13 @@
         </section>
 
         <!-- ==================== 7. BẢNG THỐNG KÊ TỪ KHÓA TÌM KIẾM CỦA KHÁCH HÀNG ==================== -->
-        <section aria-label="Thống kê từ khóa tìm kiếm" class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs hover:shadow-sm transition-all space-y-5">
+        <section aria-label="Thống kê từ khóa tìm kiếm" class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs hover:shadow-sm transition-all space-y-4 sm:space-y-5">
           <!-- Header Bảng & Nút Refresh -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <h3 class="text-base font-bold text-slate-900">Thống Kê Từ Khóa Tìm Kiếm (Khách Hàng & Nhu Cầu)</h3>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900">Thống Kê Từ Khóa Tìm Kiếm (Khách Hàng & Nhu Cầu)</h3>
               </div>
               <p class="text-xs text-slate-500 mt-0.5">Top các từ khóa khách hàng tìm kiếm nhiều nhất trên website để phát hiện xu hướng và mặt hàng quan tâm</p>
             </div>
@@ -1038,7 +1030,7 @@
             <button
               @click="fetchSearchStats"
               :disabled="searchStatsLoading"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50 self-start sm:self-auto shrink-0"
             >
               <svg class="w-3.5 h-3.5 text-[#09f]" :class="{ 'animate-spin': searchStatsLoading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -1047,16 +1039,16 @@
             </button>
           </div>
 
-          <!-- Table Container -->
-          <div class="overflow-x-auto rounded-xl border border-slate-100">
-            <table class="w-full text-left text-xs text-slate-600">
+          <!-- Table Container (Horizontal scroll on mobile) -->
+          <div class="overflow-x-auto rounded-xl border border-slate-100 -mx-1 sm:mx-0 scrollbar-none">
+            <table class="min-w-[560px] w-full text-left text-xs text-slate-600">
               <thead class="bg-slate-50 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
                 <tr>
-                  <th scope="col" class="px-4 py-3 w-16 text-center">Hạng</th>
-                  <th scope="col" class="px-4 py-3">Từ khóa tìm kiếm</th>
-                  <th scope="col" class="px-4 py-3 text-center">Số lượt tìm</th>
-                  <th scope="col" class="px-4 py-3 text-center">Tình trạng kết quả</th>
-                  <th scope="col" class="px-4 py-3 text-right">Lần tìm gần nhất</th>
+                  <th scope="col" class="px-3.5 sm:px-4 py-3 w-16 text-center">Hạng</th>
+                  <th scope="col" class="px-3.5 sm:px-4 py-3">Từ khóa tìm kiếm</th>
+                  <th scope="col" class="px-3.5 sm:px-4 py-3 text-center">Số lượt tìm</th>
+                  <th scope="col" class="px-3.5 sm:px-4 py-3 text-center">Tình trạng kết quả</th>
+                  <th scope="col" class="px-3.5 sm:px-4 py-3 text-right">Lần tìm gần nhất</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -1073,7 +1065,7 @@
                   class="hover:bg-slate-50/80 transition-colors"
                 >
                   <!-- Hạng -->
-                  <td class="px-4 py-3 text-center font-bold">
+                  <td class="px-3.5 sm:px-4 py-3 text-center font-bold">
                     <span
                       class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs"
                       :class="[
@@ -1088,7 +1080,7 @@
                   </td>
 
                   <!-- Từ khóa -->
-                  <td class="px-4 py-3 font-semibold text-slate-900">
+                  <td class="px-3.5 sm:px-4 py-3 font-semibold text-slate-900">
                     <div class="flex items-center gap-2">
                       <span class="text-sm font-medium">{{ item.keyword }}</span>
                       <NuxtLink
@@ -1105,14 +1097,14 @@
                   </td>
 
                   <!-- Số lượt tìm -->
-                  <td class="px-4 py-3 text-center font-bold text-slate-900">
+                  <td class="px-3.5 sm:px-4 py-3 text-center font-bold text-slate-900">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                       {{ item.searchCount }} lượt
                     </span>
                   </td>
 
                   <!-- Tình trạng kết quả -->
-                  <td class="px-4 py-3 text-center">
+                  <td class="px-3.5 sm:px-4 py-3 text-center">
                     <span
                       v-if="item.resultsCount > 0"
                       class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
@@ -1130,7 +1122,7 @@
                   </td>
 
                   <!-- Lần tìm gần nhất -->
-                  <td class="px-4 py-3 text-right text-slate-400 text-[11px]">
+                  <td class="px-3.5 sm:px-4 py-3 text-right text-slate-400 text-[11px]">
                     {{ formatSearchDate(item.lastSearchedAt) }}
                   </td>
                 </tr>
@@ -1408,8 +1400,8 @@ const tooltipStyle = computed(() => {
   const leftPercent = (hoveredPoint.value.x / svgWidth) * 100
   const topPercent = (hoveredPoint.value.y / svgHeight) * 100
   return {
-    left: `calc(${leftPercent}% - 65px)`,
-    top: `calc(${topPercent}% - 75px)`
+    left: `clamp(12px, calc(${leftPercent}% - 65px), calc(100% - 150px))`,
+    top: `clamp(8px, calc(${topPercent}% - 75px), calc(100% - 75px))`
   }
 })
 

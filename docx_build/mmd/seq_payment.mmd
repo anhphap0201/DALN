@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor Customer as Khách hàng
+    participant Frontend as Nuxt 4 Frontend
+    participant Controller as Order/PaymentController
+    participant Service as Order & PaymentService
+    participant DB as PostgreSQL Database
+    participant Gateway as Cổng Thanh toán (VNPAY / PayOS)
+
+    Customer->>Frontend: Nhấn "Xác nhận Thanh toán Đơn hàng"
+    Frontend->>Controller: POST /api/orders/checkout (Thông tin giỏ & phương thức)
+    Controller->>Service: processCheckout(orderDTO)
+    Service->>DB: Kiểm tra tồn kho (SELECT stock FROM inventories)
+    Service->>DB: INSERT INTO orders (Status: PENDING)
+    Service->>Gateway: Tạo URL thanh toán kèm mã băm HMAC SHA512
+    Gateway-->>Service: Trả về Payment URL / Mã VietQR
+    Service-->>Controller: DTO chứa redirectUrl
+    Controller-->>Frontend: HTTP 200 OK (redirectUrl)
+    Frontend->>Customer: Chuyển hướng sang giao diện quét mã QR
+
+    Customer->>Gateway: Quét mã QR và xác nhận chuyển khoản
+    Gateway->>Gateway: Xử lý giao dịch ngân hàng thành công
+    Gateway->>Controller: POST /api/payment/webhook (IPN callback kèm Chữ ký số)
+    Controller->>Service: handlePaymentWebhook(payload, signature)
+    Service->>Service: Xác thực chữ ký số HMAC SHA512
+    alt Chữ ký hợp lệ
+        Service->>DB: UPDATE orders SET status = 'PAID'
+        Service->>DB: UPDATE inventories SET stock_quantity = stock_quantity - order_qty
+        Service->>DB: INSERT INTO payments (transaction_id, amount, status: SUCCESS)
+        Service-->>Controller: Xử lý hoàn tất
+        Controller-->>Gateway: HTTP 200 OK ({"RspCode": "00", "Message": "Confirm Success"})
+    else Chữ ký không hợp lệ
+        Service-->>Controller: Cảnh báo giả mạo dữ liệu
+        Controller-->>Gateway: HTTP 400 Bad Request
+    end
+
+    Frontend->>Customer: Hiển thị trang "Thanh toán thành công"

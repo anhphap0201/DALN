@@ -8,10 +8,12 @@ import com.example.ecommerceelectroniccomponentsbackend.entity.Cart;
 import com.example.ecommerceelectroniccomponentsbackend.entity.CartItem;
 import com.example.ecommerceelectroniccomponentsbackend.entity.Order;
 import com.example.ecommerceelectroniccomponentsbackend.entity.OrderItem;
+import com.example.ecommerceelectroniccomponentsbackend.entity.ProductVariant;
 import com.example.ecommerceelectroniccomponentsbackend.model.User;
 import com.example.ecommerceelectroniccomponentsbackend.mapper.OrderMapper;
 import com.example.ecommerceelectroniccomponentsbackend.repository.CartRepository;
 import com.example.ecommerceelectroniccomponentsbackend.repository.OrderRepository;
+import com.example.ecommerceelectroniccomponentsbackend.repository.ProductVariantRepository;
 import com.example.ecommerceelectroniccomponentsbackend.repository.UserRepository;
 import com.example.ecommerceelectroniccomponentsbackend.service.IOrderService;
 import com.example.ecommerceelectroniccomponentsbackend.service.ISmartLockerService;
@@ -24,11 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,41 +36,129 @@ public class OrderServiceImpl implements IOrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+    private final ProductVariantRepository productVariantRepository;
     private final OrderMapper orderMapper;
     private final ISmartLockerService smartLockerService;
 
+    @Override
     @Transactional
     public OrderDTO createOrderFromCart(Long userId, CreateOrderRequest request) {
-        log.info("Creating order from cart for user: {}", userId);
-
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found for user"));
-
-        if (cart.getCartItems().isEmpty()) {
-            throw new IllegalArgumentException("Cannot create order from empty cart");
+        if (request == null) {
+            request = new CreateOrderRequest();
         }
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String fullName;
+        String email;
+        String phone;
+        String shippingAddress;
+        String province;
+        String ward;
+        String provinceCode = request.getProvinceCode() != null ? request.getProvinceCode().trim() : "";
+        String wardCode = request.getWardCode() != null ? request.getWardCode().trim() : "";
 
-        // Validate user profile
-        validateUserProfile(user);
-
-        // Build address and phone from user profile
-        String shippingAddress = buildShippingAddress(user);
-        String phone = safeTrim(user.getPhone());
-        String province = safeTrim(user.getProvince());
-        String ward = safeTrim(user.getWard());
-
-        // Calculate totals
+        Cart cart = null;
+        List<OrderItem> itemsToOrder = new ArrayList<>();
         BigDecimal itemsSubtotal = BigDecimal.ZERO;
-        for (CartItem cartItem : cart.getCartItems()) {
-            itemsSubtotal = itemsSubtotal.add(cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+
+        if (userId != null) {
+            log.info("Creating order for authenticated user: {}", userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            // Check if shipping info provided in request, otherwise fallback to user profile
+            fullName = hasText(request.getFullName()) ? request.getFullName().trim() : user.getFullName();
+            phone = hasText(request.getPhone()) ? safeTrim(request.getPhone()) : safeTrim(user.getPhone());
+            email = hasText(request.getEmail()) ? request.getEmail().trim() : user.getEmail();
+            shippingAddress = hasText(request.getAddress()) ? request.getAddress().trim() : buildShippingAddress(user);
+            province = hasText(request.getProvince()) ? safeTrim(request.getProvince()) : safeTrim(user.getProvince());
+            ward = hasText(request.getWard()) ? safeTrim(request.getWard()) : safeTrim(user.getWard());
+
+            validateShippingInfo(fullName, phone, email, shippingAddress, province, ward);
+
+            // If request has explicit items, use them; otherwise use user's DB cart
+            if (request.getItems() != null && !request.getItems().isEmpty()) {
+                for (CreateOrderRequest.OrderItemRequest reqItem : request.getItems()) {
+                    ProductVariant variant = productVariantRepository.findById(reqItem.getProductVariantId())
+                            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy biến thể sản phẩm: " + reqItem.getProductVariantId()));
+
+                    if (variant.getInStock() != null && variant.getInStock() < reqItem.getQuantity()) {
+                        throw new IllegalArgumentException("Sản phẩm " + (variant.getVariantName() != null ? variant.getVariantName() : variant.getId()) + " không đủ số lượng trong kho");
+                    }
+
+                    BigDecimal itemPrice = variant.getDiscountPrice() != null ? variant.getDiscountPrice() : variant.getPrice();
+                    itemsSubtotal = itemsSubtotal.add(itemPrice.multiply(BigDecimal.valueOf(reqItem.getQuantity())));
+
+                    OrderItem orderItem = OrderItem.builder()
+                            .productVariant(variant)
+                            .quantity(reqItem.getQuantity())
+                            .price(itemPrice)
+                            .build();
+                    itemsToOrder.add(orderItem);
+                }
+            } else {
+                cart = cartRepository.findByUserId(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("Cart not found for user"));
+
+                if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+                    throw new IllegalArgumentException("Cannot create order from empty cart");
+                }
+
+                for (CartItem cartItem : cart.getCartItems()) {
+                    itemsSubtotal = itemsSubtotal.add(cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+                    OrderItem orderItem = OrderItem.builder()
+                            .productVariant(cartItem.getProductVariant())
+                            .quantity(cartItem.getQuantity())
+                            .price(cartItem.getPrice())
+                            .build();
+                    itemsToOrder.add(orderItem);
+                }
+            }
+        } else {
+            // Guest Checkout
+            log.info("Creating order for guest user");
+            fullName = request.getFullName();
+            phone = request.getPhone();
+            email = request.getEmail();
+            shippingAddress = request.getAddress();
+            province = request.getProvince();
+            ward = request.getWard();
+
+            if (email == null || email.trim().isEmpty()) {
+                email = safeTrim(phone) + "@guest.ecshop.vn";
+            }
+
+            validateShippingInfo(fullName, phone, email, shippingAddress, province, ward);
+
+            if (request.getItems() == null || request.getItems().isEmpty()) {
+                throw new IllegalArgumentException("Đơn hàng của khách vãng lai phải có ít nhất một sản phẩm");
+            }
+
+            for (CreateOrderRequest.OrderItemRequest reqItem : request.getItems()) {
+                ProductVariant variant = productVariantRepository.findById(reqItem.getProductVariantId())
+                        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy biến thể sản phẩm: " + reqItem.getProductVariantId()));
+
+                if (variant.getInStock() != null && variant.getInStock() < reqItem.getQuantity()) {
+                    throw new IllegalArgumentException("Sản phẩm " + (variant.getVariantName() != null ? variant.getVariantName() : variant.getId()) + " không đủ số lượng trong kho");
+                }
+
+                BigDecimal itemPrice = variant.getDiscountPrice() != null ? variant.getDiscountPrice() : variant.getPrice();
+                itemsSubtotal = itemsSubtotal.add(itemPrice.multiply(BigDecimal.valueOf(reqItem.getQuantity())));
+
+                OrderItem orderItem = OrderItem.builder()
+                        .productVariant(variant)
+                        .quantity(reqItem.getQuantity())
+                        .price(itemPrice)
+                        .build();
+                itemsToOrder.add(orderItem);
+            }
         }
 
         BigDecimal shippingFee = request.getShippingFee() != null ? request.getShippingFee() : BigDecimal.ZERO;
         BigDecimal discount = request.getDiscount() != null ? request.getDiscount() : BigDecimal.ZERO;
         BigDecimal finalTotal = itemsSubtotal.add(shippingFee).subtract(discount);
+        if (finalTotal.compareTo(BigDecimal.ZERO) < 0) {
+            finalTotal = BigDecimal.ZERO;
+        }
 
         // Generate unique order number
         String orderNumber = "ORD-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -81,7 +167,6 @@ public class OrderServiceImpl implements IOrderService {
         Order order = Order.builder()
                 .userId(userId)
                 .status(Order.OrderStatus.PENDING)
-                // Money fields - populate all with calculated values (schema requires all NOT NULL)
                 .totalCost(finalTotal)
                 .totalPrice(finalTotal)
                 .subtotal(itemsSubtotal)
@@ -89,34 +174,25 @@ public class OrderServiceImpl implements IOrderService {
                 .shippingFee(shippingFee)
                 .shippingCost(shippingFee)
                 .discount(discount)
-                // Customer info
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .phone(phone)
-                // Address
-                .address(shippingAddress)
-                .province(province)
-                .provinceCode("") // User model doesn't have province code
-                .ward(ward)
-                .wardCode("") // User model doesn't have ward code
-                // Order details
+                .fullName(fullName.trim())
+                .email(email.trim())
+                .phone(phone.trim())
+                .address(shippingAddress.trim())
+                .province(province.trim())
+                .provinceCode(provinceCode)
+                .ward(ward.trim())
+                .wardCode(wardCode)
                 .orderNumber(orderNumber)
                 .paymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD")
-                .paymentStatus(("VNPAY".equalsIgnoreCase(request.getPaymentMethod()) || "PAYOS".equalsIgnoreCase(request.getPaymentMethod())) ? "UNPAID" : "PENDING")
+                .paymentStatus("PAYOS".equalsIgnoreCase(request.getPaymentMethod()) ? "UNPAID" : "PENDING")
                 .shippingMethod(request.getShippingMethod() != null ? request.getShippingMethod().toUpperCase() : "STANDARD")
                 .note(request.getNote())
                 .voucherCode(request.getVoucherCode())
                 .build();
 
-        // Add order items
-        for (CartItem cartItem : cart.getCartItems()) {
-            OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .productVariant(cartItem.getProductVariant())
-                    .quantity(cartItem.getQuantity())
-                    .price(cartItem.getPrice())
-                    .build();
-            order.getOrderItems().add(orderItem);
+        for (OrderItem item : itemsToOrder) {
+            item.setOrder(order);
+            order.getOrderItems().add(item);
         }
 
         // Smart Locker integration
@@ -128,16 +204,15 @@ public class OrderServiceImpl implements IOrderService {
 
             order.setLockerId(request.getLockerId());
 
-            // Build locker order items
-            List<SmartLockerDTO.LockerOrderItem> lockerItems = cart.getCartItems().stream()
+            List<SmartLockerDTO.LockerOrderItem> lockerItems = itemsToOrder.stream()
                     .map(ci -> SmartLockerDTO.LockerOrderItem.builder()
-                            .name(ci.getProductVariant().getVariantName())
+                            .name(ci.getProductVariant() != null && ci.getProductVariant().getVariantName() != null ? ci.getProductVariant().getVariantName() : "Linh kiện")
                             .quantity(ci.getQuantity())
                             .build())
                     .toList();
 
             SmartLockerDTO.LockerOrderRequest lockerRequest = SmartLockerDTO.LockerOrderRequest.builder()
-                    .userId(String.valueOf(userId))
+                    .userId(userId != null ? String.valueOf(userId) : "GUEST-" + phone.trim())
                     .lockerId(request.getLockerId())
                     .orderInfo(SmartLockerDTO.LockerOrderInfo.builder()
                             .items(lockerItems)
@@ -166,31 +241,34 @@ public class OrderServiceImpl implements IOrderService {
         Order savedOrder = orderRepository.save(order);
         log.info("Order created with ID: {} and number: {} for user: {}", savedOrder.getId(), savedOrder.getOrderNumber(), userId);
 
-        // Clear cart after order creation
-        cart.getCartItems().clear();
-        cartRepository.save(cart);
+        // Clear cart after order creation if cart was used
+        if (cart != null && cart.getCartItems() != null) {
+            cart.getCartItems().clear();
+            cartRepository.save(cart);
+        }
 
         return orderMapper.toDTO(savedOrder);
     }
 
-    private void validateUserProfile(User user) {
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-            throw new IllegalArgumentException("Email is required. Please update your profile.");
+    private boolean hasText(String str) {
+        return str != null && !str.trim().isEmpty();
+    }
+
+    private void validateShippingInfo(String fullName, String phone, String email, String address, String province, String ward) {
+        if (!hasText(fullName)) {
+            throw new IllegalArgumentException("Vui lòng nhập họ và tên người nhận hàng");
         }
-        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Full name is required. Please update your profile.");
+        if (!hasText(phone)) {
+            throw new IllegalArgumentException("Vui lòng nhập số điện thoại người nhận");
         }
-        if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
-            throw new IllegalArgumentException("Phone number is required. Please update your profile.");
+        if (!hasText(address)) {
+            throw new IllegalArgumentException("Vui lòng nhập địa chỉ giao hàng chi tiết");
         }
-        if (user.getDetailedAddress() == null || user.getDetailedAddress().trim().isEmpty()) {
-            throw new IllegalArgumentException("Detailed address is required. Please update your profile.");
+        if (!hasText(province)) {
+            throw new IllegalArgumentException("Vui lòng nhập Tỉnh/Thành phố");
         }
-        if (user.getWard() == null || user.getWard().trim().isEmpty()) {
-            throw new IllegalArgumentException("Ward is required. Please update your profile.");
-        }
-        if (user.getProvince() == null || user.getProvince().trim().isEmpty()) {
-            throw new IllegalArgumentException("Province is required. Please update your profile.");
+        if (!hasText(ward)) {
+            throw new IllegalArgumentException("Vui lòng nhập Phường/Xã");
         }
     }
 
@@ -205,13 +283,14 @@ public class OrderServiceImpl implements IOrderService {
         return value == null ? "" : value.trim();
     }
 
+    @Override
     @Transactional
     public Page<OrderDTO> getOrderHistory(Long userId, Pageable pageable) {
         log.info("Retrieving order history for user: {}", userId);
         Page<Order> orders = orderRepository.findByUserId(userId, pageable);
         LocalDateTime now = LocalDateTime.now();
         for (Order o : orders.getContent()) {
-            if ("VNPAY".equalsIgnoreCase(o.getPaymentMethod())
+            if ("PAYOS".equalsIgnoreCase(o.getPaymentMethod())
                     && ("UNPAID".equals(o.getPaymentStatus()) || "AWAITING_PAYMENT".equals(o.getPaymentStatus()))
                     && o.getStatus() == Order.OrderStatus.PENDING) {
                 if (o.getCreatedAt() != null && o.getCreatedAt().plusHours(24).isBefore(now)) {
@@ -225,14 +304,23 @@ public class OrderServiceImpl implements IOrderService {
         return orders.map(orderMapper::toDTO);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public OrderDTO getOrderById(Long orderId, Long userId) {
         log.info("Retrieving order: {} for user: {}", orderId, userId);
-        Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found or does not belong to user"));
+        Order order;
+        if (userId != null) {
+            order = orderRepository.findByIdAndUserId(orderId, userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found or does not belong to user"));
+        } else {
+            // For guest checkout: allow fetching by orderId if userId is null
+            order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
+        }
         return orderMapper.toDTO(order);
     }
 
+    @Override
     @Transactional
     public Map<String, Object> getDeliveryStatusByReference(String orderReference) {
         log.info("Retrieving delivery status for reference: {}", orderReference);
@@ -243,30 +331,47 @@ public class OrderServiceImpl implements IOrderService {
         }
 
         Order order = resolveOrderByReference(normalizedReference)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Order not found for reference: " + normalizedReference));
 
-        String deliveryStatus = order.getDeliveryStatus();
-        if (deliveryStatus == null || deliveryStatus.isBlank()) {
-            deliveryStatus = mapInternalStatusToDeliveryStatus(order.getStatus());
-        }
-        // If order is cancelled, always reflect that
-        if (order.getStatus() == Order.OrderStatus.CANCELLED) {
-            deliveryStatus = "cancelled";
+        Map<String, Object> deliveryStatus = new LinkedHashMap<>();
+        deliveryStatus.put("order_id", order.getId());
+        deliveryStatus.put("order_number", order.getOrderNumber());
+        deliveryStatus.put("delivery_status", order.getDeliveryStatus());
+        deliveryStatus.put("order_status", order.getStatus() != null ? order.getStatus().toString() : null);
+        deliveryStatus.put("updated_at", order.getUpdatedAt());
+
+        boolean isSmartLocker = "SMART_LOCKER".equalsIgnoreCase(order.getShippingMethod())
+                || order.getLockerId() != null
+                || order.getLockerOrderId() != null;
+
+        if (isSmartLocker) {
+            deliveryStatus.put("shipping_method", "SMART_LOCKER");
+            deliveryStatus.put("locker_id", order.getLockerId());
+            deliveryStatus.put("locker_order_id", order.getLockerOrderId());
+            deliveryStatus.put("compartment_id", order.getCompartmentId());
+            deliveryStatus.put("sender_otp", order.getSenderOTP());
+            deliveryStatus.put("recipient_otp", order.getRecipientOTP());
         }
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("orderId", order.getId());
-        response.put("orderNumber", order.getOrderNumber());
-        response.put("lockerOrderId", order.getLockerOrderId());
-        response.put("deliveryStatus", deliveryStatus);
-        response.put("status", order.getStatus().name());
-        response.put("shippingMethod", order.getShippingMethod());
-        response.put("recipientOTP", order.getRecipientOTP());
-        response.put("senderOTP", order.getSenderOTP());
-        response.put("updatedAt", getEffectiveUpdatedAt(order));
-        return response;
+        return deliveryStatus;
     }
 
+    private Optional<Order> resolveOrderByReference(String orderReference) {
+        try {
+            Long orderId = Long.parseLong(orderReference);
+            Optional<Order> orderById = orderRepository.findById(orderId);
+            if (orderById.isPresent()) {
+                return orderById;
+            }
+        } catch (NumberFormatException ignored) {
+            // Not a numeric ID, fall back to business identifiers.
+        }
+
+        return orderRepository.findByOrderNumber(orderReference)
+                .or(() -> orderRepository.findByLockerOrderId(orderReference));
+    }
+
+    @Override
     @Transactional
     public Map<String, Object> handleDeliveryWebhook(DeliveryWebhookRequest request) {
         log.info("Processing delivery webhook: orderRef={}, status={}",
@@ -344,57 +449,10 @@ public class OrderServiceImpl implements IOrderService {
         return result;
     }
 
-    private java.util.Optional<Order> resolveOrderByReference(String orderReference) {
-        if (orderReference.chars().allMatch(Character::isDigit)) {
-            try {
-                Long orderId = Long.parseLong(orderReference);
-                return orderRepository.findById(orderId);
-            } catch (NumberFormatException ex) {
-                // Fallback to order number lookup below if parsing overflows Long.
-            }
-        }
-        return orderRepository.findByOrderNumber(orderReference)
-                .or(() -> orderRepository.findByLockerOrderId(orderReference));
-    }
-
-    private LocalDateTime getEffectiveUpdatedAt(Order order) {
-        if (order.getUpdatedAt() != null) {
-            return order.getUpdatedAt();
-        }
-        return order.getCreatedAt();
-    }
-
-    private String mapInternalStatusToDeliveryStatus(Order.OrderStatus status) {
-        if (status == null) {
-            return "unknown";
-        }
-        String mappedStatus;
-        switch (status) {
-            case PENDING:
-                mappedStatus = "pending";
-                break;
-            case CONFIRMED:
-                mappedStatus = "confirmed";
-                break;
-            case SHIPPED:
-                mappedStatus = "in_transit";
-                break;
-            case DELIVERED:
-                mappedStatus = "delivered";
-                break;
-            case CANCELLED:
-                mappedStatus = "cancelled";
-                break;
-            default:
-                mappedStatus = "unknown";
-                break;
-        }
-        return mappedStatus.toLowerCase(Locale.ROOT);
-    }
-
+    @Override
     @Transactional
     public OrderDTO updateOrderStatus(Long orderId, Long userId, String status) {
-        log.info("Updating order: {} status to: {} for user: {}", orderId, status, userId);
+        log.info("Updating status for order: {} by user: {} to: {}", orderId, userId, status);
 
         Order order = orderRepository.findByIdAndUserId(orderId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found or does not belong to user"));
@@ -408,21 +466,22 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
 
+    @Override
     @Transactional
     public OrderDTO cancelOrder(Long orderId, Long userId) {
         log.info("Cancelling order: {} for user: {}", orderId, userId);
 
         Order order = orderRepository.findByIdAndUserIdWithItems(orderId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Kh\u00f4ng t\u00ecm th\u1ea5y \u0111\u01a1n h\u00e0ng"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
 
         if (order.getStatus() == Order.OrderStatus.CANCELLED) {
-            throw new IllegalArgumentException("\u0110\u01a1n h\u00e0ng \u0111\u00e3 \u0111\u01b0\u1ee3c h\u1ee7y tr\u01b0\u1edbc \u0111\u00f3");
+            throw new IllegalArgumentException("Đơn hàng đã được hủy trước đó");
         }
         if (order.getStatus() == Order.OrderStatus.DELIVERED) {
-            throw new IllegalArgumentException("Kh\u00f4ng th\u1ec3 h\u1ee7y \u0111\u01a1n h\u00e0ng \u0111\u00e3 giao");
+            throw new IllegalArgumentException("Không thể hủy đơn hàng đã giao");
         }
         if (order.getStatus() == Order.OrderStatus.SHIPPED) {
-            throw new IllegalArgumentException("Kh\u00f4ng th\u1ec3 h\u1ee7y \u0111\u01a1n h\u00e0ng \u0111ang giao");
+            throw new IllegalArgumentException("Không thể hủy đơn hàng đang giao");
         }
 
         order.setStatus(Order.OrderStatus.CANCELLED);
@@ -432,6 +491,7 @@ public class OrderServiceImpl implements IOrderService {
         return orderMapper.toDTO(cancelledOrder);
     }
 
+    @Override
     @Transactional
     public OrderDTO returnOrder(Long orderId, Long userId, String reason) {
         log.info("Requesting return for order: {} by user: {}", orderId, userId);

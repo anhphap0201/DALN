@@ -871,9 +871,19 @@ public class AiToolService {
     }
 
     /**
-     * Trả về danh sách đặc tả công cụ (Tool Definitions) theo chuẩn OpenAI / Ollama Native Tool Calling
+     * Trả về danh sách đặc tả công cụ (Tool Definitions) đầy đủ cho toàn bộ 17 công cụ của hệ thống
      */
     public List<Map<String, Object>> getToolDefinitions() {
+        return getToolDefinitions("ROLE_ADMIN");
+    }
+
+    /**
+     * Trả về danh sách công cụ theo phân quyền vai trò (Role-Based Tool Catalog).
+     * Áp dụng nguyên tắc Least Privilege: Khách và User thông thường không bao giờ
+     * được cấp schema của các công cụ quản trị (revenue, analytics, inventory value,...).
+     */
+    public List<Map<String, Object>> getToolDefinitions(String userRole) {
+        boolean isAdmin = aiToolPolicyService.isAdmin(userRole);
         List<Map<String, Object>> tools = new ArrayList<>();
 
         // Tool 1: search_products
@@ -957,23 +967,25 @@ public class AiToolService {
                 )
         ));
 
-        // Tool 5: get_low_stock_products
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_low_stock_products",
-                        "description", "Tra cứu danh sách các linh kiện có số lượng tồn kho thấp hơn hoặc bằng ngưỡng quy định để cảnh báo nhập hàng. Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "threshold", Map.of(
-                                                "type", "integer",
-                                                "description", "Ngưỡng số lượng tồn kho tối thiểu (mặc định là 10 nếu không chỉ định)"
-                                        )
-                                )
-                        )
-                )
-        ));
+        // Tool 5: get_low_stock_products (Admin only)
+        if (isAdmin) {
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_low_stock_products",
+                            "description", "Tra cứu danh sách các linh kiện có số lượng tồn kho thấp hơn hoặc bằng ngưỡng quy định để cảnh báo nhập hàng. Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "threshold", Map.of(
+                                                    "type", "integer",
+                                                    "description", "Ngưỡng số lượng tồn kho tối thiểu (mặc định là 10 nếu không chỉ định)"
+                                            )
+                                    )
+                            )
+                    )
+            ));
+        }
 
         // Tool 6: get_top_selling_products
         tools.add(Map.of(
@@ -993,33 +1005,35 @@ public class AiToolService {
                 )
         ));
 
-        // Tool 7: get_revenue_report
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_revenue_report",
-                        "description", "Truy vấn báo cáo tổng doanh thu và số lượng đơn hàng theo ngày, tháng hoặc khoảng thời gian. Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "start_date", Map.of(
-                                                "type", "string",
-                                                "description", "Ngày bắt đầu theo định dạng YYYY-MM-DD (vd: 2026-10-01)"
-                                        ),
-                                        "end_date", Map.of(
-                                                "type", "string",
-                                                "description", "Ngày kết thúc theo định dạng YYYY-MM-DD (vd: 2026-10-31)"
-                                        ),
-                                        "period", Map.of(
-                                                "type", "string",
-                                                "enum", List.of("day", "month", "year", "range"),
-                                                "description", "Loại thống kê: day, month, year hoặc range"
-                                        )
-                                ),
-                                "required", List.of("start_date", "end_date")
-                        )
-                )
-        ));
+        // Tool 7: get_revenue_report (Admin only)
+        if (isAdmin) {
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_revenue_report",
+                            "description", "Truy vấn báo cáo tổng doanh thu và số lượng đơn hàng theo ngày, tháng hoặc khoảng thời gian. Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "start_date", Map.of(
+                                                    "type", "string",
+                                                    "description", "Ngày bắt đầu theo định dạng YYYY-MM-DD (vd: 2026-10-01)"
+                                            ),
+                                            "end_date", Map.of(
+                                                    "type", "string",
+                                                    "description", "Ngày kết thúc theo định dạng YYYY-MM-DD (vd: 2026-10-31)"
+                                            ),
+                                            "period", Map.of(
+                                                    "type", "string",
+                                                    "enum", List.of("day", "month", "year", "range"),
+                                                    "description", "Loại thống kê: day, month, year hoặc range"
+                                            )
+                                    ),
+                                    "required", List.of()
+                            )
+                    )
+            ));
+        }
 
         // Tool 8: track_order
         tools.add(Map.of(
@@ -1111,83 +1125,86 @@ public class AiToolService {
                 )
         ));
 
-        // Tool 12: get_order_analytics
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_order_analytics",
-                        "description", "Báo cáo phân tích chuyên sâu tình trạng đơn hàng: tỷ lệ hủy, tỷ lệ hoàn trả, giá trị đơn hàng trung bình (AOV), doanh thu theo trạng thái và so sánh tăng trưởng kỳ trước. Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "start_date", Map.of("type", "string", "description", "Ngày bắt đầu YYYY-MM-DD"),
-                                        "end_date", Map.of("type", "string", "description", "Ngày kết thúc YYYY-MM-DD"),
-                                        "period", Map.of("type", "string", "description", "Khoảng thời gian: day, month, year hoặc range")
-                                )
-                        )
-                )
-        ));
+        // Admin Analytics Tools (Tools 12-16: Admin only)
+        if (isAdmin) {
+            // Tool 12: get_order_analytics
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_order_analytics",
+                            "description", "Báo cáo phân tích chuyên sâu tình trạng đơn hàng: tỷ lệ hủy, tỷ lệ hoàn trả, giá trị đơn hàng trung bình (AOV), doanh thu theo trạng thái và so sánh tăng trưởng kỳ trước. Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "start_date", Map.of("type", "string", "description", "Ngày bắt đầu YYYY-MM-DD"),
+                                            "end_date", Map.of("type", "string", "description", "Ngày kết thúc YYYY-MM-DD"),
+                                            "period", Map.of("type", "string", "description", "Khoảng thời gian: day, month, year hoặc range")
+                                    )
+                            )
+                    )
+            ));
 
-        // Tool 13: get_inventory_report
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_inventory_report",
-                        "description", "Báo cáo tổng giá trị vốn lưu kho, danh sách mã hết hàng, mã sắp cạn kho, hàng tồn lâu chậm luân chuyển và đề xuất số lượng nhập thêm cho mặt hàng bán chạy. Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "threshold", Map.of("type", "integer", "description", "Ngưỡng tồn kho tối thiểu (mặc định 10)")
-                                )
-                        )
-                )
-        ));
+            // Tool 13: get_inventory_report
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_inventory_report",
+                            "description", "Báo cáo tổng giá trị vốn lưu kho, danh sách mã hết hàng, mã sắp cạn kho, hàng tồn lâu chậm luân chuyển và đề xuất số lượng nhập thêm cho mặt hàng bán chạy. Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "threshold", Map.of("type", "integer", "description", "Ngưỡng tồn kho tối thiểu (mặc định 10)")
+                                    )
+                            )
+                    )
+            ));
 
-        // Tool 14: get_product_performance
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_product_performance",
-                        "description", "Xếp hạng hiệu suất sản phẩm theo lượt bán chạy, đánh giá sao của khách hàng và tỷ trọng doanh thu theo từng danh mục. Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "limit", Map.of("type", "integer", "description", "Số lượng sản phẩm lấy (mặc định 5 hoặc 10)")
-                                )
-                        )
-                )
-        ));
+            // Tool 14: get_product_performance
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_product_performance",
+                            "description", "Xếp hạng hiệu suất sản phẩm theo lượt bán chạy, đánh giá sao của khách hàng và tỷ trọng doanh thu theo từng danh mục. Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "limit", Map.of("type", "integer", "description", "Số lượng sản phẩm lấy (mặc định 5 hoặc 10)")
+                                    )
+                            )
+                    )
+            ));
 
-        // Tool 15: get_customer_analytics
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_customer_analytics",
-                        "description", "Phân tích khách hàng: số lượng đăng ký mới, khách hàng phát sinh đơn hàng, và tỷ lệ khách hàng mua lại (retention rate). Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "start_date", Map.of("type", "string", "description", "Ngày bắt đầu YYYY-MM-DD"),
-                                        "end_date", Map.of("type", "string", "description", "Ngày kết thúc YYYY-MM-DD")
-                                )
-                        )
-                )
-        ));
+            // Tool 15: get_customer_analytics
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_customer_analytics",
+                            "description", "Phân tích khách hàng: số lượng đăng ký mới, khách hàng phát sinh đơn hàng, và tỷ lệ khách hàng mua lại (retention rate). Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "start_date", Map.of("type", "string", "description", "Ngày bắt đầu YYYY-MM-DD"),
+                                            "end_date", Map.of("type", "string", "description", "Ngày kết thúc YYYY-MM-DD")
+                                    )
+                            )
+                    )
+            ));
 
-        // Tool 16: get_customer_inquiry_analytics
-        tools.add(Map.of(
-                "type", "function",
-                "function", Map.of(
-                        "name", "get_customer_inquiry_analytics",
-                        "description", "Báo cáo phân tích chuyên sâu các chủ đề kỹ thuật, dự án DIY và linh kiện mà khách hàng thường hỏi nhiều nhất qua chatbot và thanh tìm kiếm website, kèm cảnh báo nhu cầu chưa đáp ứng (hàng hết hoặc chưa có). Yêu cầu quyền Quản trị viên (Admin).",
-                        "parameters", Map.of(
-                                "type", "object",
-                                "properties", Map.of(
-                                        "limit", Map.of("type", "integer", "description", "Số lượng top mục cần thống kê (mặc định 5)")
-                                )
-                        )
-                )
-        ));
+            // Tool 16: get_customer_inquiry_analytics
+            tools.add(Map.of(
+                    "type", "function",
+                    "function", Map.of(
+                            "name", "get_customer_inquiry_analytics",
+                            "description", "Báo cáo phân tích chuyên sâu các chủ đề kỹ thuật, dự án DIY và linh kiện mà khách hàng thường hỏi nhiều nhất qua chatbot và thanh tìm kiếm website, kèm cảnh báo nhu cầu chưa đáp ứng (hàng hết hoặc chưa có). Yêu cầu quyền Quản trị viên (Admin).",
+                            "parameters", Map.of(
+                                    "type", "object",
+                                    "properties", Map.of(
+                                            "limit", Map.of("type", "integer", "description", "Số lượng top mục cần thống kê (mặc định 5)")
+                                    )
+                            )
+                    )
+            ));
+        }
 
         // Tool 17: check_warranty
         tools.add(Map.of(

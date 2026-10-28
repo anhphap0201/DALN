@@ -14,75 +14,92 @@
               <span class="text-sm text-[#09f] font-medium">Bước 1/3</span>
             </div>
 
-            <form class="space-y-4">
+            <form class="space-y-4" @submit.prevent>
               <div v-if="profileLoading" class="text-sm text-gray-500">Đang tải địa chỉ từ hồ sơ...</div>
 
               <template v-else>
-                <div v-if="!hasShippingProfile" class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                  <p class="text-sm text-yellow-700">
-                    Bạn chưa cập nhật địa chỉ giao hàng trong hồ sơ.
-                  </p>
-                  <NuxtLink
-                    to="/profile"
-                    class="inline-block mt-2 text-sm font-semibold text-[#09f] hover:text-[#0077cc]"
-                  >
-                    Cập nhật địa chỉ ngay
-                  </NuxtLink>
+                <!-- Guest notice banner -->
+                <div v-if="!isAuthenticated" class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 flex items-start gap-3">
+                  <div class="p-1 text-[#09f] flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-semibold text-blue-900">Mua hàng trực tiếp (Không cần đăng nhập)</h3>
+                    <p class="text-xs text-blue-700 mt-0.5">Vui lòng điền thông tin người nhận và địa chỉ giao hàng bên dưới để chúng tôi vận chuyển chính xác đến bạn.</p>
+                  </div>
                 </div>
 
-                <div v-else class="space-y-4">
+                <div class="space-y-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Họ và tên</label>
-                      <div class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-800">
-                        {{ shippingInfo.fullName }}
-                      </div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Họ và tên người nhận <span class="text-red-500">*</span></label>
+                      <input
+                        v-model="shippingInfo.fullName"
+                        type="text"
+                        placeholder="Nguyễn Văn A"
+                        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm transition-all outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)]"
+                        required
+                      />
                     </div>
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
-                      <div class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-800">
-                        {{ shippingInfo.phone }}
-                      </div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại <span class="text-red-500">*</span></label>
+                      <input
+                        v-model="shippingInfo.phone"
+                        type="tel"
+                        placeholder="0912345678"
+                        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm transition-all outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)]"
+                        required
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <div class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-800">
-                      {{ shippingInfo.email }}
-                    </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email (nhận thông báo đơn hàng)</label>
+                    <input
+                      v-model="shippingInfo.email"
+                      type="email"
+                      placeholder="email@example.com"
+                      class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm transition-all outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)]"
+                    />
                   </div>
 
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Tỉnh/Thành phố</label>
-                      <div class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-800">
-                        {{ shippingInfo.province }}
-                      </div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Tỉnh / Thành phố <span class="text-red-500">*</span></label>
+                      <input
+                        v-model="shippingInfo.province"
+                        type="text"
+                        placeholder="Hà Nội, TP. Hồ Chí Minh,..."
+                        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm transition-all outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)]"
+                        required
+                      />
                     </div>
 
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Phường/Xã</label>
-                      <div class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-800">
-                        {{ shippingInfo.ward }}
-                      </div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Phường / Xã / Quận / Huyện <span class="text-red-500">*</span></label>
+                      <input
+                        v-model="shippingInfo.ward"
+                        type="text"
+                        placeholder="Phường Dịch Vọng, Quận Cầu Giấy,..."
+                        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm transition-all outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)]"
+                        required
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ cụ thể</label>
-                    <div class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-800">
-                      {{ shippingInfo.address }}
-                    </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ cụ thể (Số nhà, tên đường) <span class="text-red-500">*</span></label>
+                    <input
+                      v-model="shippingInfo.address"
+                      type="text"
+                      placeholder="Số 123 đường Cầu Giấy"
+                      class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm transition-all outline-none focus:border-[#09f] focus:shadow-[0_0_0_3px_rgba(0,153,255,0.1)]"
+                      required
+                    />
                   </div>
-
-                  <NuxtLink
-                    to="/profile"
-                    class="inline-block text-sm font-semibold text-[#09f] hover:text-[#0077cc]"
-                  >
-                    Chỉnh sửa địa chỉ trong hồ sơ
-                  </NuxtLink>
                 </div>
               </template>
 
@@ -446,15 +463,73 @@
     </div>
       </Transition>
     </Teleport>
+
+    <!-- Guest Order Success Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showGuestSuccessModal"
+          class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+        >
+          <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden p-6 text-center transform transition-all">
+            <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Đặt hàng thành công!</h3>
+            <p class="text-sm text-gray-600 mb-6">
+              Cảm ơn bạn đã mua hàng tại ECSHOP. Đơn hàng của bạn đã được tiếp nhận và nhân viên sẽ liên hệ để xác nhận đơn.
+            </p>
+
+            <div class="bg-gray-50 rounded-2xl p-4 text-left space-y-2.5 text-sm mb-6 border border-gray-100">
+              <div class="flex justify-between items-center pb-2 border-b border-gray-200">
+                <span class="text-gray-500">Mã đơn hàng:</span>
+                <span class="font-bold text-[#09f]">{{ guestCompletedOrder.orderNumber }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Người nhận:</span>
+                <span class="font-medium text-gray-800">{{ guestCompletedOrder.fullName }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Số điện thoại:</span>
+                <span class="font-medium text-gray-800">{{ guestCompletedOrder.phone }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Địa chỉ:</span>
+                <span class="font-medium text-gray-800 text-right max-w-[60%]">{{ guestCompletedOrder.address }}</span>
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span class="text-gray-500">Tổng thanh toán:</span>
+                <span class="text-lg font-bold text-red-600">{{ formatPrice(guestCompletedOrder.total) }}</span>
+              </div>
+            </div>
+
+            <button
+              @click="closeGuestSuccessModalAndHome"
+              class="w-full py-3.5 px-6 bg-gradient-to-r from-[#09f] to-[#0077cc] text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+              Tiếp tục mua hàng
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 
-definePageMeta({
-  middleware: ['auth']
-})
+// Allow guest checkout without login
 
 interface OrderItem {
   id: number
@@ -464,7 +539,23 @@ interface OrderItem {
   quantity: number
 }
 
-const { getAuthHeader } = useAuth()
+const { getAuthHeader, isAuthenticated } = useAuth()
+const { clearCart } = useCart()
+
+const showGuestSuccessModal = ref(false)
+const guestCompletedOrder = ref({
+  orderNumber: '',
+  fullName: '',
+  phone: '',
+  address: '',
+  total: 0,
+  paymentMethod: ''
+})
+
+const closeGuestSuccessModalAndHome = () => {
+  showGuestSuccessModal.value = false
+  navigateTo('/')
+}
 const { success: showSuccess, error: showError } = useNotification()
 const { cart, fetchCart } = useCart()
 const {
@@ -494,11 +585,10 @@ const shippingInfo = ref({
   note: ''
 })
 
-const hasShippingProfile = computed(() => {
+const hasShippingInfo = computed(() => {
   return (
     shippingInfo.value.fullName.trim() !== '' &&
     shippingInfo.value.phone.trim() !== '' &&
-    shippingInfo.value.email.trim() !== '' &&
     shippingInfo.value.province.trim() !== '' &&
     shippingInfo.value.ward.trim() !== '' &&
     shippingInfo.value.address.trim() !== ''
@@ -535,13 +625,6 @@ const paymentMethods = [
     description: 'Quét mã VietQR chuyển khoản tự động qua mọi ứng dụng ngân hàng & ví điện tử',
     icon: 'PAYOS',
     image: '/payment method/logo-atm.png'
-  },
-  {
-    id: 'vnpay',
-    name: 'Cổng thanh toán VNPAY',
-    description: 'Thanh toán qua VNPAY-QR, Thẻ ATM / Tài khoản ngân hàng, Thẻ quốc tế',
-    icon: 'VNPAY',
-    image: '/payment method/logo-visa-master-jcb.png'
   }
 ]
 
@@ -647,7 +730,7 @@ const total = computed(() => {
 })
 
 const isFormValid = computed(() => {
-  const baseValid = hasShippingProfile.value &&
+  const baseValid = hasShippingInfo.value &&
     orderItems.value.length > 0 &&
     selectedPayment.value !== '' &&
     selectedShipping.value !== ''
@@ -674,6 +757,17 @@ const fetchCheckoutCart = async () => {
 }
 
 const fetchShippingProfile = async () => {
+  if (!isAuthenticated.value) {
+    try {
+      const saved = localStorage.getItem('ecshop_guest_info')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        Object.assign(shippingInfo.value, parsed)
+      }
+    } catch {}
+    return
+  }
+
   profileLoading.value = true
   try {
     const profile: any = await $fetch(`${API_BASE_URL}/api/user/profile`, {
@@ -690,7 +784,6 @@ const fetchShippingProfile = async () => {
     shippingInfo.value.address = profile?.detailedAddress || ''
   } catch (error: any) {
     console.error('Error fetching shipping profile:', error)
-    showError('Không thể tải địa chỉ giao hàng từ hồ sơ')
   } finally {
     profileLoading.value = false
   }
@@ -770,19 +863,44 @@ const selectModalVoucher = (voucher: any) => {
 
 const placeOrder = async () => {
   if (!isFormValid.value) {
-    showError('Vui lòng cập nhật đủ địa chỉ hồ sơ, chọn phương thức và đảm bảo giỏ hàng có sản phẩm!')
+    showError('Vui lòng điền đầy đủ họ tên, số điện thoại, địa chỉ nhận hàng và chọn phương thức thanh toán!')
     return
   }
 
   placingOrder.value = true
   try {
+    const items = (cart.value?.cartItems || []).map(item => ({
+      productVariantId: item.productVariantId,
+      quantity: item.quantity
+    }))
+
     const orderBody: Record<string, any> = {
+      fullName: shippingInfo.value.fullName.trim(),
+      phone: shippingInfo.value.phone.trim(),
+      email: shippingInfo.value.email?.trim() || undefined,
+      province: shippingInfo.value.province.trim(),
+      ward: shippingInfo.value.ward.trim(),
+      address: shippingInfo.value.address.trim(),
+      items,
       paymentMethod: selectedPayment.value.toUpperCase(),
       shippingMethod: selectedShipping.value.toUpperCase(),
       shippingFee: shippingFee.value,
       discount: voucherDiscount.value,
       voucherCode: appliedVoucher.value?.code || null,
-      note: null
+      note: shippingInfo.value.note?.trim() || null
+    }
+
+    if (!isAuthenticated.value) {
+      try {
+        localStorage.setItem('ecshop_guest_info', JSON.stringify({
+          fullName: shippingInfo.value.fullName,
+          phone: shippingInfo.value.phone,
+          email: shippingInfo.value.email,
+          province: shippingInfo.value.province,
+          ward: shippingInfo.value.ward,
+          address: shippingInfo.value.address
+        }))
+      } catch {}
     }
 
     // Only include locker fields when smart_locker is selected
@@ -790,18 +908,24 @@ const placeOrder = async () => {
       orderBody.lockerId = selectedLocker.value
     }
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    }
+    const authHeaders = getAuthHeader() as Record<string, string>
+    if (authHeaders && authHeaders.Authorization) {
+      headers.Authorization = authHeaders.Authorization
+    }
+
     // PayOS payment flow - create order and redirect to PayOS
     if (selectedPayment.value === 'payos') {
       const payosResult: any = await $fetch(`${API_BASE_URL}/api/payos/create`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(getAuthHeader() as Record<string, string>)
-        },
+        headers,
         body: JSON.stringify(orderBody)
       })
 
       if (payosResult.resultCode === 0 && payosResult.checkoutUrl) {
+        await clearCart()
         window.location.href = payosResult.checkoutUrl
         return
       } else {
@@ -810,43 +934,33 @@ const placeOrder = async () => {
       }
     }
 
-    // VNPAY payment flow - create order and redirect to VNPAY
-    if (selectedPayment.value === 'vnpay') {
-      const vnpayResult: any = await $fetch(`${API_BASE_URL}/api/vnpay/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(getAuthHeader() as Record<string, string>)
-        },
-        body: JSON.stringify(orderBody)
-      })
 
-      if (vnpayResult.resultCode === 0 && vnpayResult.payUrl) {
-        // Redirect to VNPAY payment page
-        window.location.href = vnpayResult.payUrl
-        return
-      } else {
-        showError(vnpayResult.message || 'Không thể tạo thanh toán VNPAY. Vui lòng thử lại.')
-        return
-      }
-    }
-
-    // Normal payment flow (COD, bank, card)
-    await $fetch(`${API_BASE_URL}/api/orders`, {
+    // Normal payment flow (COD)
+    const orderResult: any = await $fetch(`${API_BASE_URL}/api/orders`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(getAuthHeader() as Record<string, string>)
-      },
+      headers,
       body: JSON.stringify(orderBody)
     })
 
-    await fetchCart()
-    showSuccess('Đặt hàng thành công!')
-    await navigateTo('/orders')
+    await clearCart()
+
+    if (!isAuthenticated.value) {
+      guestCompletedOrder.value = {
+        orderNumber: orderResult?.orderNumber || `ORD-${Date.now()}`,
+        fullName: shippingInfo.value.fullName,
+        phone: shippingInfo.value.phone,
+        address: `${shippingInfo.value.address}, ${shippingInfo.value.ward}, ${shippingInfo.value.province}`,
+        total: total.value,
+        paymentMethod: 'Thanh toán khi nhận hàng (COD)'
+      }
+      showGuestSuccessModal.value = true
+    } else {
+      showSuccess('Đặt hàng thành công!')
+      await navigateTo('/orders')
+    }
   } catch (error: any) {
     console.error('Error placing order:', error)
-    const message = error?.data?.message || 'Không thể đặt hàng. Vui lòng thử lại.'
+    const message = error?.data?.message || error?.message || 'Không thể đặt hàng. Vui lòng thử lại.'
     showError(message)
   } finally {
     placingOrder.value = false

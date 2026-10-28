@@ -1,0 +1,55 @@
+classDiagram
+    class Product {
+        +Long id
+        +String name
+        +String slug
+        +String description
+        +Map~String,Object~ technicalSpecs
+        +Category category
+        +List~ProductVariant~ variants
+    }
+
+    class ProductVariant {
+        +Long id
+        +String sku
+        +String variantName
+        +BigDecimal price
+        +BigDecimal costPrice
+        +Product product
+        +Inventory inventory
+    }
+
+    class Inventory {
+        +Long id
+        +ProductVariant variant
+        +Integer stockQuantity
+        +Integer lowStockThreshold
+        +String warehouseLocation
+    }
+
+    class Order {
+        +Long id
+        +String orderCode
+        +User user
+        +String customerName
+        +String customerPhone
+        +String shippingAddress
+        +BigDecimal totalAmount
+        +String status
+        +String paymentMethod
+        +String smartLockerCode
+        +List~OrderItem~ orderItems
+    }
+
+    class OrderItem {
+        +Long id
+        +Order order
+        +ProductVariant variant
+        +Integer quantity
+        +BigDecimal unitPrice
+    }
+
+    Product "1" --> "*" ProductVariant : has
+    ProductVariant "1" -- "1" Inventory : tracked_by
+    Order "1" --> "*" OrderItem : contains
+    ProductVariant "1" <-- "*" OrderItem : references

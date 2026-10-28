@@ -1,0 +1,22 @@
+flowchart TD
+    Start([Khách hàng duyệt giỏ hàng]) --> CheckCart{Giỏ hàng hợp lệ?}
+    CheckCart -- Không --> MsgEmpty[Thông báo giỏ hàng trống] --> End1([Kết thúc])
+    CheckCart -- Có --> FillInfo[Nhập thông tin giao hàng & chọn phương thức]
+    FillInfo --> SelectPay{Phương thức thanh toán?}
+    
+    SelectPay -- COD --> CreateOrderCOD[Tạo đơn hàng trạng thái PENDING]
+    CreateOrderCOD --> SendMailCOD[Gửi email xác nhận đơn hàng]
+    SendMailCOD --> SuccessPage[Hiển thị trang đặt hàng thành công] --> End2([Hoàn tất])
+    
+    SelectPay -- VNPAY / PayOS --> GenUrl[Backend sinh URL thanh toán & chữ ký HMAC SHA512]
+    GenUrl --> RedirectGateway[Chuyển hướng sang cổng thanh toán]
+    RedirectGateway --> CustomerPay[Khách hàng quét VietQR hoặc nhập thông tin thẻ]
+    CustomerPay --> GatewayProcess{Thanh toán thành công?}
+    
+    GatewayProcess -- Thất bại / Hủy --> ReturnFail[Chuyển về trang kết quả: Giao dịch thất bại] --> End1
+    GatewayProcess -- Thành công --> Webhook[Cổng thanh toán bắn Webhook/IPN về Backend]
+    Webhook --> VerifySign{Kiểm tra chữ ký số hợp lệ?}
+    VerifySign -- Sai chữ ký --> LogWarn[Ghi log cảnh báo can thiệp dữ liệu] --> End1
+    VerifySign -- Hợp lệ --> UpdateDB[Cập nhật đơn: PAID & Khấu trừ kho thực tế]
+    UpdateDB --> SendMailSuccess[Gửi email hóa đơn điện tử cho khách]
+    SendMailSuccess --> ReturnSuccess[Chuyển hướng về trang thanh toán thành công] --> End2

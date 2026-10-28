@@ -1,0 +1,46 @@
+classDiagram
+    class User {
+        +Long id
+        +String email
+        +String passwordHash
+        +String fullName
+        +String phone
+        +String role
+        +Boolean enabled
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+    }
+
+    class JwtAuthenticationFilter {
+        -JwtTokenProvider tokenProvider
+        -CustomUserDetailsService userDetailsService
+        +doFilterInternal(request, response, filterChain)
+    }
+
+    class JwtTokenProvider {
+        -String jwtSecret
+        -Long jwtExpirationMs
+        +generateAccessToken(Authentication) String
+        +generateRefreshToken(User) String
+        +validateToken(String) Boolean
+        +getEmailFromToken(String) String
+    }
+
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +passwordEncoder() PasswordEncoder
+        +authenticationManager(AuthenticationConfiguration) AuthenticationManager
+    }
+
+    class AuthenticationController {
+        -AuthenticationService authService
+        +register(RegisterRequestDTO) ResponseEntity
+        +login(LoginRequestDTO) ResponseEntity
+        +refreshToken(RefreshRequestDTO) ResponseEntity
+        +logout(HttpServletRequest) ResponseEntity
+    }
+
+    JwtAuthenticationFilter ..> JwtTokenProvider : verifies with
+    SecurityConfig ..> JwtAuthenticationFilter : configures
+    AuthenticationController ..> JwtTokenProvider : generates tokens via
+    User "1" <-- AuthenticationController : manages

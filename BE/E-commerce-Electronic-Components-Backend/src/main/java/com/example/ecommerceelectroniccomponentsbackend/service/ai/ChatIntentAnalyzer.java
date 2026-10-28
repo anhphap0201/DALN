@@ -114,11 +114,16 @@ public class ChatIntentAnalyzer {
             return new AnalysisResult(Intent.INQUIRY_ANALYTICS, null, Map.of(), List.of(), false);
         }
 
-        // 7. Báo cáo doanh thu & Bán chạy (SALES_ANALYTICS)
+        // 7. Báo cáo doanh thu & Hiệu suất bán hàng nội bộ (SALES_ANALYTICS - Dành cho Quản trị viên)
         if (norm.contains("doanh thu") || norm.contains("bao cao doanh thu") || norm.contains("tien ban")
-                || norm.contains("ban chay") || norm.contains("top ban") || norm.contains("mua nhieu")
-                || norm.contains("hieu suat san pham") || norm.contains("danh muc nao ban chay")) {
+                || norm.contains("doanh so") || norm.contains("loi nhuan") || norm.contains("tai chinh")
+                || norm.contains("hieu suat san pham") || norm.contains("danh muc nao ban chay") || norm.contains("thong ke doanh thu")) {
             return new AnalysisResult(Intent.SALES_ANALYTICS, null, Map.of(), List.of(), false);
+        }
+
+        // 7.5. Tra cứu sản phẩm bán chạy / phổ biến (PRODUCT_RECOMMEND - Dành cho khách hàng)
+        if (norm.contains("ban chay") || norm.contains("top ban") || norm.contains("mua nhieu") || norm.contains("pho bien nhat")) {
+            return new AnalysisResult(Intent.PRODUCT_RECOMMEND, null, Map.of("topSelling", true), List.of(), false);
         }
 
         // 6. Gợi ý theo nhu cầu / ngân sách (PRODUCT_RECOMMEND)

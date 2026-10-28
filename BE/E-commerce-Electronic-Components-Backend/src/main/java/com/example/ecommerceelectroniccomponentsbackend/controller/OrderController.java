@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,24 @@ public class OrderController {
 
     private final IOrderService orderService;
 
-    private Long getCurrentUserId() {
+    private Long getCurrentUserIdOrNull() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return Long.parseLong(auth.getName());
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equalsIgnoreCase(auth.getName())) {
+            return null;
+        }
+        try {
+            return Long.parseLong(auth.getName());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private Long getCurrentUserId() {
+        Long userId = getCurrentUserIdOrNull();
+        if (userId == null) {
+            throw new AccessDeniedException("User must be authenticated");
+        }
+        return userId;
     }
 
     @PostMapping
@@ -33,7 +49,7 @@ public class OrderController {
         if (request == null) {
             request = new CreateOrderRequest();
         }
-        OrderDTO order = orderService.createOrderFromCart(getCurrentUserId(), request);
+        OrderDTO order = orderService.createOrderFromCart(getCurrentUserIdOrNull(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
@@ -48,7 +64,7 @@ public class OrderController {
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long orderId) {
-        OrderDTO order = orderService.getOrderById(orderId, getCurrentUserId());
+        OrderDTO order = orderService.getOrderById(orderId, getCurrentUserIdOrNull());
         return ResponseEntity.ok(order);
     }
 

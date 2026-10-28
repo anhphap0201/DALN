@@ -28,9 +28,16 @@ public class PayOSController {
     private final IOrderService orderService;
     private final OrderRepository orderRepository;
 
-    private Long getCurrentUserId() {
+    private Long getCurrentUserIdOrNull() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return Long.parseLong(auth.getName());
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equalsIgnoreCase(auth.getName())) {
+            return null;
+        }
+        try {
+            return Long.parseLong(auth.getName());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /**
@@ -40,7 +47,7 @@ public class PayOSController {
     @PostMapping("/create")
     public ResponseEntity<Map<String, Object>> createPayment(@RequestBody CreateOrderRequest request) {
         try {
-            Long userId = getCurrentUserId();
+            Long userId = getCurrentUserIdOrNull();
 
             // Set payment method to PAYOS
             request.setPaymentMethod("PAYOS");
@@ -71,9 +78,15 @@ public class PayOSController {
     @PostMapping("/retry-payment/{orderId}")
     public ResponseEntity<Map<String, Object>> retryPayment(@PathVariable Long orderId) {
         try {
-            Long userId = getCurrentUserId();
-            Order order = orderRepository.findByIdAndUserId(orderId, userId)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+            Long userId = getCurrentUserIdOrNull();
+            Order order;
+            if (userId != null) {
+                order = orderRepository.findByIdAndUserId(orderId, userId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+            } else {
+                order = orderRepository.findById(orderId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+            }
 
             if (order.getStatus() == Order.OrderStatus.CANCELLED) {
                 throw new RuntimeException("Đơn hàng đã bị hủy, không thể thanh toán lại");
@@ -82,7 +95,9 @@ public class PayOSController {
                 throw new RuntimeException("Đơn hàng đã được thanh toán thành công");
             }
 
+            // Create PayOS payment link
             Map<String, Object> paymentResult = payOSService.createPaymentLink(order);
+
             return ResponseEntity.ok(paymentResult);
         } catch (Exception e) {
             log.error("Lỗi thanh toán lại qua PayOS cho đơn hàng #{}", orderId, e);

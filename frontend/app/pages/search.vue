@@ -93,34 +93,137 @@
               </div>
             </div>
 
-            <!-- Price Filter -->
-            <div>
-              <h3 class="font-semibold text-gray-900 mb-3 flex items-center justify-between">
-                Khoảng giá
+            <!-- Price Filter: Thanh kéo 2 đầu (Dual Range Slider) -->
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs space-y-3.5">
+              <!-- Tiêu đề & Nút đặt lại -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#09f]"></span>
+                  <h3 class="font-bold text-slate-900 text-sm">Khoảng giá</h3>
+                </div>
                 <button
-                  v-if="selectedPriceRange"
-                  @click="selectedPriceRange = null"
-                  class="text-xs text-[#09f] hover:text-[#0077cc] transition-colors duration-200"
+                  v-if="isPriceFilterActive"
+                  @click="resetPriceFilter"
+                  class="text-xs font-semibold text-[#09f] hover:text-[#0077cc] hover:underline cursor-pointer transition-colors"
                 >
-                  Xóa
+                  Đặt lại
                 </button>
-              </h3>
-              <div class="space-y-2">
-                <label
-                  v-for="range in priceRanges"
-                  :key="range.id"
-                  class="flex items-center gap-2 cursor-pointer group"
-                >
+              </div>
+
+              <!-- 2 Ô nhập giá ở 2 đầu (Min - Max) -->
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus-within:border-[#09f] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#09f]/15 transition-all">
+                  <span class="text-[10px] font-semibold text-slate-400 block mb-0.5">Từ</span>
+                  <div class="flex items-center gap-1">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      v-model="minInputText"
+                      @focus="onMinInputFocus"
+                      @blur="onMinInputBlur"
+                      @keydown.enter="onMinInputBlur"
+                      class="w-full text-xs font-bold text-slate-800 font-mono bg-transparent focus:outline-none"
+                      placeholder="0"
+                    />
+                    <span class="text-[11px] font-medium text-slate-400 select-none">₫</span>
+                  </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus-within:border-[#09f] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#09f]/15 transition-all">
+                  <span class="text-[10px] font-semibold text-slate-400 block mb-0.5">Đến</span>
+                  <div class="flex items-center gap-1">
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      v-model="maxInputText"
+                      @focus="onMaxInputFocus"
+                      @blur="onMaxInputBlur"
+                      @keydown.enter="onMaxInputBlur"
+                      class="w-full text-xs font-bold text-slate-800 font-mono bg-transparent focus:outline-none"
+                      placeholder="5.000.000"
+                    />
+                    <span class="text-[11px] font-medium text-slate-400 select-none">₫</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Thanh trượt kéo 2 đầu (Dual Range Slider) -->
+              <div class="pt-2 px-1">
+                <div class="relative w-full h-7 flex items-center select-none">
+                  <!-- Thanh ray nền xám -->
+                  <div class="w-full h-2 bg-slate-200 rounded-full relative overflow-hidden">
+                    <!-- Dải highlight xanh giữa 2 đầu kéo -->
+                    <div
+                      class="absolute top-0 bottom-0 bg-gradient-to-r from-[#0088ea] to-[#09f] rounded-full transition-all duration-75"
+                      :style="{
+                        left: progressLeft + '%',
+                        width: Math.max(0, 100 - progressLeft - progressRight) + '%'
+                      }"
+                    ></div>
+                  </div>
+
+                  <!-- Nút kéo Min Thumb -->
                   <input
-                    type="radio"
-                    :value="range.id"
-                    v-model="selectedPriceRange"
-                    class="w-4 h-4 text-[#09f] border-gray-300 focus:ring-[#09f] focus:ring-2 cursor-pointer"
+                    type="range"
+                    :min="SLIDER_MIN"
+                    :max="sliderMaxDynamic"
+                    :step="STEP"
+                    v-model.number="currentMin"
+                    @input="onMinSliderInput"
+                    :style="{ zIndex: currentMin > (sliderMaxDynamic - SLIDER_MIN) * 0.75 ? 30 : 20 }"
+                    class="dual-range-slider pointer-events-none absolute inset-0 w-full h-full appearance-none bg-transparent m-0 cursor-pointer"
+                    aria-label="Kéo giá tối thiểu"
                   />
-                  <span class="text-sm text-gray-700 group-hover:text-[#09f] transition-colors duration-200">
-                    {{ range.label }}
-                  </span>
-                </label>
+
+                  <!-- Nút kéo Max Thumb -->
+                  <input
+                    type="range"
+                    :min="SLIDER_MIN"
+                    :max="sliderMaxDynamic"
+                    :step="STEP"
+                    v-model.number="currentMax"
+                    @input="onMaxSliderInput"
+                    :style="{ zIndex: currentMin > (sliderMaxDynamic - SLIDER_MIN) * 0.75 ? 20 : 30 }"
+                    class="dual-range-slider pointer-events-none absolute inset-0 w-full h-full appearance-none bg-transparent m-0 cursor-pointer"
+                    aria-label="Kéo giá tối đa"
+                  />
+                </div>
+
+                <!-- Nhãn 2 đầu và bước nhảy -->
+                <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mt-0.5 select-none">
+                  <span>{{ formatCompactPrice(SLIDER_MIN) }}</span>
+                  <span class="text-slate-400 font-sans text-[10px]"></span>
+                  <span>{{ formatCompactPrice(sliderMaxDynamic) }}</span>
+                </div>
+              </div>
+
+              <!-- Nút Áp dụng bộ lọc -->
+              <button
+                @click="triggerPriceFilterImmediate"
+                class="w-full py-2 px-3 bg-gradient-to-r from-[#09f] to-[#0077cc] hover:from-[#33adff] hover:to-[#0088ea] text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-sm hover:shadow-[#09f]/25 transition-all cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09f]"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span>Áp dụng ({{ formatCompactPrice(currentMin) }} - {{ formatCompactPrice(currentMax) }})</span>
+              </button>
+
+              <!-- Gợi ý nhanh (Presets) -->
+              <div class="pt-2 border-t border-slate-100">
+                <p class="text-[11px] font-semibold text-slate-500 mb-2">Gợi ý nhanh:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button
+                    v-for="preset in pricePresets"
+                    :key="preset.id"
+                    @click="applyPreset(preset)"
+                    class="px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer border"
+                    :class="isPresetActive(preset)
+                      ? 'bg-[#09f] text-white border-[#09f] font-bold shadow-xs'
+                      : 'bg-slate-50 text-slate-600 border-slate-200/80 hover:border-slate-300 hover:text-slate-900'"
+                  >
+                    {{ preset.label }}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -347,11 +450,173 @@ const API_BASE_URL = 'http://localhost:8080/api'
 
 const searchQuery = ref(String(route.query.q || ''))
 const selectedCategory = ref<number | null>(route.query.category ? Number(route.query.category) : null)
-const selectedPriceRange = ref<string | null>(null)
 const onlyShowSale = ref(false)
 const sortBy = ref('newest')
 const currentPage = ref(1)
 const itemsPerPage = 12
+
+// ==================== BỘ LỌC KHOẢNG GIÁ KÉO 2 ĐẦU (DUAL RANGE SLIDER) ====================
+const STEP = 50000 // 50.000đ mỗi bước nhảy
+const MIN_GAP = 50000 // 50.000đ chênh lệch tối thiểu giữa 2 đầu kéo
+const SLIDER_MIN = 0
+const DEFAULT_SLIDER_MAX = 5000000
+
+// Giá trị lọc đang được chọn từ 2 đầu kéo (Step 50k, lệch >= 50k)
+const currentMin = ref(0)
+const currentMax = ref(DEFAULT_SLIDER_MAX)
+const isPriceFilterActive = ref(false)
+
+// Thước đo tối đa tự động co giãn nếu người dùng nhập số lớn hơn 5.000.000
+const sliderMaxDynamic = computed(() => {
+  return Math.max(DEFAULT_SLIDER_MAX, currentMax.value)
+})
+
+// Format số tiền chuẩn tiếng Việt (vd: 500.000)
+const formatNumberVn = (val: number) => {
+  return new Intl.NumberFormat('vi-VN').format(val || 0)
+}
+
+// Format giá trị thu gọn (50k, 100k, 1.5Tr, v.v.)
+const formatCompactPrice = (val: number) => {
+  if (val >= 1000000) {
+    const m = (val / 1000000)
+    return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}Tr`
+  }
+  if (val >= 1000) {
+    return `${(val / 1000).toFixed(0)}k`
+  }
+  return `${val}đ`
+}
+
+// Giá trị hiển thị trên 2 ô input ở 2 đầu
+const minInputText = ref('0')
+const maxInputText = ref(formatNumberVn(DEFAULT_SLIDER_MAX))
+
+// Tỷ lệ % vị trí để vẽ dải highlight xanh giữa 2 đầu kéo
+const progressLeft = computed(() => {
+  const range = sliderMaxDynamic.value - SLIDER_MIN
+  if (range <= 0) return 0
+  const pct = ((currentMin.value - SLIDER_MIN) / range) * 100
+  return Math.min(100, Math.max(0, pct))
+})
+
+const progressRight = computed(() => {
+  const range = sliderMaxDynamic.value - SLIDER_MIN
+  if (range <= 0) return 0
+  const pct = 100 - (((currentMax.value - SLIDER_MIN) / range) * 100)
+  return Math.min(100, Math.max(0, pct))
+})
+
+// Xử lý kéo thanh Min: Không vượt quá currentMax - 50k
+const onMinSliderInput = () => {
+  if (currentMin.value > currentMax.value - MIN_GAP) {
+    currentMin.value = currentMax.value - MIN_GAP
+  }
+  currentMin.value = Math.round(currentMin.value / STEP) * STEP
+  minInputText.value = formatNumberVn(currentMin.value)
+  triggerPriceFilterDebounced()
+}
+
+// Xử lý kéo thanh Max: Không nhỏ hơn currentMin + 50k
+const onMaxSliderInput = () => {
+  if (currentMax.value < currentMin.value + MIN_GAP) {
+    currentMax.value = currentMin.value + MIN_GAP
+  }
+  currentMax.value = Math.round(currentMax.value / STEP) * STEP
+  maxInputText.value = formatNumberVn(currentMax.value)
+  triggerPriceFilterDebounced()
+}
+
+// Xử lý khi người dùng nhập số trực tiếp vào ô Min ở đầu trái
+const onMinInputFocus = () => {
+  minInputText.value = String(currentMin.value)
+}
+
+const onMinInputBlur = (val?: string) => {
+  const text = typeof val === 'string' ? val : minInputText.value
+  const digits = String(text).replace(/\D/g, '')
+  let num = digits ? parseInt(digits, 10) : 0
+  num = Math.max(0, Math.round(num / STEP) * STEP)
+  if (num > currentMax.value - MIN_GAP) {
+    num = currentMax.value - MIN_GAP
+  }
+  currentMin.value = num
+  minInputText.value = formatNumberVn(num)
+  triggerPriceFilterImmediate()
+}
+
+// Xử lý khi người dùng nhập số trực tiếp vào ô Max ở đầu phải
+const onMaxInputFocus = () => {
+  maxInputText.value = String(currentMax.value)
+}
+
+const onMaxInputBlur = (val?: string) => {
+  const text = typeof val === 'string' ? val : maxInputText.value
+  const digits = String(text).replace(/\D/g, '')
+  let num = digits ? parseInt(digits, 10) : (currentMin.value + MIN_GAP)
+  num = Math.round(num / STEP) * STEP
+  if (num < currentMin.value + MIN_GAP) {
+    num = currentMin.value + MIN_GAP
+  }
+  currentMax.value = num
+  maxInputText.value = formatNumberVn(num)
+  triggerPriceFilterImmediate()
+}
+
+// Presets gợi ý nhanh
+const pricePresets = [
+  { id: 'all', label: 'Tất cả', min: 0, max: DEFAULT_SLIDER_MAX },
+  { id: 'u100k', label: '< 100k', min: 0, max: 100000 },
+  { id: '100-500k', label: '100k - 500k', min: 100000, max: 500000 },
+  { id: '500k-1m', label: '500k - 1Tr', min: 500000, max: 1000000 },
+  { id: '1m-5m', label: '1Tr - 5Tr', min: 1000000, max: 5000000 }
+]
+
+const isPresetActive = (preset: any) => {
+  if (!isPriceFilterActive.value && preset.id === 'all') return true
+  return isPriceFilterActive.value && currentMin.value === preset.min && currentMax.value === preset.max
+}
+
+const applyPreset = (preset: any) => {
+  if (preset.id === 'all') {
+    resetPriceFilter()
+    return
+  }
+  currentMin.value = preset.min
+  currentMax.value = preset.max
+  minInputText.value = formatNumberVn(preset.min)
+  maxInputText.value = formatNumberVn(preset.max)
+  triggerPriceFilterImmediate()
+}
+
+// Debounce trigger khi kéo thanh trượt
+let priceDebounceTimer: any = null
+const triggerPriceFilterDebounced = () => {
+  isPriceFilterActive.value = true
+  if (priceDebounceTimer) clearTimeout(priceDebounceTimer)
+  priceDebounceTimer = setTimeout(() => {
+    currentPage.value = 1
+    searchProducts()
+  }, 350)
+}
+
+const triggerPriceFilterImmediate = () => {
+  isPriceFilterActive.value = true
+  if (priceDebounceTimer) clearTimeout(priceDebounceTimer)
+  currentPage.value = 1
+  searchProducts()
+}
+
+const resetPriceFilter = () => {
+  isPriceFilterActive.value = false
+  if (priceDebounceTimer) clearTimeout(priceDebounceTimer)
+  currentMin.value = 0
+  currentMax.value = DEFAULT_SLIDER_MAX
+  minInputText.value = '0'
+  maxInputText.value = formatNumberVn(DEFAULT_SLIDER_MAX)
+  currentPage.value = 1
+  searchProducts()
+}
 
 // State
 const categories = ref<any[]>([])
@@ -499,7 +764,8 @@ const searchProducts = async () => {
     console.log('🎯 Search Params:', {
       searchQuery: searchQuery.value,
       selectedCategory: selectedCategory.value,
-      selectedPriceRange: selectedPriceRange.value,
+      priceFilterActive: isPriceFilterActive.value,
+      priceRange: isPriceFilterActive.value ? `${currentMin.value} - ${currentMax.value}` : 'all',
       onlyShowSale: onlyShowSale.value,
       sortBy: sortBy.value
     })
@@ -510,7 +776,7 @@ const searchProducts = async () => {
                           sortBy.value
 
     // 1. Nếu chỉ lọc sản phẩm giảm giá (có thể kết hợp sort)
-    if (onlyShowSale.value && !selectedCategory.value && !selectedPriceRange.value && !searchQuery.value) {
+    if (onlyShowSale.value && !selectedCategory.value && !isPriceFilterActive.value && !searchQuery.value) {
       // GET /api/products/search/filter/on-sale
       apiUrl = `${API_BASE_URL}/products/search/filter/on-sale`
       result = await $fetch(apiUrl, {
@@ -522,21 +788,18 @@ const searchProducts = async () => {
       })
     }
     // 2. Nếu chỉ có khoảng giá (không có category, sale, search)
-    else if (selectedPriceRange.value && !selectedCategory.value && !onlyShowSale.value && !searchQuery.value) {
-      const range = priceRanges.find(r => r.id === selectedPriceRange.value)
-      if (range && range.max !== Infinity) {
-        // GET /api/products/search/filter/by-price
-        apiUrl = `${API_BASE_URL}/products/search/filter/by-price`
-        result = await $fetch(apiUrl, {
-          params: {
-            minPrice: range.min,
-            maxPrice: range.max,
-            page: currentPage.value - 1,
-            size: itemsPerPage,
-            sortBy: backendSortBy
-          }
-        })
-      }
+    else if (isPriceFilterActive.value && !selectedCategory.value && !onlyShowSale.value && !searchQuery.value) {
+      // GET /api/products/search/filter/by-price
+      apiUrl = `${API_BASE_URL}/products/search/filter/by-price`
+      result = await $fetch(apiUrl, {
+        params: {
+          minPrice: currentMin.value,
+          maxPrice: currentMax.value,
+          page: currentPage.value - 1,
+          size: itemsPerPage,
+          sortBy: backendSortBy
+        }
+      })
     }
     // 3. Nếu có search query (có thể kết hợp với category, price, sale)
     else if (searchQuery.value) {
@@ -550,7 +813,7 @@ const searchProducts = async () => {
       // Sẽ filter theo category/price/sale ở client-side sau
     }
     // 4. Nếu chỉ lọc theo category (không có filter khác)
-    else if (selectedCategory.value && !selectedPriceRange.value && !onlyShowSale.value && !searchQuery.value) {
+    else if (selectedCategory.value && !isPriceFilterActive.value && !onlyShowSale.value && !searchQuery.value) {
       // GET /api/products/search/by-category-id/{categoryId}
       apiUrl = `${API_BASE_URL}/products/search/by-category-id/${selectedCategory.value}`
       result = await $fetch(apiUrl)
@@ -558,21 +821,15 @@ const searchProducts = async () => {
     }
     // 5. Nếu có nhiều điều kiện lọc kết hợp (KHÔNG có search), dùng POST filter
     else {
-      const range = selectedPriceRange.value 
-        ? priceRanges.find(r => r.id === selectedPriceRange.value)
-        : null
-
       const filterRequest: any = {
         page: currentPage.value - 1,
         size: itemsPerPage
       }
 
-      // Thêm điều kiện lọc giá
-      if (range) {
-        filterRequest.minPrice = range.min
-        if (range.max !== Infinity) {
-          filterRequest.maxPrice = range.max
-        }
+      // Thêm điều kiện lọc giá từ thanh trượt 2 đầu
+      if (isPriceFilterActive.value) {
+        filterRequest.minPrice = currentMin.value
+        filterRequest.maxPrice = currentMax.value
       }
 
       // Thêm điều kiện lọc category
@@ -608,15 +865,12 @@ const searchProducts = async () => {
           })
         }
         
-        // Filter by price range (sử dụng minPrice của product)
-        if (selectedPriceRange.value && searchQuery.value) {
-          const range = priceRanges.find(r => r.id === selectedPriceRange.value)
-          if (range) {
-            finalProducts = finalProducts.filter((p: any) => {
-              const minPrice = p.minDiscountPrice || p.minPrice || 0
-              return minPrice >= range.min && minPrice <= range.max
-            })
-          }
+        // Filter by price range từ thanh trượt 2 đầu (sử dụng minPrice của product)
+        if (isPriceFilterActive.value && searchQuery.value) {
+          finalProducts = finalProducts.filter((p: any) => {
+            const minPrice = p.minDiscountPrice || p.minPrice || 0
+            return minPrice >= currentMin.value && minPrice <= currentMax.value
+          })
         }
         
         // Filter by sale (hasDiscount từ backend)
@@ -701,7 +955,7 @@ const filteredProducts = computed(() => {
 const sortedProducts = computed(() => {
   // Nếu dùng API có sort (on-sale, by-price), không cần sort lại
   // Chỉ sort client-side cho API không có sort param (by-product-name, by-category-id)
-  if (searchQuery.value || (selectedCategory.value && !selectedPriceRange.value && !onlyShowSale.value)) {
+  if (searchQuery.value || (selectedCategory.value && !isPriceFilterActive.value && !onlyShowSale.value)) {
     const prods = [...filteredProducts.value]
     
     switch (sortBy.value) {
@@ -747,7 +1001,7 @@ const displayedPages = computed(() => {
 
 const hasActiveFilters = computed(() => {
   return selectedCategory.value !== null || 
-         selectedPriceRange.value !== null || 
+         isPriceFilterActive.value || 
          onlyShowSale.value
 })
 
@@ -759,7 +1013,11 @@ const handleSearch = () => {
 
 const clearAllFilters = () => {
   selectedCategory.value = null
-  selectedPriceRange.value = null
+  isPriceFilterActive.value = false
+  currentMin.value = 0
+  currentMax.value = DEFAULT_SLIDER_MAX
+  minInputText.value = '0'
+  maxInputText.value = formatNumberVn(DEFAULT_SLIDER_MAX)
   onlyShowSale.value = false
   searchQuery.value = ''
   currentPage.value = 1
@@ -786,7 +1044,7 @@ const getCategoryName = (categoryId: number | null) => {
 }
 
 // Watchers
-watch([selectedCategory, selectedPriceRange, onlyShowSale, sortBy], () => {
+watch([selectedCategory, onlyShowSale, sortBy], () => {
   currentPage.value = 1
   searchProducts()
 })
@@ -824,3 +1082,64 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.dual-range-slider {
+  pointer-events: none;
+}
+.dual-range-slider::-webkit-slider-runnable-track {
+  background: transparent;
+  border: none;
+  height: 100%;
+}
+.dual-range-slider::-moz-range-track {
+  background: transparent;
+  border: none;
+  height: 100%;
+}
+.dual-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 3px solid #0099ff;
+  box-shadow: 0 2px 6px rgba(0, 153, 255, 0.45);
+  cursor: grab;
+  margin-top: -6px;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.dual-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(0, 153, 255, 0.15);
+}
+.dual-range-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.25);
+  border-color: #0077cc;
+  box-shadow: 0 0 0 6px rgba(0, 153, 255, 0.25);
+}
+.dual-range-slider::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 3px solid #0099ff;
+  box-shadow: 0 2px 6px rgba(0, 153, 255, 0.45);
+  cursor: grab;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.dual-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(0, 153, 255, 0.15);
+}
+.dual-range-slider::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.25);
+  border-color: #0077cc;
+  box-shadow: 0 0 0 6px rgba(0, 153, 255, 0.25);
+}
+</style>

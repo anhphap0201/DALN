@@ -39,11 +39,13 @@ class AiChatServiceTest {
     private ChatSessionMemoryService chatSessionMemoryService;
 
     private AiSecuritySanitizer aiSecuritySanitizer;
+    private AiToolPolicyService aiToolPolicyService;
     private AiChatService aiChatService;
 
     @BeforeEach
     void setUp() {
         aiSecuritySanitizer = new AiSecuritySanitizer();
+        aiToolPolicyService = new AiToolPolicyService();
         aiChatService = new AiChatService(
                 chatSessionRepository,
                 chatMessageRepository,
@@ -52,9 +54,72 @@ class AiChatServiceTest {
                 new ObjectMapper(),
                 chatIntentAnalyzer,
                 chatSessionMemoryService,
-                aiSecuritySanitizer
+                aiSecuritySanitizer,
+                aiToolPolicyService
         );
         ReflectionTestUtils.setField(aiChatService, "modelName", "test-model");
+    }
+
+    @Test
+    @DisplayName("Bảo mật RBAC: Chặn khách vãng lai (ROLE_GUEST) hỏi doanh thu trực tiếp")
+    void testBlockRevenueReportForGuestUser_Direct() {
+        UUID sid = UUID.randomUUID();
+        ChatSession session = ChatSession.builder().id(sid).build();
+        when(chatSessionRepository.findById(sid)).thenReturn(Optional.of(session));
+
+        ChatIntentAnalyzer.AnalysisResult analysis = new ChatIntentAnalyzer.AnalysisResult(
+                ChatIntentAnalyzer.Intent.SALES_ANALYTICS,
+                null,
+                Map.of(),
+                List.of(),
+                false
+        );
+        when(chatIntentAnalyzer.analyze(anyString())).thenReturn(analysis);
+
+        ChatSessionMemoryService.StructuredMemory mem = new ChatSessionMemoryService.StructuredMemory();
+        mem.setLastIntent("SALES_ANALYTICS");
+        when(chatSessionMemoryService.updateMemory(any(), any(), any())).thenReturn(mem);
+
+        ChatRequestDTO request = new ChatRequestDTO();
+        request.setSessionId(sid);
+        request.setMessage("thống kê doanh thu tháng");
+
+        ChatResponseDTO response = aiChatService.processChat(request, null, "ROLE_GUEST");
+
+        assertNotNull(response);
+        assertTrue(response.getMessage().contains("chỉ dành riêng cho Quản trị viên"));
+        verify(ollamaClient, never()).chat(any(), any());
+    }
+
+    @Test
+    @DisplayName("Bảo mật RBAC: Chặn khách vãng lai hỏi dồn lượt theo thời gian (Multi-turn follow up: 'tháng này')")
+    void testBlockRevenueReportForGuestUser_MultiTurnFollowUp() {
+        UUID sid = UUID.randomUUID();
+        ChatSession session = ChatSession.builder().id(sid).build();
+        when(chatSessionRepository.findById(sid)).thenReturn(Optional.of(session));
+
+        ChatIntentAnalyzer.AnalysisResult analysis = new ChatIntentAnalyzer.AnalysisResult(
+                ChatIntentAnalyzer.Intent.GENERAL_KNOWLEDGE,
+                null,
+                Map.of(),
+                List.of(),
+                false
+        );
+        when(chatIntentAnalyzer.analyze(anyString())).thenReturn(analysis);
+
+        ChatSessionMemoryService.StructuredMemory mem = new ChatSessionMemoryService.StructuredMemory();
+        mem.setLastIntent("SALES_ANALYTICS"); // Lượt trước đang ở ngữ cảnh doanh thu
+        when(chatSessionMemoryService.updateMemory(any(), any(), any())).thenReturn(mem);
+
+        ChatRequestDTO request = new ChatRequestDTO();
+        request.setSessionId(sid);
+        request.setMessage("tháng này");
+
+        ChatResponseDTO response = aiChatService.processChat(request, null, "ROLE_GUEST");
+
+        assertNotNull(response);
+        assertTrue(response.getMessage().contains("chỉ dành riêng cho Quản trị viên"));
+        verify(ollamaClient, never()).chat(any(), any());
     }
 
     @Test

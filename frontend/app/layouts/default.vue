@@ -334,10 +334,8 @@ const { cartItemCount, fetchCart } = useCart()
 onMounted(() => {
   initializeAuth()
   loadSearchHistory()
-  // Fetch cart if authenticated
-  if (isAuthenticated.value) {
-    fetchCart()
-  }
+  // Fetch cart (both authenticated and guest)
+  fetchCart()
 })
 
 const isLoggedIn = computed(() => isAuthenticated.value)

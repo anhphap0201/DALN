@@ -1,0 +1,41 @@
+sequenceDiagram
+    autonumber
+    actor User as Khách hàng / Quản trị viên
+    participant Frontend as ChatWidget.vue
+    participant Controller as ChatController
+    participant Policy as AiToolPolicyService (PBAC)
+    participant Engine as AiChatService (Orchestrator)
+    participant Memory as ChatSessionMemoryService
+    participant Ollama as Ollama Local (Qwen 2.5)
+    participant Tool as AiToolService
+    participant DB as PostgreSQL 16
+
+    User->>Frontend: Gửi: "Tư vấn mạch nguồn hạ áp 24V xuống 5V 3A nuôi Pi"
+    Frontend->>Controller: POST /api/chat/message (sessionId, content)
+    Controller->>Memory: Lấy lịch sử hội thoại gần nhất
+    Memory->>DB: SELECT * FROM chat_messages WHERE session_id = ? ORDER BY id DESC LIMIT 10
+    DB-->>Memory: 10 tin nhắn gần nhất
+    Memory-->>Controller: Ngữ cảnh hội thoại đã cắt tỉa gọn gàng
+    
+    Controller->>Engine: processUserMessage(session, userPrompt)
+    Engine->>Ollama: POST /api/chat (Messages + 16 Tool Schemas)
+    Note over Ollama: Qwen 2.5 suy luận và kích hoạt Tool Calling
+    Ollama-->>Engine: ToolCall: search_products(keyword="hạ áp 5V 3A", category="Mạch nguồn")
+    
+    Engine->>Policy: enforceToolAccess("search_products", userRole)
+    Policy-->>Engine: Quyền hợp lệ (Public tool)
+    
+    Engine->>Tool: executeTool("search_products", args)
+    Tool->>DB: SELECT * FROM products p JOIN product_variants pv...
+    DB-->>Tool: Module LM2596S DC-DC, Buck MP1584EN (Giá: 25.000đ, Tồn: 45)
+    Tool-->>Engine: Payload chuẩn: {success: true, data: [...]}
+    
+    Engine->>Ollama: Gửi Tool Output trở lại cho LLM
+    Note over Ollama: Qwen 2.5 tổng hợp dữ liệu thật thành lời giải thích 7 phần
+    Ollama-->>Engine: Lời đáp cuối cùng (Kèm siêu dữ liệu sản phẩm)
+    
+    Engine->>DB: INSERT INTO chat_messages (user & assistant messages)
+    Engine->>DB: INSERT INTO chat_tool_logs (execution metrics: 18ms)
+    Engine-->>Controller: ChatResponseDTO kèm Product Cards Metadata
+    Controller-->>Frontend: HTTP 200 OK (JSON phản hồi)
+    Frontend->>User: Hiển thị câu trả lời tự nhiên + Render Interactive Product Card

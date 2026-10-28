@@ -1,0 +1,105 @@
+erDiagram
+    USERS ||--o{ ORDERS : places
+    USERS ||--o{ CHAT_SESSIONS : owns
+    USERS ||--o{ REVIEWS : writes
+    CATEGORIES ||--o{ PRODUCTS : contains
+    PRODUCTS ||--o{ PRODUCT_VARIANTS : has
+    PRODUCT_VARIANTS ||--o{ INVENTORIES : tracks
+    PRODUCT_VARIANTS ||--o{ ORDER_ITEMS : included_in
+    ORDERS ||--|{ ORDER_ITEMS : consists_of
+    ORDERS ||--o{ PAYMENTS : generates
+    ORDERS ||--o{ WARRANTY_CLAIMS : files
+    CHAT_SESSIONS ||--o{ CHAT_MESSAGES : records
+    CHAT_SESSIONS ||--o{ CHAT_TOOL_LOGS : tracks
+
+    USERS {
+        bigint id PK
+        varchar email UK
+        varchar password_hash
+        varchar full_name
+        varchar phone
+        varchar role
+        boolean enabled
+    }
+
+    CATEGORIES {
+        bigint id PK
+        varchar name
+        varchar slug UK
+        varchar description
+    }
+
+    PRODUCTS {
+        bigint id PK
+        varchar name
+        varchar slug UK
+        text description
+        jsonb technical_specs
+        bigint category_id FK
+    }
+
+    PRODUCT_VARIANTS {
+        bigint id PK
+        varchar sku UK
+        varchar variant_name
+        numeric price
+        numeric cost_price
+        bigint product_id FK
+    }
+
+    INVENTORIES {
+        bigint id PK
+        bigint variant_id FK
+        integer stock_quantity
+        integer low_stock_threshold
+        varchar warehouse_location
+    }
+
+    ORDERS {
+        bigint id PK
+        varchar order_code UK
+        bigint user_id FK
+        varchar customer_name
+        varchar customer_phone
+        text shipping_address
+        numeric total_amount
+        varchar status
+        varchar payment_method
+        varchar smart_locker_code
+    }
+
+    ORDER_ITEMS {
+        bigint id PK
+        bigint order_id FK
+        bigint variant_id FK
+        integer quantity
+        numeric unit_price
+    }
+
+    CHAT_SESSIONS {
+        bigint id PK
+        bigint user_id FK
+        varchar title
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CHAT_MESSAGES {
+        bigint id PK
+        bigint session_id FK
+        varchar sender
+        text content
+        jsonb tools_used
+        timestamp created_at
+    }
+
+    CHAT_TOOL_LOGS {
+        bigint id PK
+        bigint session_id FK
+        varchar tool_name
+        text arguments
+        text result
+        varchar status
+        bigint execution_time_ms
+        timestamp executed_at
+    }
